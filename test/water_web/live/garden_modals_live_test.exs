@@ -59,7 +59,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
           resulting_due_on: Date.add(household_today(household), 3)
         })
 
-      _marked =
+      marked =
         GardenFixtures.care_event_fixture(item, actor_j, %{
           event_type: :manual_needs_watering,
           occurred_on: Date.add(household_today(household), -1),
@@ -78,6 +78,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
       assert has_element?(view, "#item-detail-history", "Marked needs water")
       assert has_element?(view, "#item-detail-history", "A")
       assert has_element?(view, "#item-detail-history", "J")
+      assert has_element?(view, "#item-detail-history-event-#{marked.id} .flex-col")
       assert has_element?(view, "#item-detail-due")
       assert has_element?(view, "#item-detail-interval", "Every 3 days")
       assert has_element?(view, "#item-detail-last-watered")

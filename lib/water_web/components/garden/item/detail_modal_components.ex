@@ -145,19 +145,25 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
               id={"item-detail-history-event-#{event.id}"}
               class="garden-history-item rounded-[1.2rem] px-4 py-3"
             >
-              <div class="flex items-start justify-between gap-3">
-                <div class="space-y-1">
-                  <p class="garden-text-primary text-sm font-semibold">
+              <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div class="min-w-0 space-y-2">
+                  <p class="garden-text-primary text-sm font-semibold leading-tight">
                     {history_event_label(event)}
                   </p>
-                  <p class="garden-text-muted text-sm">
+                  <p class="garden-text-faint text-[0.7rem] font-semibold uppercase tracking-[0.18em] sm:hidden">
+                    {format_date(event.occurred_on)}
+                  </p>
+                  <p class="garden-text-muted text-sm leading-tight">
                     {history_member_name(event)}
-                    <span :if={history_event_note(event)}>
-                      · {history_event_note(event)}
-                    </span>
+                  </p>
+                  <p
+                    :if={history_event_note(event)}
+                    class="garden-text-muted text-sm leading-6 break-words"
+                  >
+                    {history_event_note(event)}
                   </p>
                 </div>
-                <p class="garden-text-faint shrink-0 text-xs font-semibold uppercase tracking-[0.18em]">
+                <p class="garden-text-faint hidden shrink-0 text-xs font-semibold uppercase tracking-[0.18em] sm:block">
                   {format_date(event.occurred_on)}
                 </p>
               </div>

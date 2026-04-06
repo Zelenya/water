@@ -330,6 +330,12 @@
   backdrop-filter: blur(18px);
 }
 
+.garden-tool-dock-mobile {
+  border-radius: 1.6rem;
+  background: color-mix(in oklab, var(--garden-surface-elevated) 94%, white);
+  box-shadow: 0 20px 42px -28px rgba(43, 60, 35, 0.48);
+}
+
 .garden-popover-surface,
 .garden-sheet-surface {
   background: var(--garden-surface-modal);
@@ -555,6 +561,18 @@
     transform 180ms ease;
 }
 
+.garden-tool-button-mobile {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.garden-tool-button-mobile > span:first-child {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
 .garden-tool-button-active {
   border-color: var(--garden-selected-border);
   background: color-mix(in oklab, var(--garden-selected-bg) 82%, transparent);
@@ -706,6 +724,13 @@
 
 .garden-tool-note {
   color: var(--garden-text-faint);
+}
+
+.garden-tool-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px color-mix(in oklab, var(--garden-border-strong) 30%, transparent),
+    0 14px 26px -22px rgba(63, 84, 53, 0.4);
 }
 
 .garden-item-type-chip {

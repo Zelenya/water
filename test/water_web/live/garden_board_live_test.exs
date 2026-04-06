@@ -28,6 +28,7 @@ defmodule WaterWeb.GardenBoardLiveTest do
 
       assert has_element?(view, "#garden-shell")
       assert has_element?(view, "#garden-top-hud")
+      assert has_element?(view, "#garden-weather-cards.grid-cols-3")
       assert has_element?(view, "#garden-weather-hook")
       assert has_element?(view, "#garden-weather-card-today", "--°C/--°C")
       assert has_element?(view, "#garden-weather-card-tomorrow", "--°C/--°C")
@@ -41,6 +42,10 @@ defmodule WaterWeb.GardenBoardLiveTest do
       assert has_element?(view, "#tool-dock-desktop-water [data-lucide-icon='droplets']")
       assert has_element?(view, "#tool-dock-desktop-needs-water [data-lucide-icon='flag']")
       assert has_element?(view, "#tool-dock-mobile")
+      assert has_element?(view, "#tool-dock-mobile-browse[aria-label='Browse']")
+      assert has_element?(view, "#tool-dock-mobile-water [data-lucide-icon='droplets']")
+      assert has_element?(view, "#tool-dock-mobile-add-item[aria-label='Add Item']")
+      refute has_element?(view, "#tool-dock-mobile .garden-tool-label")
       assert has_element?(view, "#garden-board-controls")
       assert has_element?(view, "#garden-board-toolbar")
       assert has_element?(view, "#garden-board-filters")

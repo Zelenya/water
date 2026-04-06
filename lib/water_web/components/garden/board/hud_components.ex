@@ -39,7 +39,10 @@ defmodule WaterWeb.Garden.Board.HudComponents do
             </p>
           </div>
 
-          <div class="grid flex-none gap-3 sm:grid-cols-3 xl:min-w-[26rem]">
+          <div
+            id="garden-weather-cards"
+            class="grid flex-none grid-cols-3 gap-2 sm:gap-3 xl:min-w-[26rem]"
+          >
             <.weather_card
               id="garden-weather-card-today"
               top_label="Today"
@@ -122,18 +125,20 @@ defmodule WaterWeb.Garden.Board.HudComponents do
   # All weather cards are the same: top label, icon, bottom text.
   defp weather_card_content(assigns) do
     ~H"""
-    <div class="flex min-h-[6.75rem] flex-col items-center justify-between text-center">
-      <p class="text-xs font-semibold tracking-[0.16em]">{@top_label}</p>
+    <div class="flex min-h-[5.75rem] flex-col items-center justify-between text-center sm:min-h-[6.75rem]">
+      <p class="text-[0.65rem] font-semibold tracking-[0.14em] sm:text-xs sm:tracking-[0.16em]">
+        {@top_label}
+      </p>
 
-      <div class="flex min-h-10 items-center justify-center">
+      <div class="flex min-h-8 items-center justify-center sm:min-h-10">
         <%= if @icon_name do %>
           <VisualComponents.garden_icon
             name={@icon_name}
-            class={["size-10", weather_icon_class(@tone)]}
+            class={["size-7 sm:size-10", weather_icon_class(@tone)]}
           />
         <% else %>
           <span class={[
-            "text-[2.25rem] font-semibold leading-none tracking-tight opacity-80",
+            "text-[1.8rem] font-semibold leading-none tracking-tight opacity-80 sm:text-[2.25rem]",
             weather_glyph_class(@tone, @icon_glyph)
           ]}>
             {@icon_glyph}
@@ -141,7 +146,9 @@ defmodule WaterWeb.Garden.Board.HudComponents do
         <% end %>
       </div>
 
-      <p class="text-sm font-semibold leading-tight tracking-tight">{@bottom_text}</p>
+      <p class="text-[0.72rem] font-semibold leading-tight tracking-tight sm:text-sm">
+        {@bottom_text}
+      </p>
     </div>
     """
   end
@@ -152,7 +159,7 @@ defmodule WaterWeb.Garden.Board.HudComponents do
   @spec weather_card_classes(String.t(), boolean()) :: [String.t()]
   defp weather_card_classes(tone, linked?) do
     [
-      "garden-count-card rounded-[1.5rem] px-4 py-2.5 shadow-sm no-underline",
+      "garden-count-card rounded-[1.35rem] px-2.5 py-2 shadow-sm no-underline sm:rounded-[1.5rem] sm:px-4 sm:py-2.5",
       weather_card_tone_class(tone),
       linked? && "transition hover:-translate-y-0.5 hover:shadow-md"
     ]

@@ -66,7 +66,9 @@ defmodule WaterWeb.Layouts do
             <span
               class="size-2.5 rounded-full"
               style={"background-color: #{@active_member.color || "#4f7b47"}"}
-            /> Active member: {@active_member.name}
+            />
+            <span class="sm:hidden">{@active_member.name}</span>
+            <span class="hidden sm:inline">Active member: {@active_member.name}</span>
           </span>
           <.theme_toggle />
         </div>
