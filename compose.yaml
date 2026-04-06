@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+      POSTGRES_DB: ${DATABASE_NAME:-water_dev}
+    healthcheck:
+      test:
+        ["CMD-SHELL", 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    ports:
+      - "${DATABASE_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: ["/bin/sh", "/app/bin/local-dev.sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MIX_ENV: dev
+      PHX_SERVER: "true"
+      PHX_BIND_IP: 0.0.0.0
+      DATABASE_HOST: db
+      DATABASE_PORT: "5432"
+      DATABASE_NAME: ${DATABASE_NAME:-water_dev}
+      DATABASE_USER: ${DATABASE_USER:-postgres}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+      WATER_BASIC_AUTH_USERNAMES: ${WATER_BASIC_AUTH_USERNAMES:-a,j}
+      WATER_BASIC_AUTH_PASSWORD: ${WATER_BASIC_AUTH_PASSWORD:-watering}
+      HEX_HOME: /hex
+    ports:
+      - "4000:4000"
+    volumes:
+      - .:/app
+      - mix_deps:/app/deps
+      - mix_build:/app/_build
+      - hex_cache:/hex
+    working_dir: /app
+
+volumes:
+  postgres_data:
+  mix_deps:
+  mix_build:
+  hex_cache:
