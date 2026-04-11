@@ -5,6 +5,7 @@ defmodule WaterWeb.GardenBoardLiveTest do
   import WaterWeb.GardenLiveTestHelpers
 
   alias Water.GardenFixtures
+  alias WaterWeb.GardenLive.Navigation
 
   describe "board shell" do
     test "renders the board with the active member, tools, needs care items, and section tiles",
@@ -14,7 +15,7 @@ defmodule WaterWeb.GardenBoardLiveTest do
       household = GardenFixtures.default_household_fixture()
       _member = GardenFixtures.member_fixture(household, %{name: "A"})
       section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
-      today = household_today(household)
+      today = Navigation.household_today(household)
 
       item =
         GardenFixtures.care_item_fixture(section, %{
@@ -131,7 +132,7 @@ defmodule WaterWeb.GardenBoardLiveTest do
       household = GardenFixtures.default_household_fixture()
       _member = GardenFixtures.member_fixture(household, %{name: "A"})
       section = GardenFixtures.section_fixture(household, %{name: "Back", position: 0})
-      today = household_today(household)
+      today = Navigation.household_today(household)
 
       _later_item =
         GardenFixtures.care_item_fixture(section, %{
@@ -173,7 +174,7 @@ defmodule WaterWeb.GardenBoardLiveTest do
       household = GardenFixtures.default_household_fixture()
       _member = GardenFixtures.member_fixture(household, %{name: "A"})
       section = GardenFixtures.section_fixture(household, %{name: "Back", position: 0})
-      today = household_today(household)
+      today = Navigation.household_today(household)
       tomorrow = Date.add(today, 1)
 
       natural_tomorrow_item =
@@ -236,7 +237,7 @@ defmodule WaterWeb.GardenBoardLiveTest do
       household = GardenFixtures.default_household_fixture()
       _member = GardenFixtures.member_fixture(household, %{name: "A"})
       section = GardenFixtures.section_fixture(household, %{name: "Back", position: 0})
-      today = household_today(household)
+      today = Navigation.household_today(household)
 
       flagged_item =
         GardenFixtures.care_item_fixture(section, %{

@@ -1,8 +1,7 @@
 defmodule WaterWeb.GardenLiveTestHelpers do
-  use WaterWeb, :verified_routes
-
   alias Water.Garden.CareItem
   alias Water.GardenFixtures
+  alias WaterWeb.GardenLive.Navigation
 
   @spec seed_board() :: %{
           back: Water.Garden.Section.t(),
@@ -18,7 +17,7 @@ defmodule WaterWeb.GardenLiveTestHelpers do
   def seed_board do
     household = GardenFixtures.default_household_fixture()
     _member = GardenFixtures.member_fixture(household, %{name: "A"})
-    today = household_today(household)
+    today = Navigation.household_today(household)
 
     front = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
     back = GardenFixtures.section_fixture(household, %{name: "Back", position: 1})
@@ -82,15 +81,4 @@ defmodule WaterWeb.GardenLiveTestHelpers do
       tomorrow_item: tomorrow_item
     }
   end
-
-  @spec household_today(Water.Households.Household.t()) :: Date.t()
-  def household_today(household) do
-    household.timezone
-    |> DateTime.now!()
-    |> DateTime.to_date()
-  end
-
-  @spec item_new_path(map()) :: String.t()
-  def item_new_path(params) when map_size(params) == 0, do: ~p"/items/new"
-  def item_new_path(params), do: ~p"/items/new?#{params}"
 end

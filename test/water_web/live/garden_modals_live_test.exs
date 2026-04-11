@@ -5,6 +5,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
   import WaterWeb.GardenLiveTestHelpers
 
   alias Water.GardenFixtures
+  alias WaterWeb.GardenLive.Navigation
 
   describe "detail routing" do
     test "clicking a tile in browse mode opens the detail modal and closing it preserves the filter",
@@ -54,18 +55,18 @@ defmodule WaterWeb.GardenModalsLiveTest do
       _watered =
         GardenFixtures.care_event_fixture(item, actor_a, %{
           event_type: :watered,
-          occurred_on: household_today(household),
-          previous_due_on: household_today(household),
-          resulting_due_on: Date.add(household_today(household), 3)
+          occurred_on: Navigation.household_today(household),
+          previous_due_on: Navigation.household_today(household),
+          resulting_due_on: Date.add(Navigation.household_today(household), 3)
         })
 
       marked =
         GardenFixtures.care_event_fixture(item, actor_j, %{
           event_type: :manual_needs_watering,
-          occurred_on: Date.add(household_today(household), -1),
-          manual_target_on: household_today(household),
-          previous_due_on: Date.add(household_today(household), 2),
-          resulting_due_on: household_today(household)
+          occurred_on: Date.add(Navigation.household_today(household), -1),
+          manual_target_on: Navigation.household_today(household),
+          previous_due_on: Date.add(Navigation.household_today(household), 2),
+          resulting_due_on: Navigation.household_today(household)
         })
 
       {:ok, view, _html} = live(conn, ~p"/")
@@ -182,7 +183,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
       household = GardenFixtures.default_household_fixture()
       _member = GardenFixtures.member_fixture(household, %{name: "A"})
       section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
-      today = household_today(household)
+      today = Navigation.household_today(household)
 
       item =
         GardenFixtures.care_item_fixture(section, %{

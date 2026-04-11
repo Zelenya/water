@@ -8,6 +8,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
   alias Water.Garden.CareEvent
   alias Water.Households
   alias Water.Repo
+  alias WaterWeb.GardenLive.Navigation
 
   describe "water mode" do
     test "escape switches water mode back to browse", %{conn: conn} do
@@ -243,7 +244,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
       %{overdue_item: overdue_item} = seed_board()
 
       {:ok, view, _html} = live(conn, ~p"/")
-      today = household_today(Households.get_default_household!())
+      today = Navigation.household_today(Households.get_default_household!())
 
       render_click(element(view, "#tool-dock-desktop-soil-check"))
       render_click(element(view, "#section-item-tile-#{overdue_item.id}"))
@@ -369,7 +370,10 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
       %{later_item: later_item} = seed_board()
 
       {:ok, view, _html} = live(conn, ~p"/")
-      tomorrow = Households.get_default_household!() |> household_today() |> Date.add(1)
+      tomorrow =
+        Households.get_default_household!()
+        |> Navigation.household_today()
+        |> Date.add(1)
       tomorrow_label = "Needs Watering on #{Calendar.strftime(tomorrow, "%b %-d")}"
 
       render_click(element(view, "#section-item-tile-#{later_item.id}"))
@@ -462,7 +466,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
       %{overdue_item: overdue_item} = seed_board()
 
       {:ok, view, _html} = live(conn, ~p"/")
-      today = household_today(Households.get_default_household!())
+      today = Navigation.household_today(Households.get_default_household!())
 
       render_click(element(view, "#section-item-tile-#{overdue_item.id}"))
       assert_patch(view, ~p"/items/#{overdue_item.id}")

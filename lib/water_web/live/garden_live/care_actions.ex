@@ -3,8 +3,6 @@ defmodule WaterWeb.GardenLive.CareActions do
   alias WaterWeb.Garden.State.CareAction
   alias WaterWeb.GardenLive.CareActions.{Forms, Surface, Workflow}
 
-  @type interaction_kind() :: CareAction.kind()
-
   @spec handle_item_interaction(Phoenix.LiveView.Socket.t(), CareItemCard.t()) ::
           {:noreply, Phoenix.LiveView.Socket.t()}
   defdelegate handle_item_interaction(socket, item_card), to: Workflow
@@ -28,7 +26,7 @@ defmodule WaterWeb.GardenLive.CareActions do
           {:noreply, Phoenix.LiveView.Socket.t()}
   defdelegate execute_schedule_preset(socket, target_on), to: Workflow
 
-  @spec open_care_action(Phoenix.LiveView.Socket.t(), interaction_kind(), CareItemCard.t()) ::
+  @spec open_care_action(Phoenix.LiveView.Socket.t(), CareAction.kind(), CareItemCard.t()) ::
           Phoenix.LiveView.Socket.t()
   defdelegate open_care_action(socket, kind, item_card), to: Surface
 

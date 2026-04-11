@@ -2,6 +2,7 @@ defmodule WaterWeb.Garden.Board.ToolbarComponents do
   use WaterWeb, :html
 
   alias WaterWeb.Garden.Shared.VisualComponents
+  alias WaterWeb.GardenLive.Navigation
 
   attr :id, :string, required: true
   attr :tool_mode, :atom, required: true
@@ -66,7 +67,7 @@ defmodule WaterWeb.Garden.Board.ToolbarComponents do
       <%= if @can_add_item? do %>
         <.link
           id={"#{@id}-add-item"}
-          patch={new_item_path(@query_params)}
+          patch={Navigation.item_new_path(@query_params)}
           aria-label="Add Item"
           title="Add Item"
           class={tool_button_classes(false, false, @compact?, @mobile?)}
@@ -297,10 +298,6 @@ defmodule WaterWeb.Garden.Board.ToolbarComponents do
   @spec root_path(map()) :: String.t()
   defp root_path(params) when map_size(params) == 0, do: ~p"/"
   defp root_path(params), do: ~p"/?#{params}"
-
-  @spec new_item_path(map()) :: String.t()
-  defp new_item_path(params) when map_size(params) == 0, do: ~p"/items/new"
-  defp new_item_path(params), do: ~p"/items/new?#{params}"
 
   @spec tool_button_classes(boolean(), boolean(), boolean(), boolean()) :: [String.t()]
   defp tool_button_classes(active, disabled, compact?, mobile?) do

@@ -45,6 +45,7 @@ defmodule WaterWeb.Layouts do
 
   attr :active_member, :map, default: nil, doc: "the active household member"
 
+  slot :header_actions
   slot :inner_block, required: true
 
   def app(assigns) do
@@ -58,6 +59,7 @@ defmodule WaterWeb.Layouts do
         </.link>
 
         <div class="flex items-center gap-3">
+          {render_slot(@header_actions)}
           <span
             :if={@active_member}
             id="header-active-member"

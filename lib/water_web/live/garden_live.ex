@@ -6,6 +6,7 @@ defmodule WaterWeb.GardenLive do
   alias Water.Households
   alias Water.Weather
   alias Water.Weather.Forecast
+  alias WaterWeb.Garden.CommandLauncher, as: GardenCommandLauncher
   alias WaterWeb.Garden.State.Modal
   require Logger
 
@@ -17,11 +18,11 @@ defmodule WaterWeb.GardenLive do
     ToolbarComponents
   }
 
+  alias WaterWeb.Garden.CommandLauncherComponents
   alias WaterWeb.Garden.Care.ActionComponents, as: CareActionComponents
   alias WaterWeb.Garden.Item.{DetailModalComponents, FormModalComponents}
   alias WaterWeb.Garden.Shared.ModalComponents
-
-  alias WaterWeb.GardenLive.{CareActions, Modals, Navigation}
+  alias WaterWeb.GardenLive.{CareActions, CommandLauncher, Modals, Navigation}
 
   @active_member_session_key "active_member_id"
   @item_form_param "item"
@@ -60,7 +61,8 @@ defmodule WaterWeb.GardenLive do
      |> assign(:weather_forecast_state, :loading)
      |> assign(:temperature_forecast_url, nil)
      |> assign(:rain_forecast_url, nil)
-     |> assign(:modal, nil)}
+     |> assign(:modal, nil)
+     |> assign(:command_launcher, GardenCommandLauncher.new())}
   end
 
   @impl true
@@ -74,13 +76,13 @@ defmodule WaterWeb.GardenLive do
      |> assign(:current_filter, filter)
      |> assign(:filter_query_params, Navigation.filter_query_params(filter))
      |> CareActions.clear_care_surface()
-     |> Modals.apply_live_action(socket.assigns.live_action, params, filter)}
+     |> Modals.apply_live_action(socket.assigns.live_action, params, filter)
+     |> sync_command_launcher()}
   end
 
   @impl true
-  def handle_event("validate_item", %{@item_form_param => item_params}, socket) do
-    Modals.validate_item(socket, item_params)
-  end
+  def handle_event("validate_item", %{@item_form_param => item_params}, socket),
+    do: Modals.validate_item(socket, item_params)
 
   @impl true
   def handle_event("save_item", %{@item_form_param => item_params}, socket) do
@@ -89,10 +91,16 @@ defmodule WaterWeb.GardenLive do
 
   @impl true
   def handle_event("switch_tool_mode", %{"mode" => raw_mode}, socket) do
-    {:noreply,
-     socket
-     |> assign(:tool_mode, Navigation.parse_tool_mode(raw_mode))
-     |> CareActions.clear_care_surface()}
+    {:noreply, CommandLauncher.switch_tool_mode(socket, Navigation.parse_tool_mode(raw_mode))}
+  end
+
+  @impl true
+  def handle_event(
+        "escape_tool_mode",
+        %{"key" => "Escape"},
+        %{assigns: %{command_launcher: %{open?: true}}} = socket
+      ) do
+    {:noreply, CommandLauncher.close(socket)}
   end
 
   @impl true
@@ -123,13 +131,60 @@ defmodule WaterWeb.GardenLive do
       when tool_mode in [:water, :soil_check, :manual_needs_watering] do
     {:noreply,
      socket
-     |> assign(:tool_mode, :browse)
-     |> CareActions.clear_care_surface()}
+     |> CommandLauncher.switch_tool_mode(:browse)}
   end
 
   # Noop for escape_tool_mode in browse mode
   def handle_event("escape_tool_mode", _params, socket) do
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("toggle_command_launcher", _params, socket) do
+    {:noreply,
+     if(command_launcher_available?(socket.assigns),
+       do: CommandLauncher.toggle(socket),
+       else: CommandLauncher.close(socket)
+     )}
+  end
+
+  @impl true
+  def handle_event("close_command_launcher", _params, socket) do
+    {:noreply, CommandLauncher.close(socket)}
+  end
+
+  @impl true
+  def handle_event("change_command_launcher_query", %{"query" => query}, socket) do
+    {:noreply, CommandLauncher.update_query(socket, query)}
+  end
+
+  @impl true
+  def handle_event("move_command_launcher_selection", %{"delta" => raw_delta}, socket) do
+    delta =
+      case Integer.parse(raw_delta) do
+        {value, ""} when value in [-1, 1] -> value
+        _other -> 0
+      end
+
+    {:noreply, CommandLauncher.move_selection(socket, delta)}
+  end
+
+  @impl true
+  # Used on an Enter (keyboard) submit
+  def handle_event("submit_command_launcher_selection", _params, socket) do
+    case CommandLauncher.selected_entry(socket) do
+      nil -> {:noreply, socket}
+      entry -> CommandLauncher.execute_entry(socket, entry)
+    end
+  end
+
+  @impl true
+  # Used on a mouse click
+  def handle_event("execute_command_launcher_entry", %{"id" => entry_id}, socket) do
+    case CommandLauncher.entry_by_id(socket, entry_id) do
+      nil -> {:noreply, socket}
+      entry -> CommandLauncher.execute_entry(socket, entry)
+    end
   end
 
   @impl true
@@ -357,10 +412,15 @@ defmodule WaterWeb.GardenLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} active_member={@active_member}>
+      <:header_actions>
+        <CommandLauncherComponents.trigger_button :if={command_launcher_available?(assigns)} />
+      </:header_actions>
+
       <section
         id="garden-shell"
         data-tool-mode={@tool_mode}
-        phx-hook="GardenLucideIcons"
+        data-command-launcher-enabled={to_string(command_launcher_available?(assigns))}
+        phx-hook="GardenShell"
         phx-window-keydown="escape_tool_mode"
         class="garden-shell space-y-6 pb-28 md:pb-8"
       >
@@ -489,10 +549,29 @@ defmodule WaterWeb.GardenLive do
           care_feedback={@care_feedback}
           today={@today}
         />
+        <CommandLauncherComponents.launcher
+          :if={command_launcher_available?(assigns)}
+          launcher={@command_launcher}
+        />
       </section>
     </Layouts.app>
     """
   end
+
+  @spec sync_command_launcher(Phoenix.LiveView.Socket.t()) :: Phoenix.LiveView.Socket.t()
+  defp sync_command_launcher(socket) do
+    if command_launcher_available?(socket.assigns) do
+      CommandLauncher.sync(socket)
+    else
+      CommandLauncher.close(socket)
+    end
+  end
+
+  @spec command_launcher_available?(map()) :: boolean()
+  # I didn't want to deal with dirty states when some modal/form is active,
+  # so the launcher is available only on the main board (for now)
+  defp command_launcher_available?(%{modal: nil, care_action: nil}), do: true
+  defp command_launcher_available?(_assigns), do: false
 
   @spec refresh_board(Phoenix.LiveView.Socket.t()) :: Phoenix.LiveView.Socket.t()
   defp refresh_board(socket) do

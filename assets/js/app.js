@@ -23,6 +23,7 @@ import "phoenix_html";
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import { hooks as colocatedHooks } from "phoenix-colocated/water";
+import { createGardenHooks } from "./garden_hooks";
 import {
   BedSingle,
   Calendar1,
@@ -78,58 +79,7 @@ const renderGardenLucideIcons = (root) => {
   });
 };
 
-const GardenLucideIcons = {
-  mounted() {
-    renderGardenLucideIcons(this.el);
-  },
-
-  updated() {
-    renderGardenLucideIcons(this.el);
-  },
-};
-
-const geolocationFailureReason = (error) => {
-  switch (error?.code) {
-    case 1:
-      return "denied";
-    case 2:
-      return "unavailable";
-    case 3:
-      return "timeout";
-    default:
-      return "unavailable";
-  }
-};
-
-const GardenWeatherLocation = {
-  mounted() {
-    if (!("geolocation" in navigator)) {
-      this.pushEvent("weather_location_unavailable", { reason: "unsupported" });
-      return;
-    }
-
-    // The weather cards are a bonus, not required for the rest of the board.
-    // So, we use a short timeout and accept coarse cached positions.
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        this.pushEvent("weather_location_ready", {
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-        });
-      },
-      (error) => {
-        this.pushEvent("weather_location_unavailable", {
-          reason: geolocationFailureReason(error),
-        });
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 5000,
-        maximumAge: 600000,
-      },
-    );
-  },
-};
+const gardenHooks = createGardenHooks({ renderGardenLucideIcons });
 
 const applyTheme = (theme) => {
   if (theme === "system") {
@@ -161,7 +111,10 @@ const csrfToken = document
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
-  hooks: { GardenLucideIcons, GardenWeatherLocation, ...colocatedHooks },
+  hooks: {
+    ...gardenHooks,
+    ...colocatedHooks,
+  },
 });
 
 // Show progress bar on live navigation and form submits

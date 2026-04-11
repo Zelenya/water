@@ -21,7 +21,6 @@ defmodule Water.Garden do
   alias Water.Households.{Household, Member}
 
   @type result(value) :: {:ok, value} | {:error, Ecto.Changeset.t()}
-  @type command_error() :: Commands.command_error()
 
   @spec list_board(Household.t(), Board.filter(), Date.t()) :: Board.t()
   def list_board(%Household{} = household, filter, %Date{} = today),
@@ -29,6 +28,9 @@ defmodule Water.Garden do
 
   @spec list_sections(Household.t()) :: [Section.t()]
   defdelegate list_sections(household), to: Sections
+
+  @spec list_household_items(Household.t()) :: [CareItem.t()]
+  defdelegate list_household_items(household), to: CareItems
 
   @spec create_section(Household.t(), map()) :: result(Section.t())
   defdelegate create_section(household, attrs), to: Sections
@@ -63,18 +65,18 @@ defmodule Water.Garden do
   defdelegate update_item(care_item, member, attrs), to: CareItems
 
   @spec water_item(CareItem.t(), Member.t(), Date.t()) ::
-          {:ok, CareItem.t()} | {:error, command_error()}
+          {:ok, CareItem.t()} | {:error, Commands.command_error()}
   defdelegate water_item(care_item, member, occurred_on), to: Commands
 
   @spec soil_check_item(CareItem.t(), Member.t(), Schedule.postpone_days(), Date.t()) ::
-          {:ok, CareItem.t()} | {:error, command_error()}
+          {:ok, CareItem.t()} | {:error, Commands.command_error()}
   defdelegate soil_check_item(care_item, member, postpone_days, occurred_on), to: Commands
 
   @spec mark_item_needs_watering(CareItem.t(), Member.t(), Date.t(), Date.t()) ::
-          {:ok, CareItem.t()} | {:error, command_error()}
+          {:ok, CareItem.t()} | {:error, Commands.command_error()}
   defdelegate mark_item_needs_watering(care_item, member, target_on, occurred_on), to: Commands
 
   @spec clear_schedule_item(CareItem.t(), Member.t(), Date.t()) ::
-          {:ok, CareItem.t()} | {:error, command_error()}
+          {:ok, CareItem.t()} | {:error, Commands.command_error()}
   defdelegate clear_schedule_item(care_item, member, occurred_on), to: Commands
 end

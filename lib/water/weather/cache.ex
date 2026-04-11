@@ -13,8 +13,7 @@ defmodule Water.Weather.Cache do
   @table __MODULE__
 
   @type key() :: {float(), float()}
-  @type data() :: Forecast.t()
-  @type entry() :: {key(), data(), integer()}
+  @type entry() :: {key(), Forecast.t(), integer()}
 
   @spec child_spec(term()) :: Supervisor.child_spec()
   def child_spec(_arg) do
@@ -29,7 +28,7 @@ defmodule Water.Weather.Cache do
     GenServer.start_link(__MODULE__, :ok, Keyword.put(opts, :name, __MODULE__))
   end
 
-  @spec get(key(), non_neg_integer()) :: {:fresh | :stale, data()} | :miss
+  @spec get(key(), non_neg_integer()) :: {:fresh | :stale, Forecast.t()} | :miss
   def get(key, ttl_ms) when is_tuple(key) and is_integer(ttl_ms) and ttl_ms >= 0 do
     case :ets.lookup(@table, key) do
       [{^key, weather_data, inserted_at_ms}] ->
@@ -46,7 +45,7 @@ defmodule Water.Weather.Cache do
     end
   end
 
-  @spec put(key(), data()) :: :ok
+  @spec put(key(), Forecast.t()) :: :ok
   def put(key, %Forecast{} = forecast) when is_tuple(key) do
     true = :ets.insert(@table, {key, forecast, now_ms()})
     :ok
@@ -78,7 +77,8 @@ defmodule Water.Weather.Cache do
     now_ms() - inserted_at_ms >= ttl_ms
   end
 
-  @spec freshness(integer(), non_neg_integer(), data()) :: {:fresh | :stale, data()}
+  @spec freshness(integer(), non_neg_integer(), Forecast.t()) ::
+          {:fresh | :stale, Forecast.t()}
   defp freshness(inserted_at_ms, ttl_ms, weather_data) do
     # `Water.Weather` can decide whether to serve stale data or attempt a
     # refresh; the cache only reports the age classification.

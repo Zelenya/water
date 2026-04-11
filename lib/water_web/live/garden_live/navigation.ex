@@ -83,17 +83,26 @@ defmodule WaterWeb.GardenLive.Navigation do
   def parse_interaction_kind(_other), do: nil
 
   @spec board_path(map()) :: String.t()
-  # :all becomes / instead of /?
-  def board_path(params) when map_size(params) == 0, do: ~p"/"
-  def board_path(params), do: ~p"/?#{params}"
+  def board_path(params),
+    do: with_query_params(~p"/", params)
 
   @spec item_show_path(CareItem.id(), map()) :: String.t()
-  def item_show_path(item_id, params) when map_size(params) == 0, do: ~p"/items/#{item_id}"
-  def item_show_path(item_id, params), do: ~p"/items/#{item_id}?#{params}"
+  def item_show_path(item_id, params),
+    do: with_query_params(~p"/items/#{item_id}", params)
+
+  @spec item_new_path(map()) :: String.t()
+  def item_new_path(params),
+    do: with_query_params(~p"/items/new", params)
 
   @spec edit_item_path(CareItem.id(), map()) :: String.t()
-  def edit_item_path(item_id, params) when map_size(params) == 0, do: ~p"/items/#{item_id}/edit"
-  def edit_item_path(item_id, params), do: ~p"/items/#{item_id}/edit?#{params}"
+  def edit_item_path(item_id, params),
+    do: with_query_params(~p"/items/#{item_id}/edit", params)
+
+  @spec with_query_params(String.t(), map()) :: String.t()
+  # Plumb query params, so it's easy to go back exactly to where we came from.
+  # Keep the url clean in case params are empty, no dangling question marks.
+  defp with_query_params(path, params) when map_size(params) == 0, do: path
+  defp with_query_params(path, params), do: path <> "?" <> URI.encode_query(params)
 
   @spec item_id!(map()) :: integer()
   @doc """
