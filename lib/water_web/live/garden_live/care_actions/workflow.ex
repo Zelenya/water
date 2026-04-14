@@ -67,6 +67,45 @@ defmodule WaterWeb.GardenLive.CareActions.Workflow do
     end)
   end
 
+  @spec execute_water_all(Phoenix.LiveView.Socket.t()) :: {:noreply, Phoenix.LiveView.Socket.t()}
+  def execute_water_all(socket) do
+    with_active_member(socket, fn active_member ->
+      {watered_count, had_error} =
+        socket.assigns.household
+        |> Garden.list_household_items()
+        |> Enum.reduce({0, false}, fn item, {watered_count, had_error} ->
+          case Garden.water_item(item, active_member, socket.assigns.today) do
+            {:ok, _} ->
+              {watered_count + 1, had_error}
+
+            {:error, :no_state_change} ->
+              {watered_count, had_error}
+
+            {:error, _reason} ->
+              {watered_count, true}
+          end
+        end)
+
+      socket =
+        if watered_count > 0 do
+          socket
+          |> refresh_board()
+          |> put_flash(:info, "Watered #{watered_count} household items.")
+        else
+          put_flash(socket, :info, "No household items needed watering.")
+        end
+
+      socket =
+        if had_error do
+          put_flash(socket, :error, "Some items could not be watered.")
+        else
+          socket
+        end
+
+      {:noreply, socket}
+    end)
+  end
+
   @spec execute_clear_schedule_action(Phoenix.LiveView.Socket.t(), CareItemCard.t()) ::
           {:noreply, Phoenix.LiveView.Socket.t()}
   def execute_clear_schedule_action(socket, %CareItemCard{} = item_card) do

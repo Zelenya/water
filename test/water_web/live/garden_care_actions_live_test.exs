@@ -370,10 +370,12 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
       %{later_item: later_item} = seed_board()
 
       {:ok, view, _html} = live(conn, ~p"/")
+
       tomorrow =
         Households.get_default_household!()
         |> Navigation.household_today()
         |> Date.add(1)
+
       tomorrow_label = "Needs Watering on #{Calendar.strftime(tomorrow, "%b %-d")}"
 
       render_click(element(view, "#section-item-tile-#{later_item.id}"))

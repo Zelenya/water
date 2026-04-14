@@ -99,6 +99,19 @@ defmodule WaterWeb.Garden.CommandLauncher.Commands do
         status: nil
       },
       %Entry{
+        id: "command-rain",
+        title: "Rain",
+        subtitle: "Mark all items as watered today",
+        group: :commands,
+        icon_name: "cloud-rain",
+        icon_type: :garden,
+        keywords: ["rain", "water", "all"],
+        action: :rain,
+        selectable?: context.sections != [],
+        current?: false,
+        status: nil
+      },
+      %Entry{
         id: "command-filter-all",
         title: "All",
         subtitle: filter_subtitle(:all, context.current_filter),

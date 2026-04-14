@@ -76,7 +76,9 @@ defmodule WaterWeb.GardenLive.CommandLauncher do
         {:noreply, close(socket)}
 
       true ->
-        {:noreply, execute_action(socket, entry.action)}
+        socket
+        |> close()
+        |> execute_action(entry.action)
     end
   end
 
@@ -99,29 +101,30 @@ defmodule WaterWeb.GardenLive.CommandLauncher do
   end
 
   @spec execute_action(Phoenix.LiveView.Socket.t(), LauncherRegistry.Entry.action()) ::
-          Phoenix.LiveView.Socket.t()
+          {:noreply, Phoenix.LiveView.Socket.t()}
   defp execute_action(socket, {:set_tool_mode, tool_mode}) do
-    socket
-    |> close()
-    |> switch_tool_mode(tool_mode)
+    {:noreply, switch_tool_mode(socket, tool_mode)}
   end
 
   defp execute_action(socket, {:set_filter, filter}) do
-    socket
-    |> close()
-    |> push_patch(to: Navigation.board_path(Navigation.filter_query_params(filter)))
+    {:noreply,
+     push_patch(socket, to: Navigation.board_path(Navigation.filter_query_params(filter)))}
   end
 
   defp execute_action(socket, :new_item) do
-    socket
-    |> close()
-    |> push_patch(to: Navigation.item_new_path(socket.assigns.filter_query_params))
+    {:noreply,
+     push_patch(socket, to: Navigation.item_new_path(socket.assigns.filter_query_params))}
+  end
+
+  defp execute_action(socket, :rain) do
+    CareActions.execute_water_all(socket)
   end
 
   defp execute_action(socket, {:show_item, item_id}) do
-    socket
-    |> close()
-    |> push_patch(to: Navigation.item_show_path(item_id, socket.assigns.filter_query_params))
+    {:noreply,
+     push_patch(socket,
+       to: Navigation.item_show_path(item_id, socket.assigns.filter_query_params)
+     )}
   end
 
   @spec launcher_context(Phoenix.LiveView.Socket.t()) :: LauncherRegistry.context()

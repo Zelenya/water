@@ -11,6 +11,10 @@ defmodule WaterWeb.GardenLive.CareActions do
           {:noreply, Phoenix.LiveView.Socket.t()}
   defdelegate execute_water_action(socket, item_card), to: Workflow
 
+  @spec execute_water_all(Phoenix.LiveView.Socket.t()) ::
+          {:noreply, Phoenix.LiveView.Socket.t()}
+  defdelegate execute_water_all(socket), to: Workflow
+
   @spec execute_clear_schedule_action(Phoenix.LiveView.Socket.t(), CareItemCard.t()) ::
           {:noreply, Phoenix.LiveView.Socket.t()}
   defdelegate execute_clear_schedule_action(socket, item_card), to: Workflow

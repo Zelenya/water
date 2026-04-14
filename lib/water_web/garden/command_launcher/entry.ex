@@ -42,6 +42,7 @@ defmodule WaterWeb.Garden.CommandLauncher.Entry do
           {:set_tool_mode, ToolMode.t()}
           | {:set_filter, Board.filter()}
           | :new_item
+          | :rain
           | {:show_item, CareItem.id()}
 
   @type t() :: %__MODULE__{
