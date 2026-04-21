@@ -1,11 +1,13 @@
 defmodule WaterWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :water
 
+  @session_max_age Application.compile_env!(:water, :authenticated_session_max_age)
   @default_session_options [
     store: :cookie,
     key: "_water_key",
     signing_salt: "9mWDnYuj",
-    same_site: "Lax"
+    same_site: "Lax",
+    max_age: @session_max_age
   ]
   @session_options Application.compile_env(
                      :water,

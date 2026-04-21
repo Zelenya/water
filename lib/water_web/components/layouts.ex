@@ -60,6 +60,7 @@ defmodule WaterWeb.Layouts do
 
         <div class="flex items-center gap-3">
           {render_slot(@header_actions)}
+          <.reconnect_indicator />
           <span
             :if={@active_member}
             id="header-active-member"
@@ -87,6 +88,25 @@ defmodule WaterWeb.Layouts do
     """
   end
 
+  def reconnect_indicator(assigns) do
+    ~H"""
+    <span
+      id="header-reconnect-indicator"
+      class="hidden items-center text-base-content/55"
+      phx-disconnected={JS.remove_class("hidden") |> JS.add_class("inline-flex")}
+      phx-connected={JS.add_class("hidden") |> JS.remove_class("inline-flex")}
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      aria-label="Reconnecting"
+      title="Reconnecting"
+    >
+      <span class="loading loading-spinner loading-xs" />
+      <span class="sr-only">Reconnecting</span>
+    </span>
+    """
+  end
+
   @doc """
   Shows the flash group with standard titles and content.
 
@@ -102,30 +122,6 @@ defmodule WaterWeb.Layouts do
     <div id={@id} aria-live="polite">
       <.flash kind={:info} flash={@flash} />
       <.flash kind={:error} flash={@flash} />
-
-      <.flash
-        id="client-error"
-        kind={:error}
-        title={gettext("We can't find the internet")}
-        phx-disconnected={show(".phx-client-error #client-error") |> JS.remove_attribute("hidden")}
-        phx-connected={hide("#client-error") |> JS.set_attribute({"hidden", ""})}
-        hidden
-      >
-        {gettext("Attempting to reconnect")}
-        <.icon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
-      </.flash>
-
-      <.flash
-        id="server-error"
-        kind={:error}
-        title={gettext("Something went wrong!")}
-        phx-disconnected={show(".phx-server-error #server-error") |> JS.remove_attribute("hidden")}
-        phx-connected={hide("#server-error") |> JS.set_attribute({"hidden", ""})}
-        hidden
-      >
-        {gettext("Attempting to reconnect")}
-        <.icon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
-      </.flash>
     </div>
     """
   end

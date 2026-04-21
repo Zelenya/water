@@ -9,7 +9,8 @@ import Config
 
 config :water,
   ecto_repos: [Water.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime],
+  authenticated_session_max_age: 2_592_000
 
 # Configure the endpoint
 config :water, WaterWeb.Endpoint,
