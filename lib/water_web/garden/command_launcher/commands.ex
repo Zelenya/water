@@ -11,6 +11,7 @@ defmodule WaterWeb.Garden.CommandLauncher.Commands do
   # Most important/useful. Show up right away
   @default_entry_ids [
     "command-tool-water",
+    "command-rain",
     "command-tool-soil-check",
     "command-new-item"
   ]

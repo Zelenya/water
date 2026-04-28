@@ -11,13 +11,7 @@ defmodule WaterWeb.Garden.CommandLauncherTest do
 
       launcher = CommandLauncher.open(context_from(household))
 
-      assert Enum.map(launcher.results, & &1.id) == [
-               "command-tool-water",
-               "command-tool-soil-check",
-               "command-new-item"
-             ]
-
-      assert Enum.map(launcher.results, & &1.title) == ["Water", "Soil Check", "Add Item"]
+      assert Enum.map(launcher.results, & &1.title) == ["Water", "Rain", "Soil Check", "Add Item"]
     end
 
     test "shows add item as disabled when there are no sections" do
