@@ -13,16 +13,24 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
   attr :today, :any, required: true
 
   def care_item_tile(assigns) do
+    assigns =
+      assign(assigns,
+        feedback_tone: feedback_tone(assigns.care_feedback, assigns.item_card.item.id)
+      )
+
     ~H"""
     <article
       id={@id}
       data-care-item-id={@item_card.item.id}
+      data-feedback-tone={@feedback_tone}
       phx-click="interact_with_item"
       phx-value-item-id={@item_card.item.id}
       class={[
         "garden-care-tile rounded-[1.4rem] px-4 py-3.5 transition duration-200",
         actionable_tile_classes(@tool_mode),
-        tile_feedback?(@care_feedback, @item_card.item.id) && "garden-care-feedback"
+        @feedback_tone && "garden-care-feedback",
+        @feedback_tone == :default && "garden-care-feedback-default",
+        @feedback_tone == :water && "garden-care-feedback-water"
       ]}
     >
       <button
@@ -64,7 +72,10 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
 
             <div
               id={"#{@id}-detail"}
-              class="garden-tile-detail-row garden-text-faint shrink-0 text-sm"
+              class={[
+                "garden-tile-detail-row garden-text-faint shrink-0 text-sm",
+                @feedback_tone == :default && "garden-tile-detail-feedback"
+              ]}
             >
               {due_text(@item_card)}
             </div>
@@ -72,14 +83,15 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
         </div>
       </button>
 
-      <div
-        :if={tile_feedback?(@care_feedback, @item_card.item.id)}
+      <span
+        :if={@feedback_tone}
         id={"#{@id}-feedback"}
-        class="garden-feedback-pill mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] motion-safe:animate-pulse"
+        data-feedback-tone={@feedback_tone}
+        class="sr-only"
+        role="status"
       >
-        <.icon name="hero-check-circle" class="size-4" />
         {feedback_label(@care_feedback)}
-      </div>
+      </span>
     </article>
     """
   end
@@ -148,10 +160,9 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
   defp show_tile_status_badge?(:no_schedule), do: false
   defp show_tile_status_badge?(_), do: true
 
-  @spec tile_feedback?(nil | CareFeedback.t(), integer()) :: boolean()
-  defp tile_feedback?(nil, _), do: false
-  defp tile_feedback?(%CareFeedback{item_id: item_id}, item_id), do: true
-  defp tile_feedback?(_, _), do: false
+  @spec feedback_tone(nil | CareFeedback.t(), integer()) :: CareFeedback.tone() | nil
+  defp feedback_tone(%CareFeedback{item_id: item_id, tone: tone}, item_id), do: tone
+  defp feedback_tone(_, _), do: nil
 
   @spec feedback_label(CareFeedback.t()) :: String.t()
   defp feedback_label(%CareFeedback{label: label}), do: label

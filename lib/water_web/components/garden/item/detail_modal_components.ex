@@ -14,6 +14,13 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
   attr :today, :any, required: true
 
   def item_detail_modal(assigns) do
+    item_id = assigns.modal.item_detail.item_card.item.id
+
+    assigns =
+      assign(assigns,
+        feedback_tone: feedback_tone(assigns.care_feedback, item_id)
+      )
+
     ~H"""
     <ModalComponents.modal_frame id={@id} title={@modal.title} close_patch={@modal.close_path}>
       <div class="space-y-4">
@@ -80,14 +87,15 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
             </.link>
           </div>
 
-          <div
-            :if={detail_feedback?(@care_feedback, @modal.item_detail.item_card.item.id)}
+          <span
+            :if={@feedback_tone}
             id="item-detail-feedback"
-            class="garden-feedback-pill mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] motion-safe:animate-pulse"
+            data-feedback-tone={@feedback_tone}
+            class="sr-only"
+            role="status"
           >
-            <.icon name="hero-check-circle" class="size-4" />
             {@care_feedback.label}
-          </div>
+          </span>
         </div>
 
         <div class="grid gap-3 sm:grid-cols-2">
@@ -95,6 +103,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
             id="item-detail-due"
             label="Due"
             value={due_value(@modal.item_detail.item_card)}
+            highlighted?={@feedback_tone == :default}
           />
           <.detail_card
             :if={show_interval_card?(@modal.item_detail.item_card.item)}
@@ -106,6 +115,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
             id="item-detail-last-watered"
             label="Last watered"
             value={format_optional_date(@modal.item_detail.item_card.item.last_watered_on)}
+            highlighted?={@feedback_tone == :water}
           />
           <.detail_card
             id="item-detail-last-checked"
@@ -178,12 +188,16 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
   attr :id, :string, required: true
   attr :label, :string, required: true
   attr :value, :string, required: true
+  attr :highlighted?, :boolean, default: false
 
   defp detail_card(assigns) do
     ~H"""
     <article
       id={@id}
-      class="garden-detail-card rounded-[1.35rem] px-4 py-3"
+      class={[
+        "garden-detail-card rounded-[1.35rem] px-4 py-3",
+        @highlighted? && "garden-detail-card-feedback"
+      ]}
     >
       <p class="garden-text-faint text-xs font-semibold uppercase tracking-[0.2em]">{@label}</p>
       <p class="garden-text-primary text-base font-semibold">{@value}</p>
@@ -274,8 +288,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
 
   defp history_event_note(%CareEvent{}), do: nil
 
-  @spec detail_feedback?(nil | CareFeedback.t(), CareItem.id()) :: boolean()
-  defp detail_feedback?(nil, _), do: false
-  defp detail_feedback?(%CareFeedback{item_id: item_id}, item_id), do: true
-  defp detail_feedback?(_, _), do: false
+  @spec feedback_tone(nil | CareFeedback.t(), CareItem.id()) :: CareFeedback.tone() | nil
+  defp feedback_tone(%CareFeedback{item_id: item_id, tone: tone}, item_id), do: tone
+  defp feedback_tone(_, _), do: nil
 end

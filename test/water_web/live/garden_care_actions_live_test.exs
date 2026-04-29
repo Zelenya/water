@@ -16,13 +16,13 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#tool-dock-desktop-water"))
-      assert has_element?(view, "#tool-dock-desktop-water[aria-pressed='true']")
+      select_tool(view, :water)
+      assert_tool_active(view, :water)
 
       render_keydown(view, "escape_tool_mode", %{"key" => "Escape"})
 
-      assert has_element?(view, "#tool-dock-desktop-browse[aria-pressed='true']")
-      refute has_element?(view, "#tool-dock-desktop-water[aria-pressed='true']")
+      assert_tool_active(view, :browse)
+      refute_tool_active(view, :water)
     end
 
     test "watering a board tile refreshes it in place and keeps water mode active", %{conn: conn} do
@@ -30,24 +30,11 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#tool-dock-desktop-water"))
+      select_tool(view, :water)
       render_click(element(view, "#section-item-tile-#{today_item.id}"))
 
-      assert has_element?(view, "#tool-dock-desktop-water[aria-pressed='true']")
-      assert has_element?(view, "#section-item-tile-#{today_item.id}-feedback", "Watered")
-      refute has_element?(view, "#today-panel-item-#{today_item.id}")
-    end
-
-    test "clicking anywhere on a water-mode tile waters the item", %{conn: conn} do
-      %{today_item: today_item} = seed_board()
-
-      {:ok, view, _html} = live(conn, ~p"/")
-
-      render_click(element(view, "#tool-dock-desktop-water"))
-      render_click(element(view, "#section-item-tile-#{today_item.id}"))
-
-      assert has_element?(view, "#tool-dock-desktop-water[aria-pressed='true']")
-      assert has_element?(view, "#section-item-tile-#{today_item.id}-feedback", "Watered")
+      assert_tool_active(view, :water)
+      assert_water_feedback(view, "section-item-tile-#{today_item.id}")
       refute has_element?(view, "#today-panel-item-#{today_item.id}")
     end
 
@@ -56,32 +43,28 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#tool-dock-desktop-water"))
+      select_tool(view, :water)
       render_click(element(view, "#today-panel-item-#{manual_today_item.id}"))
 
-      assert has_element?(view, "#tool-dock-desktop-water[aria-pressed='true']")
+      assert_tool_active(view, :water)
       refute has_element?(view, "#today-panel-item-#{manual_today_item.id}")
     end
 
-    test "repeated watering shows explicit feedback without adding duplicate history", %{
+    test "repeated watering shows visual feedback without adding duplicate history", %{
       conn: conn
     } do
       %{today_item: today_item} = seed_board()
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#tool-dock-desktop-water"))
+      select_tool(view, :water)
       render_click(element(view, "#section-item-tile-#{today_item.id}"))
 
-      assert has_element?(view, "#section-item-tile-#{today_item.id}-feedback", "Watered")
+      assert_water_feedback(view, "section-item-tile-#{today_item.id}")
 
       render_click(element(view, "#section-item-tile-#{today_item.id}"))
 
-      assert has_element?(
-               view,
-               "#section-item-tile-#{today_item.id}-feedback",
-               "Already watered today"
-             )
+      assert_feedback_status(view, "section-item-tile-#{today_item.id}", :water)
 
       assert Repo.aggregate(
                from(care_event in CareEvent, where: care_event.care_item_id == ^today_item.id),
@@ -95,13 +78,13 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{today_item.id}"))
-      assert_patch(view, ~p"/items/#{today_item.id}")
+      open_item_detail(view, today_item)
 
       render_click(element(view, "#item-detail-water"))
 
       assert has_element?(view, "#item-detail-modal")
-      assert has_element?(view, "#item-detail-feedback", "Watered")
+      assert_feedback_status(view, "item-detail", :water)
+      assert has_element?(view, "#item-detail-last-watered.garden-detail-card-feedback")
       assert has_element?(view, "#item-detail-history")
       assert has_element?(view, "#item-detail-history", "Watered")
       refute has_element?(view, "#today-panel-item-#{today_item.id}")
@@ -116,15 +99,15 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{no_schedule_item.id}"))
-      assert_patch(view, ~p"/items/#{no_schedule_item.id}")
+      open_item_detail(view, no_schedule_item)
 
       assert has_element?(view, "#item-detail-clear-schedule")
 
       render_click(element(view, "#item-detail-water"))
 
       assert has_element?(view, "#item-detail-modal")
-      assert has_element?(view, "#item-detail-feedback", "Watered")
+      assert_feedback_status(view, "item-detail", :water)
+      assert has_element?(view, "#item-detail-last-watered.garden-detail-card-feedback")
       assert has_element?(view, "#item-detail-history", "Watered")
       assert has_element?(view, "#item-detail-due", "No schedule")
       assert has_element?(view, "#item-detail-clear-schedule")
@@ -139,8 +122,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{today_item.id}"))
-      assert_patch(view, ~p"/items/#{today_item.id}")
+      open_item_detail(view, today_item)
 
       render_click(element(view, "#item-detail-clear-schedule"))
 
@@ -160,15 +142,15 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#tool-dock-desktop-soil-check"))
+      select_tool(view, :soil_check)
       render_click(element(view, "#section-item-tile-#{overdue_item.id}"))
 
-      assert has_element?(view, "#tool-dock-desktop-soil-check[aria-pressed='true']")
+      assert_tool_active(view, :soil_check)
       assert has_element?(view, "#care-action-modal")
 
       render_keydown(view, "escape_tool_mode", %{"key" => "Escape"})
 
-      assert has_element?(view, "#tool-dock-desktop-soil-check[aria-pressed='true']")
+      assert_tool_active(view, :soil_check)
       refute has_element?(view, "#care-action-modal")
     end
 
@@ -179,15 +161,16 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#tool-dock-desktop-soil-check"))
+      select_tool(view, :soil_check)
       render_click(element(view, "#section-item-tile-#{overdue_item.id}"))
 
       assert has_element?(view, "#care-action-modal")
 
       render_click(element(view, "#care-action-modal-soil-usual"))
 
-      assert has_element?(view, "#tool-dock-desktop-soil-check[aria-pressed='true']")
+      assert_tool_active(view, :soil_check)
       assert has_element?(view, "#section-item-tile-#{overdue_item.id}-feedback", "+3d")
+      assert_default_feedback(view, "section-item-tile-#{overdue_item.id}")
       refute has_element?(view, "#care-action-modal")
     end
 
@@ -196,7 +179,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#tool-dock-desktop-soil-check"))
+      select_tool(view, :soil_check)
       render_click(element(view, "#section-item-tile-#{overdue_item.id}"))
 
       assert has_element?(view, "#care-action-modal")
@@ -212,7 +195,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#tool-dock-desktop-soil-check"))
+      select_tool(view, :soil_check)
       render_click(element(view, "#section-item-tile-#{overdue_item.id}"))
 
       render_click(element(view, "#care-action-modal-soil-custom-toggle"))
@@ -235,7 +218,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
       )
       |> render_submit()
 
-      assert has_element?(view, "#tool-dock-desktop-soil-check[aria-pressed='true']")
+      assert_tool_active(view, :soil_check)
       assert has_element?(view, "#section-item-tile-#{overdue_item.id}-feedback", "+2d")
       refute has_element?(view, "#care-action-modal")
     end
@@ -246,7 +229,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
       {:ok, view, _html} = live(conn, ~p"/")
       today = Navigation.household_today(Households.get_default_household!())
 
-      render_click(element(view, "#tool-dock-desktop-soil-check"))
+      select_tool(view, :soil_check)
       render_click(element(view, "#section-item-tile-#{overdue_item.id}"))
 
       render_click(element(view, "#care-action-modal-soil-date-toggle"))
@@ -273,7 +256,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
       )
       |> render_submit()
 
-      assert has_element?(view, "#tool-dock-desktop-soil-check[aria-pressed='true']")
+      assert_tool_active(view, :soil_check)
       assert has_element?(view, "#section-item-tile-#{overdue_item.id}-feedback", "+5d")
       refute has_element?(view, "#care-action-modal")
     end
@@ -285,8 +268,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{overdue_item.id}"))
-      assert_patch(view, ~p"/items/#{overdue_item.id}")
+      open_item_detail(view, overdue_item)
 
       render_click(element(view, "#item-detail-schedule-watering"))
 
@@ -301,7 +283,10 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       assert has_element?(view, "#item-detail-modal")
       assert has_element?(view, "#item-detail-feedback", "+3d")
+      assert_feedback_status(view, "item-detail", :default)
+      assert has_element?(view, "#item-detail-due.garden-detail-card-feedback")
       assert has_element?(view, "#section-item-tile-#{overdue_item.id}-feedback", "+3d")
+      assert_default_feedback(view, "section-item-tile-#{overdue_item.id}")
       assert has_element?(view, "#item-detail-history")
       assert has_element?(view, "#item-detail-history", "Soil checked")
       assert has_element?(view, "#item-detail-history", "+3 days")
@@ -314,14 +299,14 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#tool-dock-desktop-needs-water"))
+      select_tool(view, :manual_needs_watering)
 
-      assert has_element?(view, "#tool-dock-desktop-needs-water[aria-pressed='true']")
+      assert_tool_active(view, :manual_needs_watering)
 
       render_keydown(view, "escape_tool_mode", %{"key" => "Escape"})
 
-      assert has_element?(view, "#tool-dock-desktop-browse[aria-pressed='true']")
-      refute has_element?(view, "#tool-dock-desktop-needs-water[aria-pressed='true']")
+      assert_tool_active(view, :browse)
+      refute_tool_active(view, :manual_needs_watering)
     end
 
     test "clicking a section tile in needs water mode marks it for today and keeps mode active",
@@ -330,7 +315,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#tool-dock-desktop-needs-water"))
+      select_tool(view, :manual_needs_watering)
       render_click(element(view, "#section-item-tile-#{later_item.id}"))
 
       assert has_element?(
@@ -345,7 +330,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
                "Needs Watering Today"
              )
 
-      assert has_element?(view, "#tool-dock-desktop-needs-water[aria-pressed='true']")
+      assert_tool_active(view, :manual_needs_watering)
       assert has_element?(view, "#today-panel-item-#{later_item.id}")
     end
 
@@ -356,10 +341,10 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#tool-dock-desktop-needs-water"))
+      select_tool(view, :manual_needs_watering)
       render_click(element(view, "#today-panel-item-#{manual_today_item.id}"))
 
-      assert has_element?(view, "#tool-dock-desktop-needs-water[aria-pressed='true']")
+      assert_tool_active(view, :manual_needs_watering)
       assert has_element?(view, "#today-panel-item-#{manual_today_item.id}")
       assert Repo.aggregate(CareEvent, :count, :id) == 0
     end
@@ -378,8 +363,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       tomorrow_label = "Needs Watering on #{Calendar.strftime(tomorrow, "%b %-d")}"
 
-      render_click(element(view, "#section-item-tile-#{later_item.id}"))
-      assert_patch(view, ~p"/items/#{later_item.id}")
+      open_item_detail(view, later_item)
 
       render_click(element(view, "#item-detail-schedule-watering"))
       assert has_element?(view, "#care-action-modal")
@@ -404,8 +388,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{today_item.id}"))
-      assert_patch(view, ~p"/items/#{today_item.id}")
+      open_item_detail(view, today_item)
 
       render_click(element(view, "#item-detail-schedule-watering"))
       assert has_element?(view, "#care-action-modal")
@@ -425,8 +408,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{overdue_item.id}"))
-      assert_patch(view, ~p"/items/#{overdue_item.id}")
+      open_item_detail(view, overdue_item)
 
       render_click(element(view, "#item-detail-schedule-watering"))
       assert has_element?(view, "#care-action-modal")
@@ -470,8 +452,7 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
       {:ok, view, _html} = live(conn, ~p"/")
       today = Navigation.household_today(Households.get_default_household!())
 
-      render_click(element(view, "#section-item-tile-#{overdue_item.id}"))
-      assert_patch(view, ~p"/items/#{overdue_item.id}")
+      open_item_detail(view, overdue_item)
 
       render_click(element(view, "#item-detail-schedule-watering"))
       assert has_element?(view, "#care-action-modal")
@@ -510,4 +491,48 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
       refute has_element?(view, "#today-panel-item-#{overdue_item.id}")
     end
   end
+
+  defp select_tool(view, mode) do
+    render_click(element(view, tool_selector(mode)))
+  end
+
+  defp assert_tool_active(view, mode) do
+    assert has_element?(view, "#{tool_selector(mode)}[aria-pressed='true']")
+  end
+
+  defp refute_tool_active(view, mode) do
+    refute has_element?(view, "#{tool_selector(mode)}[aria-pressed='true']")
+  end
+
+  defp open_item_detail(view, item) do
+    render_click(element(view, "#section-item-tile-#{item.id}"))
+    assert_patch(view, ~p"/items/#{item.id}")
+  end
+
+  defp assert_water_feedback(view, item_dom_id) do
+    assert has_element?(
+             view,
+             "##{item_dom_id}.garden-care-feedback-water[data-feedback-tone='water']"
+           )
+
+    assert_feedback_status(view, item_dom_id, :water)
+  end
+
+  defp assert_default_feedback(view, item_dom_id) do
+    assert has_element?(
+             view,
+             "##{item_dom_id}.garden-care-feedback-default[data-feedback-tone='default']"
+           )
+
+    assert_feedback_status(view, item_dom_id, :default)
+  end
+
+  defp assert_feedback_status(view, base_dom_id, tone) do
+    assert has_element?(view, "##{base_dom_id}-feedback.sr-only[data-feedback-tone='#{tone}']")
+  end
+
+  defp tool_selector(:browse), do: "#tool-dock-desktop-browse"
+  defp tool_selector(:water), do: "#tool-dock-desktop-water"
+  defp tool_selector(:soil_check), do: "#tool-dock-desktop-soil-check"
+  defp tool_selector(:manual_needs_watering), do: "#tool-dock-desktop-needs-water"
 end

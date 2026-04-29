@@ -8,6 +8,8 @@ defmodule WaterWeb.GardenAccessTest do
 
   describe "GET /" do
     test "returns 401 without basic auth" do
+      _household = GardenFixtures.default_household_fixture()
+
       conn = get(unauthenticated_conn(), ~p"/")
 
       assert response(conn, 401)

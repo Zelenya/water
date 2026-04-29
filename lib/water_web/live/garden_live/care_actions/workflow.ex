@@ -42,13 +42,13 @@ defmodule WaterWeb.GardenLive.CareActions.Workflow do
     with_active_member(socket, fn active_member ->
       case Garden.water_item(item_card.item, active_member, socket.assigns.today) do
         {:ok, _} ->
-          {:noreply, apply_successful_care_action(socket, item_card.item.id, "Watered")}
+          {:noreply, apply_successful_care_action(socket, item_card.item.id, "Watered", :water)}
 
         {:error, :no_state_change} ->
           {:noreply,
            socket
            |> Surface.clear_care_action()
-           |> Surface.assign_care_feedback(item_card.item.id, "Already watered today")}
+           |> Surface.assign_care_feedback(item_card.item.id, "Already watered today", :water)}
 
         {:error, :stale} ->
           {:noreply,
@@ -266,15 +266,16 @@ defmodule WaterWeb.GardenLive.CareActions.Workflow do
   @spec apply_successful_care_action(
           Phoenix.LiveView.Socket.t(),
           CareItem.id(),
-          String.t()
+          String.t(),
+          WaterWeb.Garden.State.CareFeedback.tone()
         ) :: Phoenix.LiveView.Socket.t()
   # Update UI in the specific order to avoid flickering and ensure consistency
-  defp apply_successful_care_action(socket, item_id, label) do
+  defp apply_successful_care_action(socket, item_id, label, tone \\ :default) do
     socket
     |> refresh_board()
     |> Modals.refresh_item_detail(item_id)
     |> Surface.clear_care_action()
-    |> Surface.assign_care_feedback(item_id, label)
+    |> Surface.assign_care_feedback(item_id, label, tone)
   end
 
   @spec refresh_board(Phoenix.LiveView.Socket.t()) :: Phoenix.LiveView.Socket.t()

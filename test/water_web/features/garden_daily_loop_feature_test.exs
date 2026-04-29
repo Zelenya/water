@@ -15,7 +15,7 @@ defmodule WaterWeb.GardenDailyLoopFeatureTest do
     |> assert_has("#header-active-member", "Active member: A")
     |> click_button("#tool-dock-desktop-water", "Water")
     |> click_button("#section-item-tile-#{today_item.id}", today_item.name)
-    |> assert_has("#section-item-tile-#{today_item.id}-feedback", "Watered")
+    |> assert_has("#section-item-tile-#{today_item.id}.garden-care-feedback-water")
     |> refute_has("#today-panel-item-#{today_item.id}")
     |> click_button("#tool-dock-desktop-soil-check", "Soil Check")
     |> click_button("#section-item-tile-#{overdue_item.id}", overdue_item.name)

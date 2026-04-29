@@ -724,18 +724,19 @@
   border-color: var(--garden-water-highlight-border);
   background: color-mix(
     in oklab,
-    var(--garden-status-sky-bg) 72%,
+    var(--garden-status-sky-bg) 88%,
     var(--garden-pill-bg)
   );
   box-shadow:
-    0 0 0 2px var(--garden-water-highlight-ring),
-    0 18px 30px -24px rgba(60, 123, 180, 0.28);
+    0 0 0 3px var(--garden-water-highlight-ring),
+    0 18px 34px -22px rgba(38, 116, 184, 0.38);
 }
 
 .garden-tool-button[data-tool-mode="water"][data-active="true"]
   .garden-tool-icon-active {
-  background: color-mix(in oklab, var(--garden-status-sky-bg) 78%, white);
+  background: color-mix(in oklab, var(--garden-status-sky-bg) 86%, white);
   color: var(--garden-status-sky-text);
+  box-shadow: inset 0 0 0 1px var(--garden-water-highlight-border);
 }
 
 #garden-shell[data-tool-mode="water"]
@@ -743,26 +744,26 @@
   border-color: var(--garden-water-highlight-border);
   background: color-mix(
     in oklab,
-    var(--garden-status-sky-bg) 72%,
+    var(--garden-status-sky-bg) 88%,
     var(--garden-pill-bg)
   );
   box-shadow:
-    0 0 0 2px var(--garden-water-highlight-ring),
-    0 18px 30px -24px rgba(60, 123, 180, 0.28);
+    0 0 0 3px var(--garden-water-highlight-ring),
+    0 18px 34px -22px rgba(38, 116, 184, 0.38);
 }
 
 #garden-shell[data-tool-mode="water"]
   .garden-tool-button[data-tool-mode="water"]
   .garden-tool-label {
-  color: var(--garden-selected-text);
+  color: var(--garden-status-sky-text);
 }
 
 #garden-shell[data-tool-mode="water"]
   .garden-tool-button[data-tool-mode="water"]
   > span:first-child {
-  background: color-mix(in oklab, var(--garden-status-sky-bg) 78%, white);
+  background: color-mix(in oklab, var(--garden-status-sky-bg) 86%, white);
   color: var(--garden-status-sky-text);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 0 0 1px var(--garden-water-highlight-border);
 }
 
 .garden-tool-button[data-tool-mode="soil_check"][data-active="true"] {
@@ -933,12 +934,6 @@
   height: 100%;
 }
 
-.garden-feedback-pill {
-  border: 1px solid var(--garden-feedback-border);
-  background: var(--garden-feedback-bg);
-  color: var(--garden-feedback-text);
-}
-
 .garden-weather-pill {
   border: 1px solid
     color-mix(in oklab, var(--garden-accent-border) 72%, var(--garden-border));
@@ -1028,38 +1023,213 @@
   position: relative;
 }
 
-.garden-care-feedback {
+.garden-care-feedback-default {
+  border-color: color-mix(in oklab, var(--garden-feedback-border) 84%, white);
+  background: color-mix(
+    in oklab,
+    var(--garden-surface-card) 88%,
+    var(--garden-feedback-bg)
+  );
+  box-shadow:
+    0 0 0 1px
+      color-mix(in oklab, var(--garden-feedback-border) 28%, transparent),
+    0 22px 40px -28px rgba(71, 88, 57, 0.32);
+}
+
+.garden-care-feedback-default .garden-tile-detail-feedback,
+.garden-care-feedback-default .garden-status-badge {
+  color: var(--garden-feedback-text);
+}
+
+.garden-care-feedback-default .garden-tile-detail-feedback {
+  font-weight: 700;
+}
+
+.garden-detail-card-feedback {
+  border: 1px solid var(--garden-feedback-border);
+  background: color-mix(
+    in oklab,
+    var(--garden-surface-history) 72%,
+    var(--garden-feedback-bg)
+  );
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+    0 14px 30px -26px rgba(71, 88, 57, 0.38);
+}
+
+.garden-care-feedback-water {
+  border-color: var(--garden-water-highlight-border);
+  background: color-mix(
+    in oklab,
+    var(--garden-surface-card) 78%,
+    var(--garden-status-sky-bg)
+  );
   box-shadow:
     0 0 0 2px var(--garden-water-highlight-ring),
     0 22px 40px -26px rgba(60, 123, 180, 0.28);
 }
 
+.garden-care-feedback-water .garden-item-type-chip {
+  background: color-mix(in oklab, var(--garden-status-sky-bg) 86%, white);
+  color: var(--garden-status-sky-text);
+  transform: translateY(-1px);
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .garden-care-feedback {
-    animation: garden-water-pulse 620ms ease-out;
+  .garden-care-feedback-default {
+    animation: garden-care-confirm 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .garden-care-feedback-default .garden-tile-detail-feedback,
+  .garden-care-feedback-default .garden-status-badge,
+  .garden-detail-card-feedback {
+    animation: garden-care-detail-pop 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .garden-care-feedback-water {
+    animation: garden-water-splash-tile 760ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  /* water droplets */
+  .garden-care-feedback-water::before,
+  .garden-care-feedback-water::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    border-radius: 999px;
+    background: color-mix(
+      in oklab,
+      var(--garden-water-highlight-border) 82%,
+      white
+    );
+    opacity: 0;
+  }
+
+  .garden-care-feedback-water::before {
+    top: 0.7rem;
+    right: 1.1rem;
+    width: 0.32rem;
+    height: 0.5rem;
+    animation: garden-water-droplet-a 760ms ease-out;
+    box-shadow:
+      -0.7rem 0.45rem 0 -0.06rem
+        color-mix(in oklab, var(--garden-water-highlight-border) 70%, white),
+      0.52rem 0.56rem 0 -0.1rem
+        color-mix(in oklab, var(--garden-water-highlight-border) 68%, white);
+  }
+
+  .garden-care-feedback-water::after {
+    bottom: 0.75rem;
+    left: 1.15rem;
+    width: 0.38rem;
+    height: 0.38rem;
+    animation: garden-water-droplet-b 760ms ease-out 80ms;
+    box-shadow:
+      0.72rem -0.12rem 0 -0.09rem
+        color-mix(in oklab, var(--garden-water-highlight-border) 66%, white),
+      -0.55rem -0.28rem 0 -0.12rem
+        color-mix(in oklab, var(--garden-water-highlight-border) 64%, white);
   }
 }
 
-@keyframes garden-water-pulse {
+@keyframes garden-care-confirm {
+  0% {
+    box-shadow:
+      0 0 0 0
+        color-mix(in oklab, var(--garden-feedback-border) 44%, transparent),
+      0 12px 24px -24px rgba(71, 88, 57, 0.3);
+    transform: translateY(0) scale(1);
+  }
+
+  42% {
+    box-shadow:
+      0 0 0 7px transparent,
+      0 18px 32px -26px rgba(71, 88, 57, 0.34);
+    transform: translateY(-1px) scale(1.004);
+  }
+
+  100% {
+    box-shadow:
+      0 0 0 1px
+        color-mix(in oklab, var(--garden-feedback-border) 28%, transparent),
+      0 22px 40px -28px rgba(71, 88, 57, 0.32);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes garden-care-detail-pop {
+  0% {
+    filter: saturate(1);
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+
+  36% {
+    filter: saturate(1.28);
+    transform: translateY(-2px) scale(1.045) rotate(-0.6deg);
+  }
+
+  64% {
+    transform: translateY(0) scale(0.995) rotate(0deg);
+  }
+
+  100% {
+    filter: saturate(1);
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes garden-water-splash-tile {
   0% {
     box-shadow:
       0 0 0 0 var(--garden-water-highlight-ring),
-      0 14px 30px -26px rgba(60, 123, 180, 0.3);
-    transform: translateY(0);
+      0 12px 28px -24px rgba(38, 116, 184, 0.34);
+    transform: translateY(0) scale(1);
   }
 
-  55% {
+  42% {
     box-shadow:
-      0 0 0 14px transparent,
-      0 24px 44px -30px rgba(60, 123, 180, 0.24);
-    transform: translateY(-1px);
+      0 0 0 18px transparent,
+      0 24px 48px -30px rgba(38, 116, 184, 0.36);
+    transform: translateY(-2px) scale(1.006);
   }
 
   100% {
     box-shadow:
       0 0 0 2px var(--garden-water-highlight-ring),
       0 22px 40px -26px rgba(60, 123, 180, 0.28);
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes garden-water-droplet-a {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0.45rem, 0) scale(0.7) rotate(18deg);
+  }
+
+  35% {
+    opacity: 0.95;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0.4rem, -0.7rem, 0) scale(1) rotate(18deg);
+  }
+}
+
+@keyframes garden-water-droplet-b {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -0.2rem, 0) scale(0.65);
+  }
+
+  35% {
+    opacity: 0.85;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(-0.35rem, 0.55rem, 0) scale(1);
   }
 }
 

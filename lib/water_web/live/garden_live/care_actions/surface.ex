@@ -63,10 +63,12 @@ defmodule WaterWeb.GardenLive.CareActions.Surface do
   @spec assign_care_feedback(
           Phoenix.LiveView.Socket.t(),
           integer(),
-          String.t()
+          String.t(),
+          CareFeedback.tone()
         ) :: Phoenix.LiveView.Socket.t()
-  def assign_care_feedback(socket, item_id, label) do
-    assign(socket, :care_feedback, %CareFeedback{item_id: item_id, label: label})
+  def assign_care_feedback(socket, item_id, label, tone \\ :default)
+      when tone in [:default, :water] do
+    assign(socket, :care_feedback, %CareFeedback{item_id: item_id, label: label, tone: tone})
   end
 
   @spec update_care_action(
