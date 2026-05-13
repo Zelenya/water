@@ -13,6 +13,8 @@ defmodule Water.Garden.CareItems do
 
   @type update_result() ::
           {:ok, CareItem.t()} | {:error, :member_household_mismatch | Ecto.Changeset.t()}
+  @type delete_result() ::
+          {:ok, CareItem.t()} | {:error, :member_household_mismatch | Ecto.Changeset.t()}
   @managed_schedule_fields [:watering_interval_days, :next_due_on, :manual_due_on]
 
   @spec get_item!(Household.t(), integer()) :: CareItem.t()
@@ -88,6 +90,34 @@ defmodule Water.Garden.CareItems do
         end
       else
         {:error, changeset}
+      end
+    end
+  end
+
+  @spec delete_item(CareItem.t(), Member.t()) :: delete_result()
+  def delete_item(%CareItem{} = care_item, %Member{} = member) do
+    with :ok <- validate_member_household_match(care_item, member) do
+      household_id = care_item.household_id
+      item_id = care_item.id
+
+      care_events_query =
+        from(care_event in CareEvent,
+          where:
+            care_event.household_id == ^household_id and
+              care_event.care_item_id == ^item_id
+        )
+
+      multi =
+        Multi.new()
+        |> Multi.delete_all(:care_events, care_events_query)
+        |> Multi.delete(:care_item, care_item)
+
+      case Repo.transaction(multi) do
+        {:ok, %{care_item: deleted_item}} ->
+          {:ok, deleted_item}
+
+        {:error, :care_item, %Ecto.Changeset{} = changeset, _changes_so_far} ->
+          {:error, changeset}
       end
     end
   end

@@ -175,6 +175,30 @@ defmodule WaterWeb.GardenLive.Modals do
     end
   end
 
+  @spec delete_detail_item(Phoenix.LiveView.Socket.t()) :: {:noreply, Phoenix.LiveView.Socket.t()}
+  def delete_detail_item(socket) do
+    case detail_item_card(socket) do
+      %CareItemCard{item: %CareItem{} = item} ->
+        case Garden.delete_item(item, socket.assigns.active_member) do
+          {:ok, %CareItem{name: name}} ->
+            {:noreply,
+             socket
+             |> assign(:modal, nil)
+             |> put_flash(:info, "#{name} deleted.")
+             |> push_patch(to: Navigation.board_path(socket.assigns.filter_query_params))}
+
+          {:error, :member_household_mismatch} ->
+            {:noreply, put_flash(socket, :error, "The active member cannot delete this item.")}
+
+          {:error, %Ecto.Changeset{}} ->
+            {:noreply, put_flash(socket, :error, "That item could not be deleted.")}
+        end
+
+      nil ->
+        {:noreply, socket}
+    end
+  end
+
   @spec refresh_item_detail(Phoenix.LiveView.Socket.t(), CareItem.id()) ::
           Phoenix.LiveView.Socket.t()
   def refresh_item_detail(socket, item_id) do

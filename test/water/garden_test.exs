@@ -4,7 +4,7 @@ defmodule Water.GardenTest do
   import Ecto.Query
 
   alias Water.Garden
-  alias Water.Garden.{BoardSectionSummary, CareEvent, CareItemDetail}
+  alias Water.Garden.{BoardSectionSummary, CareEvent, CareItem, CareItemDetail}
   alias Water.GardenFixtures
   alias Water.Repo
 
@@ -129,6 +129,20 @@ defmodule Water.GardenTest do
       assert updated_item.next_due_on == ~D[2026-04-05]
       assert updated_item.manual_due_on == ~D[2026-04-02]
       assert Repo.aggregate(CareEvent, :count) == 0
+    end
+
+    test "delete_item/2 removes the item and its care history" do
+      household = GardenFixtures.household_fixture()
+      member = GardenFixtures.member_fixture(household)
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+      item = GardenFixtures.care_item_fixture(section, %{name: "Mint", position: 0})
+      event = GardenFixtures.care_event_fixture(item, member)
+
+      assert {:ok, deleted_item} = Garden.delete_item(item, member)
+
+      assert deleted_item.id == item.id
+      assert Repo.get(CareItem, item.id) == nil
+      assert Repo.get(CareEvent, event.id) == nil
     end
 
     test "get_item!/2 is household scoped" do

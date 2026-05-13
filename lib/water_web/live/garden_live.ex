@@ -230,6 +230,11 @@ defmodule WaterWeb.GardenLive do
   end
 
   @impl true
+  def handle_event("delete_item_from_detail", _params, socket) do
+    Modals.delete_detail_item(socket)
+  end
+
+  @impl true
   def handle_event("open_detail_care_action", %{"kind" => raw_kind}, socket) do
     case {Navigation.parse_interaction_kind(raw_kind), Modals.detail_item_card(socket)} do
       {kind, %CareItemCard{} = item_card} when kind in [:soil_check, :schedule_watering] ->

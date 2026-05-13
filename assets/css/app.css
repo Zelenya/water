@@ -950,6 +950,7 @@
 
 .garden-button-primary,
 .garden-button-secondary,
+.garden-button-danger,
 .garden-button-warm,
 .garden-action-option {
   cursor: pointer;
@@ -976,6 +977,14 @@
   border: 1px solid var(--garden-border);
   background: var(--garden-pill-bg);
   color: var(--garden-text-primary);
+}
+
+.garden-button-danger {
+  border: 1px solid var(--garden-status-rose-border);
+  background: var(--garden-status-rose-bg);
+  color: var(--garden-status-rose-text);
+  box-shadow: 0 18px 28px -24px
+    color-mix(in oklab, var(--garden-status-rose-border) 58%, transparent);
 }
 
 .garden-button-warm {
@@ -1293,6 +1302,14 @@
     border-color: var(--garden-border-strong);
     background: var(--garden-surface-subtle);
     box-shadow: 0 18px 28px -26px rgba(31, 42, 27, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .garden-button-danger:hover {
+    border-color: color-mix(in oklab, var(--garden-status-rose-border) 82%, white);
+    background: color-mix(in oklab, var(--garden-status-rose-bg) 86%, white);
+    box-shadow: 0 18px 28px -24px
+      color-mix(in oklab, var(--garden-status-rose-border) 72%, transparent);
     transform: translateY(-1px);
   }
 

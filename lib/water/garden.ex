@@ -64,6 +64,10 @@ defmodule Water.Garden do
           {:ok, CareItem.t()} | {:error, :member_household_mismatch | Ecto.Changeset.t()}
   defdelegate update_item(care_item, member, attrs), to: CareItems
 
+  @spec delete_item(CareItem.t(), Member.t()) ::
+          {:ok, CareItem.t()} | {:error, :member_household_mismatch | Ecto.Changeset.t()}
+  defdelegate delete_item(care_item, member), to: CareItems
+
   @spec water_item(CareItem.t(), Member.t(), Date.t()) ::
           {:ok, CareItem.t()} | {:error, Commands.command_error()}
   defdelegate water_item(care_item, member, occurred_on), to: Commands

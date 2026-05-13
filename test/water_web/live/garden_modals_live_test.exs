@@ -4,7 +4,9 @@ defmodule WaterWeb.GardenModalsLiveTest do
   import Phoenix.LiveViewTest
   import WaterWeb.GardenLiveTestHelpers
 
+  alias Water.Garden.{CareEvent, CareItem}
   alias Water.GardenFixtures
+  alias Water.Repo
   alias WaterWeb.GardenLive.Navigation
 
   describe "detail routing" do
@@ -122,6 +124,30 @@ defmodule WaterWeb.GardenModalsLiveTest do
 
       assert has_element?(view, "#item-form-modal")
       assert has_element?(view, "#garden-item-form")
+    end
+
+    test "the detail modal can delete an item and return to the board", %{conn: conn} do
+      household = GardenFixtures.default_household_fixture()
+      member = GardenFixtures.member_fixture(household, %{name: "A"})
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+      item = GardenFixtures.care_item_fixture(section, %{name: "Delete Me", position: 0})
+      event = GardenFixtures.care_event_fixture(item, member)
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      render_click(element(view, "#section-item-tile-#{item.id}"))
+      assert_patch(view, ~p"/items/#{item.id}")
+
+      assert has_element?(view, "#item-detail-edit")
+      assert has_element?(view, "#item-detail-delete")
+
+      render_click(element(view, "#item-detail-delete"))
+      assert_patch(view, ~p"/")
+
+      refute has_element?(view, "#item-detail-modal")
+      refute has_element?(view, "#section-item-tile-#{item.id}")
+      assert Repo.get(CareItem, item.id) == nil
+      assert Repo.get(CareEvent, event.id) == nil
     end
   end
 
