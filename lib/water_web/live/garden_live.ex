@@ -26,6 +26,8 @@ defmodule WaterWeb.GardenLive do
 
   @active_member_session_key "active_member_id"
   @item_form_param "item"
+  @section_form_as :section
+  @section_form_param "section"
   @schedule_form_param "schedule_watering"
 
   @impl true
@@ -58,6 +60,8 @@ defmodule WaterWeb.GardenLive do
      |> assign(:filter_query_params, %{})
      |> assign(:care_action, nil)
      |> assign(:care_feedback, nil)
+     |> assign(:editing_section_id, nil)
+     |> assign(:section_form, nil)
      |> assign(:weather_forecast_state, :loading)
      |> assign(:temperature_forecast_url, nil)
      |> assign(:rain_forecast_url, nil)
@@ -87,6 +91,111 @@ defmodule WaterWeb.GardenLive do
   @impl true
   def handle_event("save_item", %{@item_form_param => item_params}, socket) do
     Modals.save_item(socket, item_params)
+  end
+
+  @impl true
+  def handle_event("start_section_rename", %{"section-id" => raw_section_id}, socket) do
+    case Navigation.parse_item_id(raw_section_id) do
+      nil ->
+        {:noreply, socket}
+
+      section_id ->
+        section = Garden.get_section!(socket.assigns.household, section_id)
+
+        {:noreply,
+         socket
+         |> assign(:editing_section_id, section.id)
+         |> assign(
+           :section_form,
+           to_form(Garden.change_section(section, %{}), as: @section_form_as)
+         )
+         |> CommandLauncher.close()}
+    end
+  end
+
+  @impl true
+  def handle_event("validate_section", %{@section_form_param => section_params}, socket) do
+    case socket.assigns.editing_section_id do
+      nil ->
+        {:noreply, socket}
+
+      section_id ->
+        section = Garden.get_section!(socket.assigns.household, section_id)
+        changeset = Garden.change_section(section, section_params)
+
+        {:noreply,
+         assign(
+           socket,
+           :section_form,
+           to_form(%{changeset | action: :validate}, as: @section_form_as)
+         )}
+    end
+  end
+
+  @impl true
+  def handle_event("save_section", %{@section_form_param => section_params}, socket) do
+    case socket.assigns.editing_section_id do
+      nil ->
+        {:noreply, socket}
+
+      section_id ->
+        section = Garden.get_section!(socket.assigns.household, section_id)
+
+        case Garden.update_section(section, section_params) do
+          {:ok, updated_section} ->
+            {:noreply,
+             socket
+             |> clear_section_edit()
+             |> refresh_sections_and_board()
+             |> put_flash(:info, "#{updated_section.name} renamed.")}
+
+          {:error, changeset} ->
+            {:noreply,
+             assign(
+               socket,
+               :section_form,
+               to_form(%{changeset | action: :validate}, as: @section_form_as)
+             )}
+        end
+    end
+  end
+
+  @impl true
+  def handle_event("cancel_section_rename", _params, socket) do
+    {:noreply, clear_section_edit(socket)}
+  end
+
+  @impl true
+  def handle_event("delete_section", %{"section-id" => raw_section_id}, socket) do
+    case Navigation.parse_item_id(raw_section_id) do
+      nil ->
+        {:noreply, socket}
+
+      section_id ->
+        section = Garden.get_section!(socket.assigns.household, section_id)
+
+        case Garden.delete_section(section) do
+          {:ok, deleted_section} ->
+            {:noreply,
+             socket
+             |> clear_section_edit()
+             |> refresh_sections_and_board()
+             |> put_flash(:info, "#{deleted_section.name} deleted.")}
+
+          {:error, %Ecto.Changeset{}} ->
+            {:noreply, put_flash(socket, :error, "That section could not be deleted.")}
+        end
+    end
+  end
+
+  @impl true
+  def handle_event(
+        "escape_tool_mode",
+        %{"key" => "Escape"},
+        %{assigns: %{editing_section_id: section_id}} = socket
+      )
+      when is_integer(section_id) do
+    {:noreply, clear_section_edit(socket)}
   end
 
   @impl true
@@ -494,6 +603,8 @@ defmodule WaterWeb.GardenLive do
                 section_card={section_card}
                 tool_mode={@tool_mode}
                 care_feedback={@care_feedback}
+                editing_section_id={@editing_section_id}
+                section_form={@section_form}
                 today={@today}
               />
             </section>
@@ -575,8 +686,28 @@ defmodule WaterWeb.GardenLive do
   @spec command_launcher_available?(map()) :: boolean()
   # I didn't want to deal with dirty states when some modal/form is active,
   # so the launcher is available only on the main board (for now)
-  defp command_launcher_available?(%{modal: nil, care_action: nil}), do: true
+  defp command_launcher_available?(%{modal: nil, care_action: nil, editing_section_id: nil}),
+    do: true
+
   defp command_launcher_available?(_assigns), do: false
+
+  @spec clear_section_edit(Phoenix.LiveView.Socket.t()) :: Phoenix.LiveView.Socket.t()
+  defp clear_section_edit(socket) do
+    socket
+    |> assign(:editing_section_id, nil)
+    |> assign(:section_form, nil)
+  end
+
+  @spec refresh_sections_and_board(Phoenix.LiveView.Socket.t()) :: Phoenix.LiveView.Socket.t()
+  defp refresh_sections_and_board(socket) do
+    sections = Garden.list_sections(socket.assigns.household)
+    section_lookup = Map.new(sections, &{&1.id, &1})
+
+    socket
+    |> assign(:sections, sections)
+    |> assign(:section_lookup, section_lookup)
+    |> refresh_board()
+  end
 
   @spec refresh_board(Phoenix.LiveView.Socket.t()) :: Phoenix.LiveView.Socket.t()
   defp refresh_board(socket) do

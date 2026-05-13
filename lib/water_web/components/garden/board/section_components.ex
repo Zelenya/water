@@ -7,6 +7,8 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
   attr :section_card, :map, required: true
   attr :tool_mode, :atom, required: true
   attr :care_feedback, :any, default: nil
+  attr :editing_section_id, :integer, default: nil
+  attr :section_form, :any, default: nil
   attr :today, :any, required: true
 
   def garden_section(assigns) do
@@ -15,34 +17,54 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
       id={"garden-section-#{@section_card.section.id}"}
       class="garden-panel-card rounded-[1.8rem] p-5"
     >
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div class="flex items-start justify-between gap-3">
         <div class="min-w-0 flex-1">
-          <h3 class="garden-heading px-4 text-xl font-semibold tracking-tight">
+          <.section_title
+            :if={@editing_section_id == @section_card.section.id}
+            section={@section_card.section}
+            form={@section_form}
+          />
+
+          <h3
+            :if={@editing_section_id != @section_card.section.id}
+            id={"garden-section-#{@section_card.section.id}-title"}
+            class="garden-heading px-4 text-xl font-semibold tracking-tight"
+          >
             {@section_card.section.name}
           </h3>
         </div>
 
-        <div class="flex shrink-0 flex-nowrap gap-1.5">
-          <VisualComponents.summary_pill
-            id={"garden-section-#{@section_card.section.id}-overdue"}
-            label="Overdue"
-            value={@section_card.summary.overdue}
-            tone="rose"
-          />
+        <div class="flex shrink-0 items-center gap-2">
+          <div
+            id={"garden-section-#{@section_card.section.id}-summary"}
+            class="flex flex-nowrap items-center gap-1.5"
+          >
+            <VisualComponents.summary_pill
+              id={"garden-section-#{@section_card.section.id}-overdue"}
+              label="Overdue"
+              value={@section_card.summary.overdue}
+              tone="rose"
+              compact={true}
+            />
 
-          <VisualComponents.summary_pill
-            id={"garden-section-#{@section_card.section.id}-today"}
-            label="Today"
-            value={@section_card.summary.today}
-            tone="orange"
-          />
+            <VisualComponents.summary_pill
+              id={"garden-section-#{@section_card.section.id}-today"}
+              label="Today"
+              value={@section_card.summary.today}
+              tone="orange"
+              compact={true}
+            />
 
-          <VisualComponents.summary_pill
-            id={"garden-section-#{@section_card.section.id}-tomorrow"}
-            label="Tomorrow"
-            value={@section_card.summary.tomorrow}
-            tone="amber"
-          />
+            <VisualComponents.summary_pill
+              id={"garden-section-#{@section_card.section.id}-tomorrow"}
+              label="Tomorrow"
+              value={@section_card.summary.tomorrow}
+              tone="amber"
+              compact={true}
+            />
+          </div>
+
+          <.section_actions_menu section={@section_card.section} />
         </div>
       </div>
 
@@ -72,6 +94,101 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
         </div>
       </div>
     </article>
+    """
+  end
+
+  attr :section, :map, required: true
+  attr :form, :any, required: true
+
+  defp section_title(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      id={"garden-section-#{@section.id}-rename-form"}
+      phx-change="validate_section"
+      phx-submit="save_section"
+      class="garden-section-rename-form flex flex-col gap-2 px-4 sm:flex-row sm:items-center"
+    >
+      <div class="min-w-0 flex-1">
+        <.input
+          field={@form[:name]}
+          type="text"
+          class="garden-section-title-input input input-sm garden-heading w-full text-xl font-semibold tracking-tight"
+          autocomplete="off"
+          required
+        />
+      </div>
+
+      <div class="flex shrink-0 items-center gap-1">
+        <button
+          id={"garden-section-#{@section.id}-rename-submit"}
+          type="submit"
+          class="garden-section-rename-save btn btn-circle btn-sm"
+          aria-label="Save section name"
+        >
+          <.icon name="hero-check" class="size-4" />
+        </button>
+
+        <button
+          id={"garden-section-#{@section.id}-rename-cancel"}
+          type="button"
+          phx-click="cancel_section_rename"
+          class="btn btn-circle btn-sm btn-ghost"
+          aria-label="Cancel section rename"
+        >
+          <.icon name="hero-x-mark" class="size-4" />
+        </button>
+      </div>
+    </.form>
+    """
+  end
+
+  attr :section, :map, required: true
+
+  defp section_actions_menu(assigns) do
+    ~H"""
+    <div
+      id={"garden-section-#{@section.id}-actions"}
+      class="dropdown dropdown-end"
+    >
+      <button
+        id={"garden-section-#{@section.id}-actions-trigger"}
+        type="button"
+        tabindex="0"
+        class="btn btn-circle btn-sm btn-ghost"
+        aria-label={"Open actions for #{@section.name}"}
+      >
+        <.icon name="hero-ellipsis-vertical" class="size-5" />
+      </button>
+
+      <ul
+        tabindex="0"
+        class="dropdown-content menu bg-base-100 rounded-box z-20 mt-2 w-44 p-2 shadow"
+      >
+        <li>
+          <button
+            id={"garden-section-#{@section.id}-rename"}
+            type="button"
+            phx-click="start_section_rename"
+            phx-value-section-id={@section.id}
+          >
+            <.icon name="hero-pencil-square" class="size-4" /> Rename
+          </button>
+        </li>
+        <li>
+          <button
+            id={"garden-section-#{@section.id}-delete"}
+            type="button"
+            phx-click="delete_section"
+            phx-value-section-id={@section.id}
+            data-confirm={"Delete #{@section.name}? This removes every care item and care event in this section."}
+            class="text-error"
+          >
+            <.icon name="hero-trash" class="size-4" /> Delete
+          </button>
+        </li>
+      </ul>
+    </div>
     """
   end
 end

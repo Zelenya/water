@@ -4,7 +4,7 @@ defmodule Water.GardenTest do
   import Ecto.Query
 
   alias Water.Garden
-  alias Water.Garden.{BoardSectionSummary, CareEvent, CareItem, CareItemDetail}
+  alias Water.Garden.{BoardSectionSummary, CareEvent, CareItem, CareItemDetail, Section}
   alias Water.GardenFixtures
   alias Water.Repo
 
@@ -23,6 +23,31 @@ defmodule Water.GardenTest do
 
       assert {:ok, section} = Garden.create_section(household, %{name: "Back Yard"})
       assert section.position == 1
+    end
+
+    test "update_section/2 renames a section" do
+      household = GardenFixtures.household_fixture()
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+
+      assert {:ok, updated_section} = Garden.update_section(section, %{name: "Kitchen"})
+
+      assert updated_section.name == "Kitchen"
+      assert Repo.get!(Section, section.id).name == "Kitchen"
+    end
+
+    test "delete_section/1 removes the section, its items, and their care history" do
+      household = GardenFixtures.household_fixture()
+      member = GardenFixtures.member_fixture(household)
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+      item = GardenFixtures.care_item_fixture(section, %{name: "Mint", position: 0})
+      event = GardenFixtures.care_event_fixture(item, member)
+
+      assert {:ok, deleted_section} = Garden.delete_section(section)
+
+      assert deleted_section.id == section.id
+      assert Repo.get(Section, section.id) == nil
+      assert Repo.get(CareItem, item.id) == nil
+      assert Repo.get(CareEvent, event.id) == nil
     end
 
     test "create_item/2 creates a no-schedule item when no interval is provided" do

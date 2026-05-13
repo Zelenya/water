@@ -32,11 +32,19 @@ defmodule WaterWeb.Garden.Shared.VisualComponents do
   attr :label, :string, required: true
   attr :value, :integer, required: true
   attr :tone, :string, required: true
+  attr :compact, :boolean, default: false
 
   def summary_pill(assigns) do
     ~H"""
-    <span id={@id} class={summary_pill_classes(@tone)}>
-      {@label} {@value}
+    <span
+      id={@id}
+      class={summary_pill_classes(@tone, @compact)}
+      title={"#{@label} #{@value}"}
+      aria-label={"#{@label} #{@value}"}
+      tabindex={if(@compact, do: "0", else: false)}
+    >
+      <span class="garden-summary-pill-label">{@label}</span>
+      <span class="garden-summary-pill-value">{@value}</span>
     </span>
     """
   end
@@ -73,9 +81,13 @@ defmodule WaterWeb.Garden.Shared.VisualComponents do
   defp status_label(:normal), do: "Normal"
   defp status_label(:no_schedule), do: "No schedule"
 
-  @spec summary_pill_classes(String.t()) :: [String.t()]
-  defp summary_pill_classes(tone) do
-    ["garden-summary-pill", summary_pill_tone_class(tone)]
+  @spec summary_pill_classes(String.t(), boolean()) :: [String.t()]
+  defp summary_pill_classes(tone, compact?) do
+    [
+      "garden-summary-pill",
+      compact? && "garden-summary-pill-compact",
+      summary_pill_tone_class(tone)
+    ]
   end
 
   defp summary_pill_tone_class("orange"), do: "garden-summary-pill-orange"

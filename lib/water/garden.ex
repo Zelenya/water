@@ -32,11 +32,22 @@ defmodule Water.Garden do
   @spec list_household_items(Household.t()) :: [CareItem.t()]
   defdelegate list_household_items(household), to: CareItems
 
+  @spec get_section!(Household.t(), Section.id()) :: Section.t()
+  defdelegate get_section!(household, id), to: Sections
+
   @spec create_section(Household.t(), map()) :: result(Section.t())
   defdelegate create_section(household, attrs), to: Sections
 
+  @spec change_section(Section.t(), map()) :: Ecto.Changeset.t()
+  def change_section(%Section{} = section, attrs \\ %{}) when is_map(attrs) do
+    Sections.change_section(section, attrs)
+  end
+
   @spec update_section(Section.t(), map()) :: result(Section.t())
   defdelegate update_section(section, attrs), to: Sections
+
+  @spec delete_section(Section.t()) :: result(Section.t())
+  defdelegate delete_section(section), to: Sections
 
   @spec get_item!(Household.t(), integer()) :: CareItem.t()
   defdelegate get_item!(household, id), to: CareItems

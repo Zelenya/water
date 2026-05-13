@@ -4,7 +4,9 @@ defmodule WaterWeb.GardenBoardLiveTest do
   import Phoenix.LiveViewTest
   import WaterWeb.GardenLiveTestHelpers
 
+  alias Water.Garden.{CareEvent, CareItem, Section}
   alias Water.GardenFixtures
+  alias Water.Repo
   alias WaterWeb.GardenLive.Navigation
 
   describe "board shell" do
@@ -52,6 +54,23 @@ defmodule WaterWeb.GardenBoardLiveTest do
       assert has_element?(view, "#garden-board-filters")
       assert has_element?(view, "#today-panel")
       assert has_element?(view, "#garden-section-#{section.id}")
+      assert has_element?(view, "#garden-section-#{section.id}-actions")
+      assert has_element?(view, "#garden-section-#{section.id}-summary")
+
+      assert has_element?(
+               view,
+               "#garden-section-#{section.id}-overdue.garden-summary-pill-compact"
+             )
+
+      assert has_element?(view, "#garden-section-#{section.id}-today.garden-summary-pill-compact")
+
+      assert has_element?(
+               view,
+               "#garden-section-#{section.id}-tomorrow.garden-summary-pill-compact"
+             )
+
+      assert has_element?(view, "#garden-section-#{section.id}-rename", "Rename")
+      assert has_element?(view, "#garden-section-#{section.id}-delete", "Delete")
       assert has_element?(view, "#section-item-tile-#{item.id}")
       assert has_element?(view, "#garden-section-items-#{section.id}[data-tile-layout='list']")
       assert has_element?(view, "#today-panel-item-#{item.id}-name", item.name)
@@ -99,6 +118,81 @@ defmodule WaterWeb.GardenBoardLiveTest do
       {:ok, view, _html} = live(conn, ~p"/")
 
       assert has_element?(view, "#header-active-member", "Active member: J")
+    end
+  end
+
+  describe "section actions" do
+    test "renames a section inline from the actions menu", %{conn: conn} do
+      household = GardenFixtures.default_household_fixture()
+      _member = GardenFixtures.member_fixture(household, %{name: "A"})
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      render_click(element(view, "#garden-section-#{section.id}-rename"))
+
+      assert has_element?(view, "#garden-section-#{section.id}-rename-form")
+
+      view
+      |> form("#garden-section-#{section.id}-rename-form", section: %{name: "Kitchen"})
+      |> render_submit()
+
+      assert has_element?(view, "#garden-section-#{section.id}-title", "Kitchen")
+      refute has_element?(view, "#garden-section-#{section.id}-rename-form")
+      assert Repo.get!(Section, section.id).name == "Kitchen"
+    end
+
+    test "keeps inline rename open when the submitted name is invalid", %{conn: conn} do
+      household = GardenFixtures.default_household_fixture()
+      _member = GardenFixtures.member_fixture(household, %{name: "A"})
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      render_click(element(view, "#garden-section-#{section.id}-rename"))
+
+      view
+      |> form("#garden-section-#{section.id}-rename-form", section: %{name: ""})
+      |> render_submit()
+
+      assert has_element?(view, "#garden-section-#{section.id}-rename-form")
+      assert has_element?(view, "#garden-section-#{section.id}-rename-form input.input-error")
+      assert Repo.get!(Section, section.id).name == "Front"
+    end
+
+    test "escape cancels inline section rename without changing the title", %{conn: conn} do
+      household = GardenFixtures.default_household_fixture()
+      _member = GardenFixtures.member_fixture(household, %{name: "A"})
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      render_click(element(view, "#garden-section-#{section.id}-rename"))
+      assert has_element?(view, "#garden-section-#{section.id}-rename-form")
+
+      render_keydown(view, "escape_tool_mode", %{"key" => "Escape"})
+
+      refute has_element?(view, "#garden-section-#{section.id}-rename-form")
+      assert has_element?(view, "#garden-section-#{section.id}-title", "Front")
+      assert Repo.get!(Section, section.id).name == "Front"
+    end
+
+    test "deletes a section and all of its contents from the actions menu", %{conn: conn} do
+      household = GardenFixtures.default_household_fixture()
+      member = GardenFixtures.member_fixture(household, %{name: "A"})
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+      item = GardenFixtures.care_item_fixture(section, %{name: "Mint", position: 0})
+      event = GardenFixtures.care_event_fixture(item, member)
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      render_click(element(view, "#garden-section-#{section.id}-delete"))
+
+      refute has_element?(view, "#garden-section-#{section.id}")
+      assert has_element?(view, "#garden-board-empty")
+      assert Repo.get(Section, section.id) == nil
+      assert Repo.get(CareItem, item.id) == nil
+      assert Repo.get(CareEvent, event.id) == nil
     end
   end
 
