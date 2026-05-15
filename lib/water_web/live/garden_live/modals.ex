@@ -17,7 +17,7 @@ defmodule WaterWeb.GardenLive.Modals do
     |> assign(:modal, nil)
   end
 
-  def apply_live_action(socket, :new, _params, filter) do
+  def apply_live_action(socket, :new, params, filter) do
     close_path = modal_close_path(filter)
 
     if Enum.empty?(socket.assigns.sections) do
@@ -32,7 +32,11 @@ defmodule WaterWeb.GardenLive.Modals do
         }
       )
     else
-      changeset = Garden.new_item_changeset(socket.assigns.household, %{})
+      changeset =
+        Garden.new_item_changeset(
+          socket.assigns.household,
+          new_item_default_attrs(params, socket.assigns.sections)
+        )
 
       socket
       |> assign(:page_title, "Add Item")
@@ -225,6 +229,23 @@ defmodule WaterWeb.GardenLive.Modals do
   @spec modal_close_path(Board.filter()) :: String.t()
   def modal_close_path(filter) do
     Navigation.board_path(Navigation.filter_query_params(filter))
+  end
+
+  @spec new_item_default_attrs(map(), [Water.Garden.Section.t()]) :: map()
+  defp new_item_default_attrs(params, sections) do
+    raw_section_id = Map.get(params, "section_id")
+
+    case Navigation.parse_item_id(raw_section_id) do
+      nil ->
+        %{}
+
+      section_id ->
+        if Enum.any?(sections, &(&1.id == section_id)) do
+          %{section_id: section_id}
+        else
+          %{}
+        end
+    end
   end
 
   @spec assign_form(

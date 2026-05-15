@@ -69,6 +69,7 @@ defmodule WaterWeb.GardenBoardLiveTest do
                "#garden-section-#{section.id}-tomorrow.garden-summary-pill-compact"
              )
 
+      assert has_element?(view, "#garden-section-#{section.id}-add-item", "Add care item")
       assert has_element?(view, "#garden-section-#{section.id}-rename", "Rename")
       assert has_element?(view, "#garden-section-#{section.id}-delete", "Delete")
       assert has_element?(view, "#section-item-tile-#{item.id}")
@@ -122,6 +123,39 @@ defmodule WaterWeb.GardenBoardLiveTest do
   end
 
   describe "section actions" do
+    test "opens add item modal with the current section preselected", %{conn: conn} do
+      household = GardenFixtures.default_household_fixture()
+      _member = GardenFixtures.member_fixture(household, %{name: "A"})
+      front = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+      back = GardenFixtures.section_fixture(household, %{name: "Back", position: 1})
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      render_click(element(view, "#garden-section-#{back.id}-add-item"))
+      assert_patch(view, ~p"/items/new?#{%{"section_id" => back.id}}")
+
+      assert has_element?(view, "#garden-item-form")
+
+      assert has_element?(
+               view,
+               "#garden-item-form select[name='item[section_id]'] option[value='#{back.id}'][selected]"
+             )
+
+      view
+      |> form("#garden-item-form",
+        item: %{
+          name: "Back Basil",
+          type: "plant",
+          watering_interval_days: "3"
+        }
+      )
+      |> render_submit()
+
+      assert_patch(view, ~p"/")
+      assert has_element?(view, "#garden-section-items-#{back.id}", "Back Basil")
+      refute has_element?(view, "#garden-section-items-#{front.id}", "Back Basil")
+    end
+
     test "renames a section inline from the actions menu", %{conn: conn} do
       household = GardenFixtures.default_household_fixture()
       _member = GardenFixtures.member_fixture(household, %{name: "A"})

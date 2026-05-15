@@ -3,12 +3,14 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
 
   alias WaterWeb.Garden.Board.ItemTileComponents
   alias WaterWeb.Garden.Shared.VisualComponents
+  alias WaterWeb.GardenLive.Navigation
 
   attr :section_card, :map, required: true
   attr :tool_mode, :atom, required: true
   attr :care_feedback, :any, default: nil
   attr :editing_section_id, :integer, default: nil
   attr :section_form, :any, default: nil
+  attr :query_params, :map, default: %{}
   attr :today, :any, required: true
 
   def garden_section(assigns) do
@@ -64,7 +66,7 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
             />
           </div>
 
-          <.section_actions_menu section={@section_card.section} />
+          <.section_actions_menu section={@section_card.section} query_params={@query_params} />
         </div>
       </div>
 
@@ -144,6 +146,7 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
   end
 
   attr :section, :map, required: true
+  attr :query_params, :map, required: true
 
   defp section_actions_menu(assigns) do
     ~H"""
@@ -165,6 +168,14 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
         tabindex="0"
         class="dropdown-content menu bg-base-100 rounded-box z-20 mt-2 w-44 p-2 shadow"
       >
+        <li>
+          <.link
+            id={"garden-section-#{@section.id}-add-item"}
+            patch={Navigation.item_new_path(add_item_query_params(@section, @query_params))}
+          >
+            <.icon name="hero-plus" class="size-4" /> Add care item
+          </.link>
+        </li>
         <li>
           <button
             id={"garden-section-#{@section.id}-rename"}
@@ -190,5 +201,10 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
       </ul>
     </div>
     """
+  end
+
+  @spec add_item_query_params(map(), map()) :: map()
+  defp add_item_query_params(section, query_params) do
+    Map.put(query_params, "section_id", section.id)
   end
 end

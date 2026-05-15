@@ -605,6 +605,7 @@ defmodule WaterWeb.GardenLive do
                 care_feedback={@care_feedback}
                 editing_section_id={@editing_section_id}
                 section_form={@section_form}
+                query_params={@filter_query_params}
                 today={@today}
               />
             </section>
