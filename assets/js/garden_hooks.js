@@ -1,3 +1,5 @@
+import Sortable from "sortablejs";
+
 const launcherOpen = () =>
   Boolean(document.getElementById("garden-command-launcher"));
 
@@ -41,6 +43,25 @@ const geolocationFailureReason = (error) => {
     default:
       return "unavailable";
   }
+};
+
+const careSortableSectionPayload = (sectionEl) => ({
+  section_id: sectionEl.dataset.careSectionId,
+  item_ids: Array.from(sectionEl.querySelectorAll("[data-care-item-id]")).map(
+    (itemEl) => itemEl.dataset.careItemId,
+  ),
+});
+
+const uniqueCareSortableSections = (...sectionEls) => {
+  const seen = new Set();
+
+  return sectionEls.filter((sectionEl) => {
+    if (!sectionEl?.dataset?.careSectionId) return false;
+    if (seen.has(sectionEl.dataset.careSectionId)) return false;
+
+    seen.add(sectionEl.dataset.careSectionId);
+    return true;
+  });
 };
 
 export const createGardenHooks = ({ renderGardenLucideIcons }) => ({
@@ -148,6 +169,55 @@ export const createGardenHooks = ({ renderGardenLucideIcons }) => ({
         focusLauncherInput(this.el);
         this.focusTimeout = setTimeout(() => focusLauncherInput(this.el), 30);
       });
+    },
+  },
+
+  // Connects care item lists so items can be reordered or moved between sections.
+  GardenCareSortable: {
+    mounted() {
+      this.initializeSortable();
+    },
+
+    updated() {
+      this.destroySortable();
+      this.initializeSortable();
+    },
+
+    destroyed() {
+      this.destroySortable();
+    },
+
+    initializeSortable() {
+      if (this.el.dataset.sortableEnabled !== "true") return;
+
+      this.sortable = Sortable.create(this.el, {
+        group: "garden-care-items",
+        animation: 180,
+        draggable: ".garden-care-sortable-item",
+        handle: ".garden-care-drag-handle",
+        filter: ".garden-care-sortable-empty",
+        ghostClass: "garden-care-drag-ghost",
+        chosenClass: "garden-care-drag-chosen",
+        dragClass: "garden-care-drag-active",
+        onEnd: (event) => {
+          if (!event.item?.dataset?.careItemId) return;
+          if (event.from === event.to && event.oldIndex === event.newIndex) return;
+
+          this.pushEvent("reposition_care_item", {
+            item_id: event.item.dataset.careItemId,
+            sections: uniqueCareSortableSections(event.from, event.to).map(
+              careSortableSectionPayload,
+            ),
+          });
+        },
+      });
+    },
+
+    destroySortable() {
+      if (!this.sortable) return;
+
+      this.sortable.destroy();
+      this.sortable = null;
     },
   },
 

@@ -1083,6 +1083,20 @@
   color: var(--garden-text-muted);
 }
 
+.garden-care-sortable-list {
+  min-height: 4.75rem;
+}
+
+.garden-care-sortable-list[data-sortable-enabled="true"].garden-care-sortable-list-empty {
+  border-radius: 1.4rem;
+  outline: 1px dashed color-mix(in oklab, var(--garden-border) 82%, transparent);
+  outline-offset: 0.25rem;
+}
+
+.garden-care-sortable-empty {
+  pointer-events: none;
+}
+
 .garden-empty-state {
   background: var(--garden-surface-elevated);
   box-shadow: var(--garden-shadow-md);
@@ -1098,7 +1112,26 @@
   position: relative;
 }
 
-.garden-care-feedback-default {
+.garden-care-tile-sortable {
+  touch-action: manipulation;
+}
+
+.garden-care-drag-handle {
+  color: var(--garden-text-faint);
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.garden-care-drag-ghost {
+  opacity: 0.42;
+}
+
+.garden-care-drag-active {
+  box-shadow: var(--garden-shadow-md);
+}
+∆ .garden-care-feedback-default {
   border-color: color-mix(in oklab, var(--garden-feedback-border) 84%, white);
   background: color-mix(
     in oklab,
@@ -1372,7 +1405,11 @@
   }
 
   .garden-button-danger:hover {
-    border-color: color-mix(in oklab, var(--garden-status-rose-border) 82%, white);
+    border-color: color-mix(
+      in oklab,
+      var(--garden-status-rose-border) 82%,
+      white
+    );
     background: color-mix(in oklab, var(--garden-status-rose-bg) 86%, white);
     box-shadow: 0 18px 28px -24px
       color-mix(in oklab, var(--garden-status-rose-border) 72%, transparent);
@@ -1422,6 +1459,18 @@
   #garden-shell[data-tool-mode="browse"] .garden-care-tile,
   #garden-shell[data-tool-mode="browse"] .garden-care-tile button {
     cursor: pointer;
+  }
+
+  #garden-shell[data-tool-mode="browse"]
+    .garden-care-tile
+    .garden-care-drag-handle {
+    cursor: grab;
+  }
+
+  #garden-shell[data-tool-mode="browse"]
+    .garden-care-tile
+    .garden-care-drag-handle:active {
+    cursor: grabbing;
   }
 
   #garden-shell[data-tool-mode="water"] {

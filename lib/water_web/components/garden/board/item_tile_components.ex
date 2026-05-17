@@ -11,6 +11,7 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
   attr :tool_mode, :atom, required: true
   attr :care_feedback, :any, default: nil
   attr :today, :any, required: true
+  attr :sortable?, :boolean, default: false
 
   def care_item_tile(assigns) do
     assigns =
@@ -23,65 +24,78 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
       id={@id}
       data-care-item-id={@item_card.item.id}
       data-feedback-tone={@feedback_tone}
-      phx-click="interact_with_item"
-      phx-value-item-id={@item_card.item.id}
       class={[
-        "garden-care-tile rounded-[1.4rem] px-4 py-3.5 transition duration-200",
+        "garden-care-tile garden-care-sortable-item rounded-[1.4rem] px-4 py-3.5 transition duration-200",
+        @sortable? && "garden-care-tile-sortable",
         actionable_tile_classes(@tool_mode),
         @feedback_tone && "garden-care-feedback",
         @feedback_tone == :default && "garden-care-feedback-default",
         @feedback_tone == :water && "garden-care-feedback-water"
       ]}
     >
-      <button
-        id={"#{@id}-button"}
-        type="button"
-        class="group block w-full cursor-pointer text-left focus-visible:outline-none"
-        aria-label={tile_action_aria_label(@tool_mode, @item_card)}
-      >
-        <div class="flex min-w-0 items-center gap-3">
-          <span
-            id={"#{@id}-type-marker"}
-            data-item-icon={VisualComponents.item_icon_name(@item_card.item.type)}
-            class="garden-item-type-chip inline-flex size-7 shrink-0 items-center justify-center rounded-xl"
-          >
-            <VisualComponents.garden_icon
-              name={VisualComponents.item_icon_name(@item_card.item.type)}
-              class="size-4"
-            />
-          </span>
-
-          <div class="flex min-w-0 flex-1 items-center justify-between gap-3">
-            <div
-              id={"#{@id}-title"}
-              class="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1"
+      <div class="flex min-w-0 items-center gap-3">
+        <button
+          id={"#{@id}-button"}
+          type="button"
+          phx-click="interact_with_item"
+          phx-value-item-id={@item_card.item.id}
+          class="group block min-w-0 flex-1 cursor-pointer text-left focus-visible:outline-none"
+          aria-label={tile_action_aria_label(@tool_mode, @item_card)}
+        >
+          <div class="flex min-w-0 items-center gap-3">
+            <span
+              id={"#{@id}-type-marker"}
+              data-item-icon={VisualComponents.item_icon_name(@item_card.item.type)}
+              class="garden-item-type-chip inline-flex size-7 shrink-0 items-center justify-center rounded-xl"
             >
-              <p
-                id={"#{@id}-name"}
-                class="garden-tile-name garden-text-primary text-[1.05rem] font-semibold tracking-tight"
-              >
-                {@item_card.item.name}
-              </p>
-              <VisualComponents.status_badge
-                :if={show_tile_status_badge?(@item_card.status)}
-                id={"#{@id}-status"}
-                status={@item_card.status}
-                quiet={true}
+              <VisualComponents.garden_icon
+                name={VisualComponents.item_icon_name(@item_card.item.type)}
+                class="size-4"
               />
-            </div>
+            </span>
 
-            <div
-              id={"#{@id}-detail"}
-              class={[
-                "garden-tile-detail-row garden-text-faint shrink-0 text-sm",
-                @feedback_tone == :default && "garden-tile-detail-feedback"
-              ]}
-            >
-              {due_text(@item_card)}
+            <div class="flex min-w-0 flex-1 items-center justify-between gap-3">
+              <div
+                id={"#{@id}-title"}
+                class="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1"
+              >
+                <p
+                  id={"#{@id}-name"}
+                  class="garden-tile-name garden-text-primary text-[1.05rem] font-semibold tracking-tight"
+                >
+                  {@item_card.item.name}
+                </p>
+                <VisualComponents.status_badge
+                  :if={show_tile_status_badge?(@item_card.status)}
+                  id={"#{@id}-status"}
+                  status={@item_card.status}
+                  quiet={true}
+                />
+              </div>
+
+              <div
+                id={"#{@id}-detail"}
+                class={[
+                  "garden-tile-detail-row garden-text-faint shrink-0 text-sm",
+                  @feedback_tone == :default && "garden-tile-detail-feedback"
+                ]}
+              >
+                {due_text(@item_card)}
+              </div>
             </div>
           </div>
-        </div>
-      </button>
+        </button>
+        <button
+          :if={@sortable?}
+          id={"#{@id}-drag-handle"}
+          type="button"
+          class="garden-care-drag-handle shrink-0 cursor-grab touch-none"
+          aria-label={"Drag #{@item_card.item.name} to reorder or move sections"}
+          title="Drag to move"
+        >
+          <VisualComponents.garden_icon name="grip-vertical" class="size-4" />
+        </button>
+      </div>
 
       <span
         :if={@feedback_tone}

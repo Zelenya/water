@@ -297,6 +297,30 @@ defmodule WaterWeb.GardenLive do
   end
 
   @impl true
+  def handle_event("reposition_care_item", params, socket) do
+    with true <- sortable_enabled?(socket.assigns),
+         {:ok, item_id, section_orders} <- parse_reposition_params(params),
+         {:ok, _moved_item} <-
+           Garden.reposition_item(
+             socket.assigns.household,
+             socket.assigns.active_member,
+             item_id,
+             section_orders
+           ) do
+      {:noreply, refresh_board(socket)}
+    else
+      false ->
+        {:noreply, refresh_board(socket)}
+
+      _error ->
+        {:noreply,
+         socket
+         |> refresh_board()
+         |> put_flash(:error, "That item move could not be saved. The board has been refreshed.")}
+    end
+  end
+
+  @impl true
   def handle_event("interact_with_item", params, socket) do
     raw_item_id = Map.get(params, "item-id")
 
@@ -607,6 +631,7 @@ defmodule WaterWeb.GardenLive do
                 section_form={@section_form}
                 query_params={@filter_query_params}
                 today={@today}
+                sortable?={sortable_enabled?(assigns)}
               />
             </section>
         <% end %>
@@ -691,6 +716,61 @@ defmodule WaterWeb.GardenLive do
     do: true
 
   defp command_launcher_available?(_assigns), do: false
+
+  @spec sortable_enabled?(map()) :: boolean()
+  defp sortable_enabled?(%{
+         current_filter: :all,
+         tool_mode: :browse,
+         modal: nil,
+         care_action: nil,
+         editing_section_id: nil
+       }),
+       do: true
+
+  defp sortable_enabled?(_assigns), do: false
+
+  @spec parse_reposition_params(map()) ::
+          {:ok, pos_integer(), [Garden.CareItems.section_order()]} | :error
+  defp parse_reposition_params(params) do
+    with item_id when is_integer(item_id) <- Navigation.parse_item_id(Map.get(params, "item_id")),
+         raw_sections when is_list(raw_sections) <- Map.get(params, "sections"),
+         {:ok, section_orders} <- parse_reposition_sections(raw_sections) do
+      {:ok, item_id, section_orders}
+    else
+      _other -> :error
+    end
+  end
+
+  @spec parse_reposition_sections([map()]) ::
+          {:ok, [Garden.CareItems.section_order()]} | :error
+  defp parse_reposition_sections(raw_sections) do
+    raw_sections
+    |> Enum.reduce_while({:ok, []}, fn raw_section, {:ok, section_orders} ->
+      with section_id when is_integer(section_id) <-
+             Navigation.parse_item_id(Map.get(raw_section, "section_id")),
+           raw_item_ids when is_list(raw_item_ids) <- Map.get(raw_section, "item_ids"),
+           {:ok, item_ids} <- parse_reposition_item_ids(raw_item_ids) do
+        {:cont, {:ok, [%{section_id: section_id, item_ids: item_ids} | section_orders]}}
+      else
+        _other -> {:halt, :error}
+      end
+    end)
+    |> case do
+      {:ok, section_orders} -> {:ok, Enum.reverse(section_orders)}
+      :error -> :error
+    end
+  end
+
+  @spec parse_reposition_item_ids([term()]) :: {:ok, [pos_integer()]} | :error
+  defp parse_reposition_item_ids(raw_item_ids) do
+    item_ids = Enum.map(raw_item_ids, &Navigation.parse_item_id/1)
+
+    if Enum.all?(item_ids, &is_integer/1) do
+      {:ok, item_ids}
+    else
+      :error
+    end
+  end
 
   @spec clear_section_edit(Phoenix.LiveView.Socket.t()) :: Phoenix.LiveView.Socket.t()
   defp clear_section_edit(socket) do

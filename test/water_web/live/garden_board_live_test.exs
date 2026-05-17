@@ -1,6 +1,7 @@
 defmodule WaterWeb.GardenBoardLiveTest do
   use WaterWeb.ConnCase, async: true
 
+  import Ecto.Query
   import Phoenix.LiveViewTest
   import WaterWeb.GardenLiveTestHelpers
 
@@ -73,7 +74,15 @@ defmodule WaterWeb.GardenBoardLiveTest do
       assert has_element?(view, "#garden-section-#{section.id}-rename", "Rename")
       assert has_element?(view, "#garden-section-#{section.id}-delete", "Delete")
       assert has_element?(view, "#section-item-tile-#{item.id}")
-      assert has_element?(view, "#garden-section-items-#{section.id}[data-tile-layout='list']")
+
+      assert has_element?(
+               view,
+               "#garden-section-items-#{section.id}[data-tile-layout='list'][data-sortable-enabled='true']"
+             )
+
+      assert has_element?(view, "#section-item-tile-#{item.id}-drag-handle")
+      assert has_element?(view, "#section-item-tile-#{item.id}-button")
+      refute has_element?(view, "#today-panel-item-#{item.id}-drag-handle")
       assert has_element?(view, "#today-panel-item-#{item.id}-name", item.name)
       assert has_element?(view, "#today-panel-overdue-pill", "Overdue 0")
       assert has_element?(view, "#today-panel-today-pill", "Today 1")
@@ -291,7 +300,7 @@ defmodule WaterWeb.GardenBoardLiveTest do
       {:ok, view, _html} = live(conn, ~p"/?filter=today")
 
       render_click(element(view, "#tool-dock-desktop-water"))
-      render_click(element(view, "#section-item-tile-#{today_item.id}"))
+      render_click(element(view, "#section-item-tile-#{today_item.id}-button"))
 
       refute has_element?(view, "#section-item-tile-#{today_item.id}")
     end
@@ -357,6 +366,100 @@ defmodule WaterWeb.GardenBoardLiveTest do
     end
   end
 
+  describe "drag sorting" do
+    test "disables sortable handles outside the all filter", %{conn: conn} do
+      household = GardenFixtures.default_household_fixture()
+      _member = GardenFixtures.member_fixture(household, %{name: "A"})
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+      today = Navigation.household_today(household)
+
+      item =
+        GardenFixtures.care_item_fixture(section, %{
+          name: "Today",
+          next_due_on: today,
+          position: 0
+        })
+
+      {:ok, view, _html} = live(conn, ~p"/?filter=today")
+
+      assert has_element?(
+               view,
+               "#garden-section-items-#{section.id}[data-sortable-enabled='false']"
+             )
+
+      refute has_element?(view, "#section-item-tile-#{item.id}-drag-handle")
+    end
+
+    test "moves an item between sections from the sortable hook", %{conn: conn} do
+      household = GardenFixtures.default_household_fixture()
+      _member = GardenFixtures.member_fixture(household, %{name: "A"})
+      source = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+      destination = GardenFixtures.section_fixture(household, %{name: "Back", position: 1})
+
+      source_item = GardenFixtures.care_item_fixture(source, %{name: "Mint", position: 0})
+      moved_item = GardenFixtures.care_item_fixture(source, %{name: "Basil", position: 1})
+
+      destination_item =
+        GardenFixtures.care_item_fixture(destination, %{name: "Sage", position: 0})
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      render_hook(view, "reposition_care_item", %{
+        "item_id" => to_string(moved_item.id),
+        "sections" => [
+          %{
+            "section_id" => to_string(source.id),
+            "item_ids" => [to_string(source_item.id)]
+          },
+          %{
+            "section_id" => to_string(destination.id),
+            "item_ids" => [to_string(destination_item.id), to_string(moved_item.id)]
+          }
+        ]
+      })
+
+      assert has_element?(view, "#garden-section-items-#{destination.id}", "Basil")
+      refute has_element?(view, "#garden-section-items-#{source.id}", "Basil")
+
+      assert item_order(source) == [{source_item.id, "Mint", 0}]
+
+      assert item_order(destination) == [
+               {destination_item.id, "Sage", 0},
+               {moved_item.id, "Basil", 1}
+             ]
+    end
+
+    test "reorders items within a section from the sortable hook", %{conn: conn} do
+      household = GardenFixtures.default_household_fixture()
+      _member = GardenFixtures.member_fixture(household, %{name: "A"})
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+
+      first = GardenFixtures.care_item_fixture(section, %{name: "First", position: 0})
+      second = GardenFixtures.care_item_fixture(section, %{name: "Second", position: 1})
+      third = GardenFixtures.care_item_fixture(section, %{name: "Third", position: 2})
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      render_hook(view, "reposition_care_item", %{
+        "item_id" => to_string(third.id),
+        "sections" => [
+          %{
+            "section_id" => to_string(section.id),
+            "item_ids" => [to_string(third.id), to_string(first.id), to_string(second.id)]
+          }
+        ]
+      })
+
+      assert has_element?(view, "#garden-section-items-#{section.id}", "Third")
+
+      assert item_order(section) == [
+               {third.id, "Third", 0},
+               {first.id, "First", 1},
+               {second.id, "Second", 2}
+             ]
+    end
+  end
+
   describe "tile status copy" do
     test "main board hides flagged, normal, and no-schedule badges and uses no due date copy",
          %{
@@ -410,5 +513,15 @@ defmodule WaterWeb.GardenBoardLiveTest do
 
       assert has_element?(view, "#section-item-tile-#{no_schedule_item.id}-detail", "No due date")
     end
+  end
+
+  @spec item_order(Section.t()) :: [{CareItem.id(), String.t(), non_neg_integer()}]
+  defp item_order(%Section{id: section_id}) do
+    from(care_item in CareItem,
+      where: care_item.section_id == ^section_id,
+      order_by: [asc: care_item.position, asc: care_item.inserted_at],
+      select: {care_item.id, care_item.name, care_item.position}
+    )
+    |> Repo.all()
   end
 end

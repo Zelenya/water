@@ -96,6 +96,110 @@ defmodule Water.GardenTest do
       assert moved_item.position == 1
     end
 
+    test "reposition_item/4 reorders items within one section" do
+      household = GardenFixtures.household_fixture()
+      member = GardenFixtures.member_fixture(household)
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+
+      first = GardenFixtures.care_item_fixture(section, %{name: "First", position: 0})
+      second = GardenFixtures.care_item_fixture(section, %{name: "Second", position: 1})
+      third = GardenFixtures.care_item_fixture(section, %{name: "Third", position: 2})
+
+      assert {:ok, moved_item} =
+               Garden.reposition_item(household, member, third.id, [
+                 %{section_id: section.id, item_ids: [third.id, first.id, second.id]}
+               ])
+
+      assert moved_item.id == third.id
+
+      assert item_order(section) == [
+               {third.id, "Third", 0},
+               {first.id, "First", 1},
+               {second.id, "Second", 2}
+             ]
+    end
+
+    test "reposition_item/4 moves an item between sections at the requested index" do
+      household = GardenFixtures.household_fixture()
+      member = GardenFixtures.member_fixture(household)
+      source = GardenFixtures.section_fixture(household, %{name: "Source", position: 0})
+      destination = GardenFixtures.section_fixture(household, %{name: "Destination", position: 1})
+
+      source_first =
+        GardenFixtures.care_item_fixture(source, %{name: "Source First", position: 0})
+
+      moved = GardenFixtures.care_item_fixture(source, %{name: "Move Me", position: 1})
+      source_last = GardenFixtures.care_item_fixture(source, %{name: "Source Last", position: 2})
+
+      destination_first =
+        GardenFixtures.care_item_fixture(destination, %{name: "Dest First", position: 0})
+
+      destination_last =
+        GardenFixtures.care_item_fixture(destination, %{name: "Dest Last", position: 1})
+
+      assert {:ok, moved_item} =
+               Garden.reposition_item(household, member, moved.id, [
+                 %{section_id: source.id, item_ids: [source_first.id, source_last.id]},
+                 %{
+                   section_id: destination.id,
+                   item_ids: [destination_first.id, moved.id, destination_last.id]
+                 }
+               ])
+
+      assert moved_item.section_id == destination.id
+      assert moved_item.position == 1
+
+      assert item_order(source) == [
+               {source_first.id, "Source First", 0},
+               {source_last.id, "Source Last", 1}
+             ]
+
+      assert item_order(destination) == [
+               {destination_first.id, "Dest First", 0},
+               {moved.id, "Move Me", 1},
+               {destination_last.id, "Dest Last", 2}
+             ]
+    end
+
+    test "reposition_item/4 rejects sections outside the household" do
+      household = GardenFixtures.household_fixture()
+      member = GardenFixtures.member_fixture(household)
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+      item = GardenFixtures.care_item_fixture(section, %{name: "Mint", position: 0})
+
+      other_household = GardenFixtures.household_fixture()
+
+      other_section =
+        GardenFixtures.section_fixture(other_household, %{name: "Other", position: 0})
+
+      assert Garden.reposition_item(household, member, item.id, [
+               %{section_id: section.id, item_ids: []},
+               %{section_id: other_section.id, item_ids: [item.id]}
+             ]) == {:error, :invalid_reposition}
+
+      assert item_order(section) == [{item.id, "Mint", 0}]
+    end
+
+    test "reposition_item/4 rejects stale or incomplete orders without partial updates" do
+      household = GardenFixtures.household_fixture()
+      member = GardenFixtures.member_fixture(household)
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+
+      first = GardenFixtures.care_item_fixture(section, %{name: "First", position: 0})
+      second = GardenFixtures.care_item_fixture(section, %{name: "Second", position: 1})
+      third = GardenFixtures.care_item_fixture(section, %{name: "Third", position: 2})
+
+      assert Garden.reposition_item(household, member, second.id, [
+               %{section_id: section.id, item_ids: [second.id, first.id]}
+             ]) == {:error, :stale_reposition}
+
+      assert item_order(section) == [
+               {first.id, "First", 0},
+               {second.id, "Second", 1},
+               {third.id, "Third", 2}
+             ]
+    end
+
     test "update_item/3 treats a schedule-only same-visible-date edit as a silent no-op" do
       household = GardenFixtures.household_fixture()
       member = GardenFixtures.member_fixture(household)
@@ -818,5 +922,15 @@ defmodule Water.GardenTest do
 
       assert Repo.aggregate(CareEvent, :count) == 1
     end
+  end
+
+  @spec item_order(Section.t()) :: [{CareItem.id(), String.t(), non_neg_integer()}]
+  defp item_order(%Section{id: section_id}) do
+    from(care_item in CareItem,
+      where: care_item.section_id == ^section_id,
+      order_by: [asc: care_item.position, asc: care_item.inserted_at],
+      select: {care_item.id, care_item.name, care_item.position}
+    )
+    |> Repo.all()
   end
 end

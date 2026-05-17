@@ -34,6 +34,7 @@ import {
   createElement as createLucideElement,
   Droplets,
   Flag,
+  GripVertical,
   Haze,
   LayoutGrid,
   Shovel,
@@ -59,6 +60,7 @@ const gardenLucideIcons = {
   sprout: Sprout,
   sun: Sun,
   trees: Trees,
+  "grip-vertical": GripVertical,
 };
 
 const renderGardenLucideIcons = (root) => {

@@ -12,6 +12,7 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
   attr :section_form, :any, default: nil
   attr :query_params, :map, default: %{}
   attr :today, :any, required: true
+  attr :sortable?, :boolean, default: false
 
   def garden_section(assigns) do
     ~H"""
@@ -72,19 +73,24 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
 
       <div class="mt-5">
         <div
-          :if={Enum.empty?(@section_card.items)}
-          id={"garden-section-empty-#{@section_card.section.id}"}
-          class="garden-empty-inline rounded-[1.4rem] px-4 py-5 text-sm"
-        >
-          This section is ready for items, but nothing has been added yet.
-        </div>
-
-        <div
-          :if={@section_card.items != []}
           id={"garden-section-items-#{@section_card.section.id}"}
+          data-care-section-id={@section_card.section.id}
+          data-sortable-enabled={to_string(@sortable?)}
           data-tile-layout="list"
-          class="grid gap-3"
+          phx-hook="GardenCareSortable"
+          class={[
+            "garden-care-sortable-list grid gap-3",
+            @section_card.items == [] && "garden-care-sortable-list-empty"
+          ]}
         >
+          <div
+            :if={Enum.empty?(@section_card.items)}
+            id={"garden-section-empty-#{@section_card.section.id}"}
+            class="garden-empty-inline garden-care-sortable-empty rounded-[1.4rem] px-4 py-5 text-sm"
+          >
+            This section is ready for items, but nothing has been added yet.
+          </div>
+
           <ItemTileComponents.care_item_tile
             :for={item_card <- @section_card.items}
             id={"section-item-tile-#{item_card.item.id}"}
@@ -92,6 +98,7 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
             tool_mode={@tool_mode}
             care_feedback={@care_feedback}
             today={@today}
+            sortable?={@sortable?}
           />
         </div>
       </div>

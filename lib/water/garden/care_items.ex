@@ -15,6 +15,15 @@ defmodule Water.Garden.CareItems do
           {:ok, CareItem.t()} | {:error, :member_household_mismatch | Ecto.Changeset.t()}
   @type delete_result() ::
           {:ok, CareItem.t()} | {:error, :member_household_mismatch | Ecto.Changeset.t()}
+  @type section_order() :: %{
+          required(:section_id) => Section.id(),
+          required(:item_ids) => [CareItem.id()]
+        }
+  @type reposition_error() ::
+          :member_household_mismatch
+          | :empty_reposition
+          | :invalid_reposition
+          | :stale_reposition
   @managed_schedule_fields [:watering_interval_days, :next_due_on, :manual_due_on]
 
   @spec get_item!(Household.t(), integer()) :: CareItem.t()
@@ -120,6 +129,167 @@ defmodule Water.Garden.CareItems do
           {:error, changeset}
       end
     end
+  end
+
+  @spec reposition_item(Household.t(), Member.t(), CareItem.id(), [section_order()]) ::
+          {:ok, CareItem.t()} | {:error, reposition_error()}
+  def reposition_item(
+        %Household{id: household_id} = household,
+        %Member{} = member,
+        item_id,
+        section_orders
+      )
+      when is_integer(item_id) and is_list(section_orders) do
+    with :ok <- validate_member_household_match(household, member),
+         :ok <- validate_section_orders_shape(section_orders) do
+      Repo.transaction(fn ->
+        with :ok <- validate_reposition_sections(household_id, section_orders),
+             {:ok, current_items} <- lock_affected_reposition_items(household_id, section_orders),
+             :ok <- validate_reposition_items(current_items, item_id, section_orders),
+             :ok <- stage_reposition_items(current_items),
+             :ok <- write_reposition_items(section_orders),
+             %CareItem{} = moved_item <-
+               Repo.get_by(CareItem, id: item_id, household_id: household_id) do
+          moved_item
+        else
+          nil -> Repo.rollback(:stale_reposition)
+          {:error, reason} -> Repo.rollback(reason)
+        end
+      end)
+    end
+  end
+
+  def reposition_item(%Household{}, %Member{}, _item_id, _section_orders) do
+    {:error, :invalid_reposition}
+  end
+
+  @spec validate_section_orders_shape([term()]) :: :ok | {:error, reposition_error()}
+  defp validate_section_orders_shape([]), do: {:error, :empty_reposition}
+
+  defp validate_section_orders_shape(section_orders) do
+    section_ids = Enum.map(section_orders, &Map.get(&1, :section_id))
+    item_ids = Enum.flat_map(section_orders, &Map.get(&1, :item_ids, []))
+
+    cond do
+      not Enum.all?(section_orders, &valid_section_order_shape?/1) ->
+        {:error, :invalid_reposition}
+
+      Enum.uniq(section_ids) != section_ids ->
+        {:error, :invalid_reposition}
+
+      Enum.uniq(item_ids) != item_ids ->
+        {:error, :invalid_reposition}
+
+      true ->
+        :ok
+    end
+  end
+
+  @spec valid_section_order_shape?(term()) :: boolean()
+  defp valid_section_order_shape?(%{section_id: section_id, item_ids: item_ids}) do
+    is_integer(section_id) and section_id > 0 and
+      is_list(item_ids) and Enum.all?(item_ids, &(is_integer(&1) and &1 > 0))
+  end
+
+  defp valid_section_order_shape?(_section_order), do: false
+
+  @spec validate_reposition_sections(Household.id(), [section_order()]) ::
+          :ok | {:error, reposition_error()}
+  defp validate_reposition_sections(household_id, section_orders) do
+    section_ids = Enum.map(section_orders, & &1.section_id)
+
+    section_count =
+      from(section in Section,
+        where: section.household_id == ^household_id and section.id in ^section_ids
+      )
+      |> Repo.aggregate(:count, :id)
+
+    if section_count == length(section_ids) do
+      :ok
+    else
+      {:error, :invalid_reposition}
+    end
+  end
+
+  @spec lock_affected_reposition_items(Household.id(), [section_order()]) ::
+          {:ok, [CareItem.t()]}
+  defp lock_affected_reposition_items(household_id, section_orders) do
+    section_ids = Enum.map(section_orders, & &1.section_id)
+
+    items =
+      from(care_item in CareItem,
+        where: care_item.household_id == ^household_id and care_item.section_id in ^section_ids,
+        order_by: [asc: care_item.section_id, asc: care_item.position, asc: care_item.inserted_at],
+        lock: "FOR UPDATE"
+      )
+      |> Repo.all()
+
+    {:ok, items}
+  end
+
+  @spec validate_reposition_items([CareItem.t()], CareItem.id(), [section_order()]) ::
+          :ok | {:error, reposition_error()}
+  defp validate_reposition_items(current_items, item_id, section_orders) do
+    current_item_ids = Enum.map(current_items, & &1.id)
+    final_item_ids = Enum.flat_map(section_orders, & &1.item_ids)
+
+    cond do
+      Enum.count(final_item_ids, &(&1 == item_id)) != 1 ->
+        {:error, :stale_reposition}
+
+      Enum.sort(current_item_ids) != Enum.sort(final_item_ids) ->
+        {:error, :stale_reposition}
+
+      true ->
+        :ok
+    end
+  end
+
+  @spec stage_reposition_items([CareItem.t()]) :: :ok | {:error, reposition_error()}
+  defp stage_reposition_items(current_items) do
+    current_items
+    |> Enum.reduce_while(:ok, fn %CareItem{id: item_id}, :ok ->
+      {updated_count, _result} =
+        from(care_item in CareItem, where: care_item.id == ^item_id)
+        |> Repo.update_all(set: [position: -item_id])
+
+      if updated_count == 1 do
+        {:cont, :ok}
+      else
+        {:halt, {:error, :stale_reposition}}
+      end
+    end)
+  end
+
+  @spec write_reposition_items([section_order()]) :: :ok | {:error, reposition_error()}
+  defp write_reposition_items(section_orders) do
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
+
+    section_orders
+    |> Enum.flat_map(fn %{section_id: section_id, item_ids: item_ids} ->
+      item_ids
+      |> Enum.with_index()
+      |> Enum.map(fn {item_id, position} ->
+        %{item_id: item_id, section_id: section_id, position: position, updated_at: now}
+      end)
+    end)
+    |> Enum.reduce_while(:ok, fn attrs, :ok ->
+      {updated_count, _result} =
+        from(care_item in CareItem, where: care_item.id == ^attrs.item_id)
+        |> Repo.update_all(
+          set: [
+            section_id: attrs.section_id,
+            position: attrs.position,
+            updated_at: attrs.updated_at
+          ]
+        )
+
+      if updated_count == 1 do
+        {:cont, :ok}
+      else
+        {:halt, {:error, :stale_reposition}}
+      end
+    end)
   end
 
   @spec build_new_item_changeset(Household.t(), map(), Date.t()) :: Ecto.Changeset.t()
@@ -416,6 +586,15 @@ defmodule Water.Garden.CareItems do
        ),
        do: :ok
 
+  defp validate_member_household_match(
+         %Household{id: household_id},
+         %Member{household_id: household_id}
+       ),
+       do: :ok
+
   defp validate_member_household_match(%CareItem{}, %Member{}),
+    do: {:error, :member_household_mismatch}
+
+  defp validate_member_household_match(%Household{}, %Member{}),
     do: {:error, :member_household_mismatch}
 end

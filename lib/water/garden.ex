@@ -79,6 +79,10 @@ defmodule Water.Garden do
           {:ok, CareItem.t()} | {:error, :member_household_mismatch | Ecto.Changeset.t()}
   defdelegate delete_item(care_item, member), to: CareItems
 
+  @spec reposition_item(Household.t(), Member.t(), CareItem.id(), [CareItems.section_order()]) ::
+          {:ok, CareItem.t()} | {:error, CareItems.reposition_error()}
+  defdelegate reposition_item(household, member, item_id, section_orders), to: CareItems
+
   @spec water_item(CareItem.t(), Member.t(), Date.t()) ::
           {:ok, CareItem.t()} | {:error, Commands.command_error()}
   defdelegate water_item(care_item, member, occurred_on), to: Commands

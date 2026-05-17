@@ -18,7 +18,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/?filter=overdue")
 
-      render_click(element(view, "#section-item-tile-#{overdue_item.id}"))
+      render_click(element(view, "#section-item-tile-#{overdue_item.id}-button"))
       assert_patch(view, ~p"/items/#{overdue_item.id}?#{%{"filter" => "overdue"}}")
 
       assert has_element?(view, "#item-detail-modal")
@@ -36,7 +36,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/?filter=overdue")
 
-      render_click(element(view, "#section-item-tile-#{overdue_item.id}"))
+      render_click(element(view, "#section-item-tile-#{overdue_item.id}-button"))
       assert_patch(view, ~p"/items/#{overdue_item.id}?#{%{"filter" => "overdue"}}")
       assert has_element?(view, "#item-detail-modal")
 
@@ -73,7 +73,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{item.id}"))
+      render_click(element(view, "#section-item-tile-#{item.id}-button"))
       assert_patch(view, ~p"/items/#{item.id}")
 
       assert has_element?(view, "#item-detail-history")
@@ -100,7 +100,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{item.id}"))
+      render_click(element(view, "#section-item-tile-#{item.id}-button"))
       assert_patch(view, ~p"/items/#{item.id}")
 
       assert has_element?(view, "#item-detail-history")
@@ -116,7 +116,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{item.id}"))
+      render_click(element(view, "#section-item-tile-#{item.id}-button"))
       assert_patch(view, ~p"/items/#{item.id}")
 
       render_click(element(view, "#item-detail-edit"))
@@ -135,7 +135,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{item.id}"))
+      render_click(element(view, "#section-item-tile-#{item.id}-button"))
       assert_patch(view, ~p"/items/#{item.id}")
 
       assert has_element?(view, "#item-detail-edit")
@@ -185,7 +185,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{item.id}"))
+      render_click(element(view, "#section-item-tile-#{item.id}-button"))
       assert_patch(view, ~p"/items/#{item.id}")
       render_click(element(view, "#item-detail-edit"))
       assert_patch(view, ~p"/items/#{item.id}/edit")
@@ -221,7 +221,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{item.id}"))
+      render_click(element(view, "#section-item-tile-#{item.id}-button"))
       render_click(element(view, "#item-detail-edit"))
       assert_patch(view, ~p"/items/#{item.id}/edit")
 
@@ -276,7 +276,7 @@ defmodule WaterWeb.GardenModalsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
 
-      render_click(element(view, "#section-item-tile-#{item.id}"))
+      render_click(element(view, "#section-item-tile-#{item.id}-button"))
       render_click(element(view, "#item-detail-edit"))
       assert_patch(view, ~p"/items/#{item.id}/edit")
 
