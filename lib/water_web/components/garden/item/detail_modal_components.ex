@@ -12,6 +12,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
   attr :edit_patch, :string, required: true
   attr :care_feedback, :any, default: nil
   attr :today, :any, required: true
+  attr :mobile?, :boolean, default: false
 
   def item_detail_modal(assigns) do
     item_id = assigns.modal.item_detail.item_card.item.id
@@ -83,9 +84,16 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
               patch={@edit_patch}
               aria-label="Edit item"
               title="Edit item"
-              class="garden-button-secondary inline-flex size-10 items-center justify-center rounded-full"
+              class={[
+                "garden-button-secondary inline-flex items-center justify-center rounded-full",
+                @mobile? && "gap-2 px-4 py-2.5 text-sm font-semibold",
+                !@mobile? && "size-10"
+              ]}
             >
               <.icon name="hero-pencil-square" class="size-5" />
+              <%= if @mobile? do %>
+                Edit item
+              <% end %>
             </.link>
 
             <button
@@ -95,9 +103,16 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
               data-confirm={"Delete #{@modal.item_detail.item_card.item.name}? This removes its care history too."}
               aria-label="Delete item"
               title="Delete item"
-              class="garden-button-danger inline-flex size-10 items-center justify-center rounded-full"
+              class={[
+                "garden-button-danger inline-flex items-center justify-center rounded-full",
+                @mobile? && "gap-2 px-4 py-2.5 text-sm font-semibold",
+                !@mobile? && "size-10"
+              ]}
             >
               <.icon name="hero-trash" class="size-5" />
+              <%= if @mobile? do %>
+                Delete item
+              <% end %>
             </button>
           </div>
 

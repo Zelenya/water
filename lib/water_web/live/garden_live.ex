@@ -66,6 +66,7 @@ defmodule WaterWeb.GardenLive do
      |> assign(:temperature_forecast_url, nil)
      |> assign(:rain_forecast_url, nil)
      |> assign(:modal, nil)
+     |> assign(:mobile?, false)
      |> assign(:command_launcher, GardenCommandLauncher.new())}
   end
 
@@ -547,6 +548,12 @@ defmodule WaterWeb.GardenLive do
   end
 
   @impl true
+  def handle_event("garden_viewport_changed", %{"mobile" => mobile?}, socket)
+      when is_boolean(mobile?) do
+    {:noreply, assign(socket, :mobile?, mobile?)}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} active_member={@active_member}>
@@ -690,6 +697,7 @@ defmodule WaterWeb.GardenLive do
           }
           care_feedback={@care_feedback}
           today={@today}
+          mobile?={@mobile?}
         />
         <CommandLauncherComponents.launcher
           :if={command_launcher_available?(assigns)}

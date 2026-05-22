@@ -8,6 +8,8 @@ const launcherEnabled = () => {
   return shell?.dataset.commandLauncherEnabled === "true";
 };
 
+const mobileViewportQuery = "(max-width: 767px)";
+
 // Shortcut gating for the command launcher
 const shouldCaptureLauncherShortcut = (event) => {
   const cmdK =
@@ -80,6 +82,12 @@ export const createGardenHooks = ({ renderGardenLucideIcons }) => ({
   GardenShell: {
     mounted() {
       renderGardenLucideIcons(this.el);
+      this.mobileViewport = window.matchMedia(mobileViewportQuery);
+      this.pushMobileViewportState = () => {
+        this.pushEvent("garden_viewport_changed", {
+          mobile: this.mobileViewport.matches,
+        });
+      };
 
       this.handleLauncherShortcut = (event) => {
         if (!shouldCaptureLauncherShortcut(event)) return;
@@ -89,6 +97,11 @@ export const createGardenHooks = ({ renderGardenLucideIcons }) => ({
       };
 
       window.addEventListener("keydown", this.handleLauncherShortcut);
+      this.mobileViewport.addEventListener(
+        "change",
+        this.pushMobileViewportState,
+      );
+      this.pushMobileViewportState();
     },
 
     updated() {
@@ -97,6 +110,10 @@ export const createGardenHooks = ({ renderGardenLucideIcons }) => ({
 
     destroyed() {
       window.removeEventListener("keydown", this.handleLauncherShortcut);
+      this.mobileViewport.removeEventListener(
+        "change",
+        this.pushMobileViewportState,
+      );
     },
   },
 

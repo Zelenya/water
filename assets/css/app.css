@@ -1131,7 +1131,8 @@
 .garden-care-drag-active {
   box-shadow: var(--garden-shadow-md);
 }
-∆ .garden-care-feedback-default {
+
+.garden-care-feedback-default {
   border-color: color-mix(in oklab, var(--garden-feedback-border) 84%, white);
   background: color-mix(
     in oklab,
