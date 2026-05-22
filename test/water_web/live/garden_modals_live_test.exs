@@ -126,6 +126,31 @@ defmodule WaterWeb.GardenModalsLiveTest do
       assert has_element?(view, "#garden-item-form")
     end
 
+    test "detail modal action labels follow the reported mobile viewport", %{conn: conn} do
+      household = GardenFixtures.default_household_fixture()
+      _member = GardenFixtures.member_fixture(household, %{name: "A"})
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+      item = GardenFixtures.care_item_fixture(section, %{name: "Responsive Mint", position: 0})
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      render_click(element(view, "#section-item-tile-#{item.id}-button"))
+      assert has_element?(view, "#item-detail-edit")
+      assert has_element?(view, "#item-detail-delete")
+      refute has_element?(view, "#item-detail-edit", "Edit item")
+      refute has_element?(view, "#item-detail-delete", "Delete item")
+
+      render_hook(view, "garden_viewport_changed", %{"mobile" => true})
+
+      assert has_element?(view, "#item-detail-edit", "Edit item")
+      assert has_element?(view, "#item-detail-delete", "Delete item")
+
+      render_hook(view, "garden_viewport_changed", %{"mobile" => false})
+
+      refute has_element?(view, "#item-detail-edit", "Edit item")
+      refute has_element?(view, "#item-detail-delete", "Delete item")
+    end
+
     test "the detail modal can delete an item and return to the board", %{conn: conn} do
       household = GardenFixtures.default_household_fixture()
       member = GardenFixtures.member_fixture(household, %{name: "A"})

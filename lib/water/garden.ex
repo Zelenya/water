@@ -14,6 +14,7 @@ defmodule Water.Garden do
     CareItems,
     Commands,
     Schedule,
+    ScheduleSuggestion,
     Section,
     Sections
   }
@@ -98,4 +99,12 @@ defmodule Water.Garden do
   @spec clear_schedule_item(CareItem.t(), Member.t(), Date.t()) ::
           {:ok, CareItem.t()} | {:error, Commands.command_error()}
   defdelegate clear_schedule_item(care_item, member, occurred_on), to: Commands
+
+  @spec suggest_after_watering(CareItem.t(), Date.t()) :: ScheduleSuggestion.t() | nil
+  defdelegate suggest_after_watering(care_item, occurred_on), to: ScheduleSuggestion
+
+  @spec apply_schedule_suggestion(CareItem.t(), Member.t(), ScheduleSuggestion.t()) ::
+          {:ok, CareItem.t()}
+          | {:error, :member_household_mismatch | :suggestion_item_mismatch | Ecto.Changeset.t()}
+  defdelegate apply_schedule_suggestion(care_item, member, suggestion), to: CareItems
 end

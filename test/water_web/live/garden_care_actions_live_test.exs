@@ -5,7 +5,8 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
   import Phoenix.LiveViewTest
   import WaterWeb.GardenLiveTestHelpers
 
-  alias Water.Garden.CareEvent
+  alias Water.Garden.{CareEvent, CareItem}
+  alias Water.GardenFixtures
   alias Water.Households
   alias Water.Repo
   alias WaterWeb.GardenLive.Navigation
@@ -112,6 +113,102 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
       assert has_element?(view, "#item-detail-due", "No schedule")
       assert has_element?(view, "#item-detail-clear-schedule")
       refute has_element?(view, "#item-detail-last-watered", "Not yet recorded")
+    end
+
+    test "watering a no-schedule item with a daily history opens the suggestion modal", %{
+      conn: conn
+    } do
+      %{no_schedule_item: no_schedule_item} = seed_board()
+      {member, today} = active_member_and_today()
+      insert_waterings(no_schedule_item, member, [Date.add(today, -2), Date.add(today, -1)])
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      select_tool(view, :water)
+      render_click(element(view, "#section-item-tile-#{no_schedule_item.id}-button"))
+
+      assert has_element?(view, "#schedule-suggestion-modal")
+      assert has_element?(view, "#schedule-suggestion-item", no_schedule_item.name)
+      assert has_element?(view, "#schedule-suggestion-current", "No schedule")
+      assert has_element?(view, "#schedule-suggestion-proposed", "Every day")
+      assert has_element?(view, "#schedule-suggestion-next-due")
+    end
+
+    test "accepting a schedule suggestion applies recurrence and records schedule history", %{
+      conn: conn
+    } do
+      %{no_schedule_item: no_schedule_item} = seed_board()
+      {member, today} = active_member_and_today()
+      insert_waterings(no_schedule_item, member, [Date.add(today, -2), Date.add(today, -1)])
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      select_tool(view, :water)
+      render_click(element(view, "#section-item-tile-#{no_schedule_item.id}-button"))
+      render_click(element(view, "#schedule-suggestion-accept"))
+
+      refute has_element?(view, "#schedule-suggestion-modal")
+
+      updated_item = Repo.get!(CareItem, no_schedule_item.id)
+      assert updated_item.watering_interval_days == 1
+      assert updated_item.next_due_on == Date.add(today, 1)
+
+      assert Repo.aggregate(
+               from(
+                 care_event in CareEvent,
+                 where:
+                   care_event.care_item_id == ^no_schedule_item.id and
+                     care_event.event_type == :schedule_changed
+               ),
+               :count,
+               :id
+             ) == 1
+    end
+
+    test "dismissing a schedule suggestion leaves the schedule unchanged", %{conn: conn} do
+      %{no_schedule_item: no_schedule_item} = seed_board()
+      {member, today} = active_member_and_today()
+      insert_waterings(no_schedule_item, member, [Date.add(today, -2), Date.add(today, -1)])
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      select_tool(view, :water)
+      render_click(element(view, "#section-item-tile-#{no_schedule_item.id}-button"))
+      render_click(element(view, "#schedule-suggestion-dismiss"))
+
+      refute has_element?(view, "#schedule-suggestion-modal")
+
+      updated_item = Repo.get!(CareItem, no_schedule_item.id)
+      assert updated_item.watering_interval_days == nil
+      assert updated_item.next_due_on == nil
+    end
+
+    test "detail modal watering keeps detail open and shows the suggestion overlay", %{conn: conn} do
+      %{no_schedule_item: no_schedule_item} = seed_board()
+      {member, today} = active_member_and_today()
+      insert_waterings(no_schedule_item, member, [Date.add(today, -2), Date.add(today, -1)])
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      open_item_detail(view, no_schedule_item)
+      render_click(element(view, "#item-detail-water"))
+
+      assert has_element?(view, "#item-detail-modal")
+      assert has_element?(view, "#schedule-suggestion-modal")
+      assert has_element?(view, "#item-detail-history", "Watered")
+    end
+
+    test "water all does not open schedule suggestions", %{conn: conn} do
+      %{no_schedule_item: no_schedule_item} = seed_board()
+      {member, today} = active_member_and_today()
+      insert_waterings(no_schedule_item, member, [Date.add(today, -2), Date.add(today, -1)])
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      render_click(element(view, "#garden-command-launcher-trigger"))
+      render_click(element(view, "#garden-command-launcher-entry-command-rain"))
+
+      refute has_element?(view, "#schedule-suggestion-modal")
     end
 
     test "detail modal clear schedule refreshes the modal and removes the item from urgent views",
@@ -529,6 +626,21 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
 
   defp assert_feedback_status(view, base_dom_id, tone) do
     assert has_element?(view, "##{base_dom_id}-feedback.sr-only[data-feedback-tone='#{tone}']")
+  end
+
+  defp active_member_and_today do
+    household = Households.get_default_household!()
+    [member | _rest] = Households.list_members(household)
+    {member, Navigation.household_today(household)}
+  end
+
+  defp insert_waterings(item, member, dates) do
+    Enum.each(dates, fn date ->
+      GardenFixtures.care_event_fixture(item, member, %{
+        event_type: :watered,
+        occurred_on: date
+      })
+    end)
   end
 
   defp tool_selector(:browse), do: "#tool-dock-desktop-browse"

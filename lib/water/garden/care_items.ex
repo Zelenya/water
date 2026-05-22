@@ -6,13 +6,26 @@ defmodule Water.Garden.CareItems do
 
   alias Ecto.Multi
 
-  alias Water.Garden.{Attrs, CareEvent, CareItem, CareItemCard, CareItemDetail, Schedule, Section}
+  alias Water.Garden.{
+    Attrs,
+    CareEvent,
+    CareItem,
+    CareItemCard,
+    CareItemDetail,
+    Schedule,
+    ScheduleSuggestion,
+    Section
+  }
+
   alias Water.Garden.Schedule.Edit
   alias Water.Households.{Household, Member}
   alias Water.Repo
 
   @type update_result() ::
           {:ok, CareItem.t()} | {:error, :member_household_mismatch | Ecto.Changeset.t()}
+  @type suggestion_update_result() ::
+          {:ok, CareItem.t()}
+          | {:error, :member_household_mismatch | :suggestion_item_mismatch | Ecto.Changeset.t()}
   @type delete_result() ::
           {:ok, CareItem.t()} | {:error, :member_household_mismatch | Ecto.Changeset.t()}
   @type section_order() :: %{
@@ -101,6 +114,38 @@ defmodule Water.Garden.CareItems do
         {:error, changeset}
       end
     end
+  end
+
+  @spec apply_schedule_suggestion(CareItem.t(), Member.t(), ScheduleSuggestion.t()) ::
+          suggestion_update_result()
+  def apply_schedule_suggestion(
+        %CareItem{id: item_id} = care_item,
+        %Member{} = member,
+        %ScheduleSuggestion{care_item_id: item_id} = suggestion
+      ) do
+    with :ok <- validate_member_household_match(care_item, member) do
+      changeset =
+        CareItem.update_changeset(care_item, %{
+          watering_interval_days: suggestion.suggested_interval_days,
+          next_due_on: suggestion.next_due_on,
+          manual_due_on: nil
+        })
+
+      if changeset.valid? do
+        persist_update(
+          care_item,
+          member,
+          changeset,
+          today_in_household_id(care_item.household_id)
+        )
+      else
+        {:error, changeset}
+      end
+    end
+  end
+
+  def apply_schedule_suggestion(%CareItem{}, %Member{}, %ScheduleSuggestion{}) do
+    {:error, :suggestion_item_mismatch}
   end
 
   @spec delete_item(CareItem.t(), Member.t()) :: delete_result()
@@ -520,6 +565,13 @@ defmodule Water.Garden.CareItems do
     timezone
     |> DateTime.now!()
     |> DateTime.to_date()
+  end
+
+  @spec today_in_household_id(Household.id()) :: Date.t()
+  defp today_in_household_id(household_id) do
+    household_id
+    |> then(&Repo.get!(Household, &1))
+    |> today_in_household()
   end
 
   @spec maybe_put_default_attr(map(), atom(), term()) :: map()

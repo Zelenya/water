@@ -20,9 +20,17 @@ defmodule WaterWeb.GardenLive do
 
   alias WaterWeb.Garden.CommandLauncherComponents
   alias WaterWeb.Garden.Care.ActionComponents, as: CareActionComponents
+  alias WaterWeb.Garden.Care.ScheduleSuggestionComponents
   alias WaterWeb.Garden.Item.{DetailModalComponents, FormModalComponents}
   alias WaterWeb.Garden.Shared.ModalComponents
-  alias WaterWeb.GardenLive.{CareActions, CommandLauncher, Modals, Navigation}
+
+  alias WaterWeb.GardenLive.{
+    CareActions,
+    CommandLauncher,
+    Modals,
+    Navigation,
+    ScheduleSuggestions
+  }
 
   @active_member_session_key "active_member_id"
   @item_form_param "item"
@@ -59,6 +67,7 @@ defmodule WaterWeb.GardenLive do
      |> assign(:current_filter, :all)
      |> assign(:filter_query_params, %{})
      |> assign(:care_action, nil)
+     |> assign(:schedule_suggestion, nil)
      |> assign(:care_feedback, nil)
      |> assign(:editing_section_id, nil)
      |> assign(:section_form, nil)
@@ -211,6 +220,15 @@ defmodule WaterWeb.GardenLive do
         %{assigns: %{command_launcher: %{open?: true}}} = socket
       ) do
     {:noreply, CommandLauncher.close(socket)}
+  end
+
+  @impl true
+  def handle_event(
+        "escape_tool_mode",
+        %{"key" => "Escape"},
+        %{assigns: %{schedule_suggestion: %_{} = _suggestion}} = socket
+      ) do
+    {:noreply, ScheduleSuggestions.dismiss(socket)}
   end
 
   @impl true
@@ -504,6 +522,16 @@ defmodule WaterWeb.GardenLive do
   end
 
   @impl true
+  def handle_event("dismiss_schedule_suggestion", _params, socket) do
+    {:noreply, ScheduleSuggestions.dismiss(socket)}
+  end
+
+  @impl true
+  def handle_event("accept_schedule_suggestion", _params, socket) do
+    ScheduleSuggestions.accept(socket)
+  end
+
+  @impl true
   def handle_event("weather_location_ready", params, socket) do
     with {:ok, latitude} <- parse_coordinate(Map.get(params, "latitude")),
          {:ok, longitude} <- parse_coordinate(Map.get(params, "longitude")) do
@@ -659,6 +687,11 @@ defmodule WaterWeb.GardenLive do
           today={@today}
         />
 
+        <ScheduleSuggestionComponents.schedule_suggestion_modal
+          :if={@schedule_suggestion != nil}
+          suggestion={@schedule_suggestion}
+        />
+
         <FormModalComponents.item_form_modal
           :if={@modal != nil and @modal.kind in [:new_form, :edit_form]}
           id="item-form-modal"
@@ -720,8 +753,13 @@ defmodule WaterWeb.GardenLive do
   @spec command_launcher_available?(map()) :: boolean()
   # I didn't want to deal with dirty states when some modal/form is active,
   # so the launcher is available only on the main board (for now)
-  defp command_launcher_available?(%{modal: nil, care_action: nil, editing_section_id: nil}),
-    do: true
+  defp command_launcher_available?(%{
+         modal: nil,
+         care_action: nil,
+         schedule_suggestion: nil,
+         editing_section_id: nil
+       }),
+       do: true
 
   defp command_launcher_available?(_assigns), do: false
 
@@ -731,6 +769,7 @@ defmodule WaterWeb.GardenLive do
          tool_mode: :browse,
          modal: nil,
          care_action: nil,
+         schedule_suggestion: nil,
          editing_section_id: nil
        }),
        do: true

@@ -6,7 +6,7 @@ defmodule WaterWeb.GardenLive.CareActions.Workflow do
   alias Water.Garden.{CareItem, CareItemCard}
   alias Water.Households.Member
   alias WaterWeb.Garden.State.CareAction
-  alias WaterWeb.GardenLive.{Modals, Navigation}
+  alias WaterWeb.GardenLive.{Modals, Navigation, ScheduleSuggestions}
   alias WaterWeb.GardenLive.CareActions.Surface
 
   @spec handle_item_interaction(Phoenix.LiveView.Socket.t(), CareItemCard.t()) ::
@@ -41,8 +41,11 @@ defmodule WaterWeb.GardenLive.CareActions.Workflow do
   def execute_water_action(socket, %CareItemCard{} = item_card) do
     with_active_member(socket, fn active_member ->
       case Garden.water_item(item_card.item, active_member, socket.assigns.today) do
-        {:ok, _} ->
-          {:noreply, apply_successful_care_action(socket, item_card.item.id, "Watered", :water)}
+        {:ok, updated_item} ->
+          {:noreply,
+           socket
+           |> apply_successful_care_action(item_card.item.id, "Watered", :water)
+           |> ScheduleSuggestions.maybe_open_after_watering(updated_item, socket.assigns.today)}
 
         {:error, :no_state_change} ->
           {:noreply,
