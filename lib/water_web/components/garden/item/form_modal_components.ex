@@ -42,7 +42,7 @@ defmodule WaterWeb.Garden.Item.FormModalComponents do
 
             <div class="sm:col-span-2 space-y-3">
               <fieldset id="garden-item-schedule-mode">
-                <legend class="garden-text-primary text-sm font-semibold">Schedule</legend>
+                <legend class="text-base-content text-sm font-semibold">Schedule</legend>
                 <div class="mt-2 grid gap-2 sm:grid-cols-2">
                   <label class={schedule_mode_option_classes(@modal.schedule_mode, :recurring)}>
                     <input
@@ -53,7 +53,9 @@ defmodule WaterWeb.Garden.Item.FormModalComponents do
                       class="sr-only"
                     />
                     <span class="block text-sm font-semibold">Recurring</span>
-                    <span class="garden-text-muted block text-xs">Water on a repeating rhythm</span>
+                    <span class="text-base-content/70 block text-xs">
+                      Water on a repeating rhythm
+                    </span>
                   </label>
 
                   <label class={schedule_mode_option_classes(@modal.schedule_mode, :no_schedule)}>
@@ -65,7 +67,7 @@ defmodule WaterWeb.Garden.Item.FormModalComponents do
                       class="sr-only"
                     />
                     <span class="block text-sm font-semibold">No schedule</span>
-                    <span class="garden-text-muted block text-xs">
+                    <span class="text-base-content/70 block text-xs">
                       Keep it off the recurring schedule
                     </span>
                   </label>
@@ -87,7 +89,7 @@ defmodule WaterWeb.Garden.Item.FormModalComponents do
             <.link
               id="garden-item-cancel"
               patch={@modal.close_path}
-              class="garden-button-secondary inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium"
+              class="btn btn-sm btn-soft rounded-full px-4 text-sm font-medium"
             >
               Cancel
             </.link>
@@ -95,7 +97,7 @@ defmodule WaterWeb.Garden.Item.FormModalComponents do
             <button
               id="garden-item-submit"
               type="submit"
-              class="garden-button-primary inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold"
+              class="btn btn-sm btn-primary rounded-full px-5 text-sm font-semibold"
             >
               {item_form_submit_label(@modal.kind)}
             </button>

@@ -53,11 +53,11 @@ defmodule WaterWeb.Garden.Shared.ModalComponents do
       close_label="Close modal"
     >
       <div class="garden-divider flex items-center justify-between gap-4 border-b px-6 py-5 sm:px-8">
-        <h2 class="garden-heading text-2xl font-semibold tracking-tight">{@title}</h2>
+        <h2 class="text-base-content text-2xl font-semibold tracking-tight">{@title}</h2>
         <.link
           id="garden-modal-close"
           patch={@close_patch}
-          class="garden-button-secondary inline-flex size-10 items-center justify-center rounded-full"
+          class="btn btn-circle btn-soft size-10"
           aria-label="Close modal"
         >
           <.icon name="hero-x-mark" class="size-5" />

@@ -30,7 +30,7 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
             <div class="space-y-1">
               <h2
                 id="care-action-modal-title"
-                class="garden-heading text-2xl font-semibold tracking-tight"
+                class="text-base-content text-2xl font-semibold tracking-tight"
               >
                 {care_action_heading(@care_action.kind)}
               </h2>
@@ -40,7 +40,7 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
               id="care-action-modal-close"
               type="button"
               phx-click="cancel_care_action"
-              class="garden-button-secondary inline-flex size-10 items-center justify-center rounded-full"
+              class="btn btn-circle btn-soft size-10"
               aria-label="Close care action"
             >
               <.icon name="hero-x-mark" class="size-5" />
@@ -70,10 +70,10 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
     ~H"""
     <div class="space-y-4">
       <div class="space-y-1">
-        <h3 class="garden-heading text-lg font-semibold tracking-tight">
+        <h3 class="text-base-content text-lg font-semibold tracking-tight">
           {@care_action.item_card.item.name}
         </h3>
-        <p class="garden-text-muted text-sm">
+        <p class="text-base-content/70 text-sm">
           {care_action_body(@care_action, @today)}
         </p>
       </div>
@@ -126,7 +126,7 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
         <button
           id={"#{@id_prefix}-#{action_prefix(@care_action.kind)}-custom-submit"}
           type="submit"
-          class="garden-button-primary inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold"
+          class="btn btn-sm btn-primary rounded-full px-4 text-sm font-semibold"
         >
           Save delay
         </button>
@@ -134,7 +134,7 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
           id={"#{@id_prefix}-#{action_prefix(@care_action.kind)}-custom-back"}
           type="button"
           phx-click="show_schedule_picker"
-          class="garden-button-secondary inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium"
+          class="btn btn-sm btn-soft rounded-full px-4 text-sm font-medium"
         >
           Back
         </button>
@@ -172,7 +172,7 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
         <button
           id={"#{@id_prefix}-#{action_prefix(@care_action.kind)}-date-submit"}
           type="submit"
-          class="garden-button-primary inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold"
+          class="btn btn-sm btn-primary rounded-full px-4 text-sm font-semibold"
         >
           Save date
         </button>
@@ -180,7 +180,7 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
           id={"#{@id_prefix}-#{action_prefix(@care_action.kind)}-date-back"}
           type="button"
           phx-click="show_schedule_picker"
-          class="garden-button-secondary inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium"
+          class="btn btn-sm btn-soft rounded-full px-4 text-sm font-medium"
         >
           Back
         </button>
@@ -201,12 +201,12 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
       class="garden-action-option garden-action-option-warm flex w-full items-center justify-between rounded-[1.25rem] px-4 py-3 text-left"
     >
       <span>
-        <span class="garden-text-primary block text-sm font-semibold">Today</span>
-        <span class="garden-text-warm block text-xs">
+        <span class="text-base-content block text-sm font-semibold">Today</span>
+        <span class="text-warning block text-xs">
           Needs to be watered right away
         </span>
       </span>
-      <.icon name="hero-sun" class="garden-text-warm size-4" />
+      <.icon name="hero-sun" class="text-warning size-4" />
     </button>
 
     <button
@@ -217,12 +217,12 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
       class="garden-action-option garden-action-option-soft flex w-full items-center justify-between rounded-[1.25rem] px-4 py-3 text-left"
     >
       <span>
-        <span class="garden-text-primary block text-sm font-semibold">Tomorrow</span>
-        <span class="garden-text-muted block text-xs">
+        <span class="text-base-content block text-sm font-semibold">Tomorrow</span>
+        <span class="text-base-content/70 block text-xs">
           Can wait another day
         </span>
       </span>
-      <.icon name="hero-calendar-days" class="garden-text-muted size-4" />
+      <.icon name="hero-calendar-days" class="text-base-content/70 size-4" />
     </button>
     """
   end
@@ -240,12 +240,12 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
       class="garden-action-option garden-action-option-soft flex w-full items-center justify-between rounded-[1.25rem] px-4 py-3 text-left"
     >
       <span>
-        <span class="garden-text-primary block text-sm font-semibold">Usual interval</span>
-        <span class="garden-text-muted block text-xs">
+        <span class="text-base-content block text-sm font-semibold">Usual interval</span>
+        <span class="text-base-content/70 block text-xs">
           Delay by {@care_action.item_card.item.watering_interval_days} days
         </span>
       </span>
-      <.icon name="hero-arrow-right" class="garden-text-muted size-4" />
+      <.icon name="hero-arrow-right" class="text-base-content/70 size-4" />
     </button>
 
     <button
@@ -255,12 +255,12 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
       class="garden-action-option flex w-full items-center justify-between rounded-[1.25rem] px-4 py-3 text-left"
     >
       <span>
-        <span class="garden-text-primary block text-sm font-semibold">Custom days</span>
-        <span class="garden-text-muted block text-xs">
+        <span class="text-base-content block text-sm font-semibold">Custom days</span>
+        <span class="text-base-content/70 block text-xs">
           Delay by custom number of days
         </span>
       </span>
-      <.icon name="hero-adjustments-horizontal" class="garden-text-muted size-4" />
+      <.icon name="hero-adjustments-horizontal" class="text-base-content/70 size-4" />
     </button>
 
     <button
@@ -270,12 +270,12 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
       class="garden-action-option flex w-full items-center justify-between rounded-[1.25rem] px-4 py-3 text-left"
     >
       <span>
-        <span class="garden-text-primary block text-sm font-semibold">Pick date</span>
-        <span class="garden-text-muted block text-xs">
+        <span class="text-base-content block text-sm font-semibold">Pick date</span>
+        <span class="text-base-content/70 block text-xs">
           Choose the exact next due date
         </span>
       </span>
-      <.icon name="hero-calendar" class="garden-text-muted size-4" />
+      <.icon name="hero-calendar" class="text-base-content/70 size-4" />
     </button>
     """
   end

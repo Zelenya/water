@@ -727,13 +727,13 @@ defmodule WaterWeb.GardenLive do
           close_patch={@modal.close_path}
         >
           <div class="space-y-3">
-            <p class="garden-text-muted text-sm leading-6">
+            <p class="text-base-content/70 text-sm leading-6">
               Add Item is disabled until the household has at least one section. Sections are still managed through the backend in this phase.
             </p>
             <div class="flex justify-end">
               <.link
                 patch={@modal.close_path}
-                class="garden-button-secondary inline-flex items-center rounded-full px-4 py-2 text-sm font-medium"
+                class="btn btn-sm btn-soft rounded-full px-4 text-sm font-medium"
               >
                 Back to board
               </.link>

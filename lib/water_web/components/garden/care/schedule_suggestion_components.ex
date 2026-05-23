@@ -23,10 +23,10 @@ defmodule WaterWeb.Garden.Care.ScheduleSuggestionComponents do
     >
       <div class="garden-divider flex items-center justify-between gap-4 border-b px-6 py-5 sm:px-8">
         <div class="space-y-1">
-          <p class="garden-text-muted text-sm font-medium">Watering pattern found</p>
+          <p class="text-base-content/70 text-sm font-medium">Watering pattern found</p>
           <h2
             id="schedule-suggestion-title"
-            class="garden-heading text-2xl font-semibold tracking-tight"
+            class="text-base-content text-2xl font-semibold tracking-tight"
           >
             Suggest schedule
           </h2>
@@ -36,7 +36,7 @@ defmodule WaterWeb.Garden.Care.ScheduleSuggestionComponents do
           id="schedule-suggestion-close"
           type="button"
           phx-click="dismiss_schedule_suggestion"
-          class="garden-button-secondary inline-flex size-10 items-center justify-center rounded-full"
+          class="btn btn-circle btn-soft size-10"
           aria-label="Close schedule suggestion"
         >
           <.icon name="hero-x-mark" class="size-5" />
@@ -47,11 +47,11 @@ defmodule WaterWeb.Garden.Care.ScheduleSuggestionComponents do
         <div class="space-y-1">
           <h3
             id="schedule-suggestion-item"
-            class="garden-heading text-lg font-semibold tracking-tight"
+            class="text-base-content text-lg font-semibold tracking-tight"
           >
             {@suggestion.item_card.item.name}
           </h3>
-          <p class="garden-text-muted text-sm leading-6">
+          <p class="text-base-content/70 text-sm leading-6">
             The last waterings point to {interval_copy(@suggestion.suggestion.suggested_interval_days)}.
           </p>
         </div>
@@ -76,13 +76,13 @@ defmodule WaterWeb.Garden.Care.ScheduleSuggestionComponents do
 
         <div id="schedule-suggestion-history" class="garden-panel-soft rounded-[1.5rem] px-4 py-3">
           <div class="flex items-center justify-between gap-3">
-            <p class="garden-text-primary text-sm font-semibold">Recent waterings</p>
-            <.icon name="hero-calendar-days" class="garden-text-muted size-4" />
+            <p class="text-base-content text-sm font-semibold">Recent waterings</p>
+            <.icon name="hero-calendar-days" class="text-base-content/70 size-4" />
           </div>
           <div class="mt-3 flex flex-wrap gap-2">
             <span
               :for={date <- @suggestion.suggestion.watering_dates}
-              class="garden-button-secondary rounded-full px-3 py-1 text-xs font-semibold"
+              class="btn btn-xs btn-soft rounded-full px-3 text-xs font-semibold"
             >
               {short_date(date)}
             </span>
@@ -94,7 +94,7 @@ defmodule WaterWeb.Garden.Care.ScheduleSuggestionComponents do
             id="schedule-suggestion-dismiss"
             type="button"
             phx-click="dismiss_schedule_suggestion"
-            class="garden-button-secondary inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium"
+            class="btn btn-sm btn-soft rounded-full px-4 text-sm font-medium"
           >
             Not now
           </button>
@@ -102,7 +102,7 @@ defmodule WaterWeb.Garden.Care.ScheduleSuggestionComponents do
             id="schedule-suggestion-accept"
             type="button"
             phx-click="accept_schedule_suggestion"
-            class="garden-button-primary inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold"
+            class="btn btn-sm btn-primary rounded-full px-4 text-sm font-semibold"
           >
             Use this schedule
           </button>
@@ -119,8 +119,8 @@ defmodule WaterWeb.Garden.Care.ScheduleSuggestionComponents do
   defp summary_card(assigns) do
     ~H"""
     <div id={@id} class="garden-panel-soft rounded-[1.25rem] px-4 py-3">
-      <p class="garden-text-muted text-xs font-semibold uppercase">{@label}</p>
-      <p class="garden-text-primary mt-1 text-sm font-semibold">{@value}</p>
+      <p class="text-base-content/70 text-xs font-semibold uppercase">{@label}</p>
+      <p class="text-base-content mt-1 text-sm font-semibold">{@value}</p>
     </div>
     """
   end

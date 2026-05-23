@@ -15,10 +15,12 @@ defmodule WaterWeb.Garden.Board.EmptyStateComponents do
       class="garden-empty-state rounded-[1.8rem] border-dashed px-6 py-8 text-center"
     >
       <div class="mx-auto max-w-xl space-y-3">
-        <p class="garden-kicker text-xs font-semibold uppercase tracking-[0.2em]">Garden board</p>
-        <h2 class="garden-heading text-2xl font-semibold tracking-tight">{@title}</h2>
-        <p class="garden-text-muted text-sm leading-6">{@body}</p>
-        <p :if={@action_text} class="garden-text-primary text-sm font-medium">{@action_text}</p>
+        <p class="text-base-content/55 text-xs font-semibold uppercase tracking-[0.2em]">
+          Garden board
+        </p>
+        <h2 class="text-base-content text-2xl font-semibold tracking-tight">{@title}</h2>
+        <p class="text-base-content/70 text-sm leading-6">{@body}</p>
+        <p :if={@action_text} class="text-base-content text-sm font-medium">{@action_text}</p>
       </div>
     </section>
     """

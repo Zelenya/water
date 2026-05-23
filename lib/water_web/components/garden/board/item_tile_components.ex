@@ -61,7 +61,7 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
               >
                 <p
                   id={"#{@id}-name"}
-                  class="garden-tile-name garden-text-primary text-[1.05rem] font-semibold tracking-tight"
+                  class="garden-tile-name text-base-content text-[1.05rem] font-semibold tracking-tight"
                 >
                   {@item_card.item.name}
                 </p>
@@ -76,7 +76,7 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
               <div
                 id={"#{@id}-detail"}
                 class={[
-                  "garden-tile-detail-row garden-text-faint shrink-0 text-sm",
+                  "garden-tile-detail-row text-base-content/55 shrink-0 text-sm",
                   @feedback_tone == :default && "garden-tile-detail-feedback"
                 ]}
               >

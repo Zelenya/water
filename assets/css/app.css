@@ -30,8 +30,8 @@
   --color-base-200: oklch(25.26% 0.014 253.1);
   --color-base-300: oklch(20.15% 0.012 254.09);
   --color-base-content: oklch(97.807% 0.029 256.847);
-  --color-primary: oklch(58% 0.233 277.117);
-  --color-primary-content: oklch(96% 0.018 272.314);
+  --color-primary: #3d6f37;
+  --color-primary-content: #ffffff;
   --color-secondary: oklch(58% 0.233 277.117);
   --color-secondary-content: oklch(96% 0.018 272.314);
   --color-accent: oklch(60% 0.25 292.717);
@@ -65,8 +65,8 @@
   --color-base-200: oklch(96% 0.001 286.375);
   --color-base-300: oklch(92% 0.004 286.32);
   --color-base-content: oklch(21% 0.006 285.885);
-  --color-primary: oklch(70% 0.213 47.604);
-  --color-primary-content: oklch(98% 0.016 73.684);
+  --color-primary: #2f5a29;
+  --color-primary-content: #ffffff;
   --color-secondary: oklch(55% 0.027 264.364);
   --color-secondary-content: oklch(98% 0.002 247.839);
   --color-accent: oklch(0% 0 0);
@@ -468,27 +468,6 @@
 
   .garden-divider {
     border-color: var(--garden-divider);
-  }
-
-  .garden-kicker {
-    color: var(--garden-text-faint);
-  }
-
-  .garden-heading,
-  .garden-text-primary {
-    color: var(--garden-text-primary);
-  }
-
-  .garden-text-muted {
-    color: var(--garden-text-muted);
-  }
-
-  .garden-text-faint {
-    color: var(--garden-text-faint);
-  }
-
-  .garden-text-warm {
-    color: var(--garden-text-warm);
   }
 
   .garden-pill {
@@ -1025,10 +1004,6 @@
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 
-  .garden-button-primary,
-  .garden-button-secondary,
-  .garden-button-danger,
-  .garden-button-warm,
   .garden-action-option {
     cursor: pointer;
     transition:
@@ -1037,37 +1012,6 @@
       color 180ms ease,
       transform 180ms ease,
       box-shadow 180ms ease;
-  }
-
-  .garden-button-primary {
-    background: #2f5a29;
-    color: #fff;
-    box-shadow: 0 18px 28px -20px rgba(47, 90, 41, 0.9);
-  }
-
-  [data-theme="dark"] .garden-button-primary {
-    background: #3d6f37;
-    box-shadow: 0 18px 28px -20px rgba(24, 38, 22, 0.9);
-  }
-
-  .garden-button-secondary {
-    border: 1px solid var(--garden-border);
-    background: var(--garden-pill-bg);
-    color: var(--garden-text-primary);
-  }
-
-  .garden-button-danger {
-    border: 1px solid var(--garden-status-rose-border);
-    background: var(--garden-status-rose-bg);
-    color: var(--garden-status-rose-text);
-    box-shadow: 0 18px 28px -24px
-      color-mix(in oklab, var(--garden-status-rose-border) 58%, transparent);
-  }
-
-  .garden-button-warm {
-    border: 1px solid var(--garden-warm-border);
-    background: var(--garden-warm-bg);
-    color: var(--garden-warm-text);
   }
 
   .garden-action-option {
@@ -1402,43 +1346,8 @@
       transform: translateY(-1px);
     }
 
-    .garden-button-primary:hover {
-      background: #274d22;
-      box-shadow: 0 22px 34px -24px rgba(47, 90, 41, 0.72);
-      transform: translateY(-1px);
-    }
-
-    [data-theme="dark"] .garden-button-primary:hover {
-      background: #487f41;
-    }
-
-    .garden-button-secondary:hover {
-      border-color: var(--garden-border-strong);
-      background: var(--garden-surface-subtle);
-      box-shadow: 0 18px 28px -26px rgba(31, 42, 27, 0.4);
-      transform: translateY(-1px);
-    }
-
-    .garden-button-danger:hover {
-      border-color: color-mix(
-        in oklab,
-        var(--garden-status-rose-border) 82%,
-        white
-      );
-      background: color-mix(in oklab, var(--garden-status-rose-bg) 86%, white);
-      box-shadow: 0 18px 28px -24px
-        color-mix(in oklab, var(--garden-status-rose-border) 72%, transparent);
-      transform: translateY(-1px);
-    }
-
     .garden-command-launcher-trigger:hover {
       background: color-mix(in oklab, var(--garden-pill-bg) 78%, white);
-      transform: translateY(-1px);
-    }
-
-    .garden-button-warm:hover {
-      border-color: color-mix(in oklab, var(--garden-warm-border) 80%, white);
-      box-shadow: 0 18px 28px -26px rgba(94, 74, 19, 0.34);
       transform: translateY(-1px);
     }
 

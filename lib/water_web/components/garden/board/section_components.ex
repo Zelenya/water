@@ -31,7 +31,7 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
           <h3
             :if={@editing_section_id != @section_card.section.id}
             id={"garden-section-#{@section_card.section.id}-title"}
-            class="garden-heading px-4 text-xl font-semibold tracking-tight"
+            class="text-base-content px-4 text-xl font-semibold tracking-tight"
           >
             {@section_card.section.name}
           </h3>
@@ -122,7 +122,7 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
         <.input
           field={@form[:name]}
           type="text"
-          class="garden-section-title-input input input-sm garden-heading w-full text-xl font-semibold tracking-tight"
+          class="garden-section-title-input input input-sm text-base-content w-full text-xl font-semibold tracking-tight"
           autocomplete="off"
           required
         />

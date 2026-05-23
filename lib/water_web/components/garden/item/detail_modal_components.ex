@@ -35,7 +35,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
                 />
               </span>
               <div>
-                <p class="garden-text-primary text-base font-semibold">
+                <p class="text-base-content text-base font-semibold">
                   {section_name(@section_lookup, @modal.item_detail.item_card.item.section_id)}
                 </p>
               </div>
@@ -55,7 +55,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
               id="item-detail-water"
               type="button"
               phx-click="water_from_detail"
-              class="garden-button-primary inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold"
+              class="btn btn-sm btn-primary rounded-full gap-2 px-4 text-sm font-semibold"
             >
               <VisualComponents.garden_icon name="droplets" class="size-5" /> Water now
             </button>
@@ -65,7 +65,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
               type="button"
               phx-click="open_detail_care_action"
               phx-value-kind="schedule_watering"
-              class="garden-button-secondary inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold"
+              class="btn btn-sm btn-soft rounded-full gap-2 px-4 text-sm font-semibold"
             >
               <VisualComponents.garden_icon name="calendar-1" class="size-5" /> Schedule one
             </button>
@@ -74,7 +74,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
               id="item-detail-clear-schedule"
               type="button"
               phx-click="clear_schedule_from_detail"
-              class="garden-button-secondary inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold"
+              class="btn btn-sm btn-soft rounded-full gap-2 px-4 text-sm font-semibold"
             >
               <.icon name="hero-pause-circle" class="size-5" /> Clear schedule
             </button>
@@ -85,7 +85,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
               aria-label="Edit item"
               title="Edit item"
               class={[
-                "garden-button-secondary inline-flex items-center justify-center rounded-full",
+                "btn btn-sm btn-soft rounded-full",
                 @mobile? && "gap-2 px-4 py-2.5 text-sm font-semibold",
                 !@mobile? && "size-10"
               ]}
@@ -104,7 +104,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
               aria-label="Delete item"
               title="Delete item"
               class={[
-                "garden-button-danger inline-flex items-center justify-center rounded-full",
+                "btn btn-sm btn-error btn-soft rounded-full",
                 @mobile? && "gap-2 px-4 py-2.5 text-sm font-semibold",
                 !@mobile? && "size-10"
               ]}
@@ -159,11 +159,11 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
         >
           <div class="flex items-center justify-between gap-3">
             <div>
-              <h3 class="garden-heading mt-1 px-2 text-lg font-semibold tracking-tight">
+              <h3 class="text-base-content mt-1 px-2 text-lg font-semibold tracking-tight">
                 Latest care events
               </h3>
             </div>
-            <span class="garden-text-faint text-xs font-medium uppercase tracking-[0.18em]">
+            <span class="text-base-content/55 text-xs font-medium uppercase tracking-[0.18em]">
               {length(@modal.item_detail.recent_events)} events
             </span>
           </div>
@@ -173,7 +173,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
             id="item-detail-history-empty"
             class="mt-4"
           >
-            <p class="garden-text-muted text-sm">
+            <p class="text-base-content/70 text-sm">
               No care history
             </p>
           </div>
@@ -186,23 +186,23 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
             >
               <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div class="min-w-0 space-y-2">
-                  <p class="garden-text-primary text-sm font-semibold leading-tight">
+                  <p class="text-base-content text-sm font-semibold leading-tight">
                     {history_event_label(event)}
                   </p>
-                  <p class="garden-text-faint text-[0.7rem] font-semibold uppercase tracking-[0.18em] sm:hidden">
+                  <p class="text-base-content/55 text-[0.7rem] font-semibold uppercase tracking-[0.18em] sm:hidden">
                     {format_date(event.occurred_on)}
                   </p>
-                  <p class="garden-text-muted text-sm leading-tight">
+                  <p class="text-base-content/70 text-sm leading-tight">
                     {history_member_name(event)}
                   </p>
                   <p
                     :if={history_event_note(event)}
-                    class="garden-text-muted text-sm leading-6 break-words"
+                    class="text-base-content/70 text-sm leading-6 break-words"
                   >
                     {history_event_note(event)}
                   </p>
                 </div>
-                <p class="garden-text-faint hidden shrink-0 text-xs font-semibold uppercase tracking-[0.18em] sm:block">
+                <p class="text-base-content/55 hidden shrink-0 text-xs font-semibold uppercase tracking-[0.18em] sm:block">
                   {format_date(event.occurred_on)}
                 </p>
               </div>
@@ -228,8 +228,8 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
         @highlighted? && "garden-detail-card-feedback"
       ]}
     >
-      <p class="garden-text-faint text-xs font-semibold uppercase tracking-[0.2em]">{@label}</p>
-      <p class="garden-text-primary text-base font-semibold">{@value}</p>
+      <p class="text-base-content/55 text-xs font-semibold uppercase tracking-[0.2em]">{@label}</p>
+      <p class="text-base-content text-base font-semibold">{@value}</p>
     </article>
     """
   end

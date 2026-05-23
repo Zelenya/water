@@ -27,13 +27,13 @@ defmodule WaterWeb.Garden.Board.HudComponents do
         <div id="garden-weather-hook" phx-hook="GardenWeatherLocation" class="hidden" />
         <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div class="min-w-0 space-y-1.5">
-            <p class="garden-kicker text-xs font-semibold uppercase tracking-[0.2em]">
+            <p class="text-base-content/55 text-xs font-semibold uppercase tracking-[0.2em]">
               Today
             </p>
 
             <p
               id="garden-top-hud-date"
-              class="garden-heading text-2xl font-semibold tracking-tight sm:text-3xl"
+              class="text-base-content text-2xl font-semibold tracking-tight sm:text-3xl"
             >
               {formatted_today(@today)}
             </p>

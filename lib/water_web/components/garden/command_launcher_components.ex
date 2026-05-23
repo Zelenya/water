@@ -87,7 +87,7 @@ defmodule WaterWeb.Garden.CommandLauncherComponents do
                   placeholder="Search commands and items"
                   autocomplete="off"
                   autofocus
-                  class="grow border-0 bg-transparent p-0 text-sm outline-none placeholder:text-[color:var(--garden-text-faint)]"
+                  class="grow border-0 bg-transparent p-0 text-sm outline-none placeholder:text-base-content/55"
                 />
 
                 <div class="hidden items-center gap-1 md:flex">
@@ -135,8 +135,8 @@ defmodule WaterWeb.Garden.CommandLauncherComponents do
               id="garden-command-launcher-empty"
               class="garden-command-launcher-empty rounded-[1.5rem] px-4 py-8 text-center"
             >
-              <p class="garden-heading text-base font-semibold">Nothing matches this search</p>
-              <p class="garden-text-muted mt-1 text-sm">
+              <p class="text-base-content text-base font-semibold">Nothing matches this search</p>
+              <p class="text-base-content/70 mt-1 text-sm">
                 Retry searching for a command, item name, or section name.
               </p>
             </div>
@@ -168,7 +168,7 @@ defmodule WaterWeb.Garden.CommandLauncherComponents do
     ~H"""
     <section id={@id} class="space-y-2">
       <header class="px-2">
-        <h3 class="garden-text-faint text-xs font-semibold uppercase tracking-[0.18em]">
+        <h3 class="text-base-content/55 text-xs font-semibold uppercase tracking-[0.18em]">
           {@title}
         </h3>
       </header>
@@ -227,7 +227,7 @@ defmodule WaterWeb.Garden.CommandLauncherComponents do
             quiet={true}
           />
         </span>
-        <span class="garden-text-muted block text-sm leading-5">
+        <span class="text-base-content/70 block text-sm leading-5">
           {@entry.subtitle}
         </span>
       </span>

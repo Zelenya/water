@@ -19,7 +19,7 @@ defmodule WaterWeb.Garden.Board.CareSectionComponents do
       class="garden-panel-soft rounded-[1.8rem] p-4"
     >
       <div class="flex flex-col gap-1.5 sm:flex-row sm:items-end sm:justify-between">
-        <h2 class="garden-heading px-4 text-2xl font-semibold tracking-tight">Needs care</h2>
+        <h2 class="text-base-content px-4 text-2xl font-semibold tracking-tight">Needs care</h2>
         <div class="flex shrink-0 flex-nowrap gap-1.5">
           <VisualComponents.summary_pill
             id="today-panel-overdue-pill"
