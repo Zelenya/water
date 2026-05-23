@@ -13,6 +13,8 @@ defmodule Water.Garden do
     CareItemCard,
     CareItems,
     Commands,
+    Event,
+    Events,
     Schedule,
     ScheduleSuggestion,
     Section,
@@ -22,6 +24,29 @@ defmodule Water.Garden do
   alias Water.Households.{Household, Member}
 
   @type result(value) :: {:ok, value} | {:error, Ecto.Changeset.t()}
+
+  @spec subscribe(Household.t()) :: :ok | {:error, term()}
+  defdelegate subscribe(household), to: Events
+
+  @spec broadcast_board_changed(Household.t()) :: :ok | {:error, term()}
+  defdelegate broadcast_board_changed(household), to: Events
+
+  @spec broadcast_care_action_applied(
+          Household.t(),
+          CareItem.id(),
+          String.t(),
+          Event.tone()
+        ) :: :ok | {:error, term()}
+  defdelegate broadcast_care_action_applied(household, item_id, label, tone), to: Events
+
+  @spec broadcast_item_changed(CareItem.t()) :: :ok | {:error, term()}
+  defdelegate broadcast_item_changed(care_item), to: Events
+
+  @spec broadcast_item_deleted(CareItem.t()) :: :ok | {:error, term()}
+  defdelegate broadcast_item_deleted(care_item), to: Events
+
+  @spec broadcast_section_changed(Section.t()) :: :ok | {:error, term()}
+  defdelegate broadcast_section_changed(section), to: Events
 
   @spec list_board(Household.t(), Board.filter(), Date.t()) :: Board.t()
   def list_board(%Household{} = household, filter, %Date{} = today),

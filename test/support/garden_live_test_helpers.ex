@@ -3,6 +3,12 @@ defmodule WaterWeb.GardenLiveTestHelpers do
   alias Water.GardenFixtures
   alias WaterWeb.GardenLive.Navigation
 
+  @spec sync_view(Phoenix.LiveViewTest.View.t()) :: :ok
+  def sync_view(%Phoenix.LiveViewTest.View{pid: pid}) do
+    _state = :sys.get_state(pid)
+    :ok
+  end
+
   @spec seed_board() :: %{
           back: Water.Garden.Section.t(),
           front: Water.Garden.Section.t(),

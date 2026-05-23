@@ -123,7 +123,9 @@ defmodule WaterWeb.GardenLive.Modals do
     case socket.assigns.modal do
       %Modal{kind: :new_form} ->
         case Garden.create_item(socket.assigns.household, item_params) do
-          {:ok, %CareItem{name: name}} ->
+          {:ok, %CareItem{name: name} = item} ->
+            :ok = Garden.broadcast_item_changed(item)
+
             {:noreply,
              socket
              |> assign(:modal, nil)
@@ -141,7 +143,9 @@ defmodule WaterWeb.GardenLive.Modals do
 
       %Modal{kind: :edit_form, item_card: %CareItemCard{} = item_card} ->
         case Garden.update_item(item_card.item, socket.assigns.active_member, item_params) do
-          {:ok, %CareItem{name: name}} ->
+          {:ok, %CareItem{name: name} = item} ->
+            :ok = Garden.broadcast_item_changed(item)
+
             {:noreply,
              socket
              |> assign(:modal, nil)
@@ -185,6 +189,8 @@ defmodule WaterWeb.GardenLive.Modals do
       %CareItemCard{item: %CareItem{} = item} ->
         case Garden.delete_item(item, socket.assigns.active_member) do
           {:ok, %CareItem{name: name}} ->
+            :ok = Garden.broadcast_item_deleted(item)
+
             {:noreply,
              socket
              |> assign(:modal, nil)

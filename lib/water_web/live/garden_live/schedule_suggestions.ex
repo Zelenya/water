@@ -44,6 +44,8 @@ defmodule WaterWeb.GardenLive.ScheduleSuggestions do
        %Member{} = member} ->
         case Garden.apply_schedule_suggestion(item, member, suggestion.suggestion) do
           {:ok, updated_item} ->
+            :ok = Garden.broadcast_item_changed(updated_item)
+
             {:noreply,
              socket
              |> dismiss()

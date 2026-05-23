@@ -230,6 +230,37 @@ defmodule WaterWeb.GardenModalsLiveTest do
       assert has_element?(view, "#section-item-tile-#{item.id}", "Chocolate Mint")
     end
 
+    test "editing an item broadcasts refreshed board state to another open session", %{conn: conn} do
+      household = GardenFixtures.default_household_fixture()
+      _member = GardenFixtures.member_fixture(household, %{name: "A"})
+      section = GardenFixtures.section_fixture(household, %{name: "Front", position: 0})
+      item = GardenFixtures.care_item_fixture(section, %{name: "Mint", position: 0})
+
+      {:ok, acting_view, _html} = live(conn, ~p"/")
+      {:ok, watching_view, _html} = live(conn, ~p"/")
+
+      render_click(element(acting_view, "#section-item-tile-#{item.id}-button"))
+      assert_patch(acting_view, ~p"/items/#{item.id}")
+      render_click(element(acting_view, "#item-detail-edit"))
+      assert_patch(acting_view, ~p"/items/#{item.id}/edit")
+
+      acting_view
+      |> form("#garden-item-form",
+        item: %{
+          name: "Chocolate Basil",
+          type: "plant",
+          section_id: Integer.to_string(section.id),
+          watering_interval_days: Integer.to_string(item.watering_interval_days)
+        }
+      )
+      |> render_submit()
+
+      sync_view(watching_view)
+
+      assert has_element?(watching_view, "#section-item-tile-#{item.id}", "Chocolate Basil")
+      refute has_element?(watching_view, "#section-item-tile-#{item.id}", "Mint")
+    end
+
     test "editing a no-schedule item can switch it back to recurring", %{conn: conn} do
       household = GardenFixtures.default_household_fixture()
       _member = GardenFixtures.member_fixture(household, %{name: "A"})

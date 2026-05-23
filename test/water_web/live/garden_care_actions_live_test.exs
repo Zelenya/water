@@ -39,6 +39,22 @@ defmodule WaterWeb.GardenCareActionsLiveTest do
       refute has_element?(view, "#today-panel-item-#{today_item.id}")
     end
 
+    test "watering broadcasts refreshed board state and feedback to another open session", %{
+      conn: conn
+    } do
+      %{today_item: today_item} = seed_board()
+
+      {:ok, acting_view, _html} = live(conn, ~p"/")
+      {:ok, watching_view, _html} = live(conn, ~p"/")
+
+      select_tool(acting_view, :water)
+      render_click(element(acting_view, "#section-item-tile-#{today_item.id}-button"))
+      sync_view(watching_view)
+
+      assert_water_feedback(watching_view, "section-item-tile-#{today_item.id}")
+      refute has_element?(watching_view, "#today-panel-item-#{today_item.id}")
+    end
+
     test "watering a needs care tile updates the urgent list immediately", %{conn: conn} do
       %{manual_today_item: manual_today_item} = seed_board()
 

@@ -2,7 +2,7 @@ defmodule WaterWeb.GardenLive do
   use WaterWeb, :live_view
 
   alias Water.Garden
-  alias Water.Garden.CareItemCard
+  alias Water.Garden.{CareItem, CareItemCard, Event}
   alias Water.Households
   alias Water.Weather
   alias Water.Weather.Forecast
@@ -54,6 +54,10 @@ defmodule WaterWeb.GardenLive do
 
     section_lookup = Map.new(sections, &{&1.id, &1})
 
+    if connected?(socket) do
+      :ok = Garden.subscribe(household)
+    end
+
     {:ok,
      socket
      |> assign(:household, household)
@@ -78,6 +82,17 @@ defmodule WaterWeb.GardenLive do
      |> assign(:mobile?, false)
      |> assign(:command_launcher, GardenCommandLauncher.new())}
   end
+
+  @impl true
+  def handle_info(
+        {Water.Garden.Events, %Event{household_id: household_id} = event},
+        %{assigns: %{household: %{id: household_id}}} = socket
+      ) do
+    {:noreply, apply_garden_event(socket, event)}
+  end
+
+  @impl true
+  def handle_info({Water.Garden.Events, %Event{}}, socket), do: {:noreply, socket}
 
   @impl true
   def handle_params(params, _uri, socket) do
@@ -153,6 +168,8 @@ defmodule WaterWeb.GardenLive do
 
         case Garden.update_section(section, section_params) do
           {:ok, updated_section} ->
+            :ok = Garden.broadcast_section_changed(updated_section)
+
             {:noreply,
              socket
              |> clear_section_edit()
@@ -186,6 +203,8 @@ defmodule WaterWeb.GardenLive do
 
         case Garden.delete_section(section) do
           {:ok, deleted_section} ->
+            :ok = Garden.broadcast_section_changed(deleted_section)
+
             {:noreply,
              socket
              |> clear_section_edit()
@@ -326,6 +345,8 @@ defmodule WaterWeb.GardenLive do
              item_id,
              section_orders
            ) do
+      :ok = Garden.broadcast_board_changed(socket.assigns.household)
+
       {:noreply, refresh_board(socket)}
     else
       false ->
@@ -867,6 +888,108 @@ defmodule WaterWeb.GardenLive do
   defp parse_weather_reason(%{"reason" => "unsupported"}), do: :unsupported
   defp parse_weather_reason(%{"reason" => "timeout"}), do: :timeout
   defp parse_weather_reason(_params), do: :unavailable
+
+  @spec apply_garden_event(Phoenix.LiveView.Socket.t(), Event.t()) :: Phoenix.LiveView.Socket.t()
+  defp apply_garden_event(socket, %Event{} = event) do
+    socket
+    |> refresh_sections_and_board()
+    |> apply_event_modal(event)
+    |> apply_event_section_edit(event)
+    |> apply_event_care_surface(event)
+    |> sync_command_launcher()
+  end
+
+  @spec apply_event_modal(Phoenix.LiveView.Socket.t(), Event.t()) :: Phoenix.LiveView.Socket.t()
+  defp apply_event_modal(socket, %Event{kind: :item_deleted, item_id: item_id})
+       when is_integer(item_id) do
+    case socket.assigns.modal do
+      %Modal{kind: kind, item_card: %CareItemCard{item: %CareItem{id: ^item_id}}}
+      when kind in [:edit_form] ->
+        assign(socket, :modal, nil)
+
+      %Modal{
+        kind: :show_detail,
+        item_detail: %{item_card: %CareItemCard{item: %CareItem{id: ^item_id}}}
+      } ->
+        assign(socket, :modal, nil)
+
+      _other ->
+        socket
+    end
+  end
+
+  defp apply_event_modal(socket, %Event{item_id: item_id}) when is_integer(item_id) do
+    Modals.refresh_item_detail(socket, item_id)
+  end
+
+  defp apply_event_modal(socket, %Event{}), do: socket
+
+  @spec apply_event_section_edit(Phoenix.LiveView.Socket.t(), Event.t()) ::
+          Phoenix.LiveView.Socket.t()
+  defp apply_event_section_edit(socket, %Event{kind: :section_changed, section_id: section_id})
+       when is_integer(section_id) do
+    section_still_exists? =
+      Enum.any?(socket.assigns.sections, &(&1.id == section_id))
+
+    if socket.assigns.editing_section_id == section_id and not section_still_exists? do
+      clear_section_edit(socket)
+    else
+      socket
+    end
+  end
+
+  defp apply_event_section_edit(socket, %Event{}), do: socket
+
+  @spec apply_event_care_surface(Phoenix.LiveView.Socket.t(), Event.t()) ::
+          Phoenix.LiveView.Socket.t()
+  defp apply_event_care_surface(
+         socket,
+         %Event{kind: :care_action_applied, item_id: item_id, label: label, tone: tone}
+       )
+       when is_integer(item_id) and is_binary(label) and tone in [:default, :water] do
+    socket
+    |> maybe_clear_open_care_action(item_id)
+    |> maybe_dismiss_schedule_suggestion(item_id)
+    |> CareActions.clear_care_action()
+    |> assign(:care_feedback, %WaterWeb.Garden.State.CareFeedback{
+      item_id: item_id,
+      label: label,
+      tone: tone
+    })
+  end
+
+  defp apply_event_care_surface(socket, %Event{kind: :item_deleted, item_id: item_id})
+       when is_integer(item_id) do
+    socket
+    |> maybe_clear_open_care_action(item_id)
+    |> maybe_dismiss_schedule_suggestion(item_id)
+  end
+
+  defp apply_event_care_surface(socket, %Event{}), do: socket
+
+  @spec maybe_clear_open_care_action(Phoenix.LiveView.Socket.t(), CareItem.id()) ::
+          Phoenix.LiveView.Socket.t()
+  defp maybe_clear_open_care_action(socket, item_id) do
+    case socket.assigns.care_action do
+      %{item_card: %CareItemCard{item: %CareItem{id: ^item_id}}} ->
+        CareActions.clear_care_action(socket)
+
+      _other ->
+        socket
+    end
+  end
+
+  @spec maybe_dismiss_schedule_suggestion(Phoenix.LiveView.Socket.t(), CareItem.id()) ::
+          Phoenix.LiveView.Socket.t()
+  defp maybe_dismiss_schedule_suggestion(socket, item_id) do
+    case socket.assigns.schedule_suggestion do
+      %{item_card: %CareItemCard{item: %CareItem{id: ^item_id}}} ->
+        ScheduleSuggestions.dismiss(socket)
+
+      _other ->
+        socket
+    end
+  end
 
   # Note: Haven't tested all the codes yet, this log helps to verify the mappings.
   # Can be eventually removed.

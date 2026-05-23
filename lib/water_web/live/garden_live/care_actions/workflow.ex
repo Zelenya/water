@@ -91,6 +91,8 @@ defmodule WaterWeb.GardenLive.CareActions.Workflow do
 
       socket =
         if watered_count > 0 do
+          :ok = Garden.broadcast_board_changed(socket.assigns.household)
+
           socket
           |> refresh_board()
           |> put_flash(:info, "Watered #{watered_count} household items.")
@@ -274,6 +276,8 @@ defmodule WaterWeb.GardenLive.CareActions.Workflow do
         ) :: Phoenix.LiveView.Socket.t()
   # Update UI in the specific order to avoid flickering and ensure consistency
   defp apply_successful_care_action(socket, item_id, label, tone \\ :default) do
+    :ok = Garden.broadcast_care_action_applied(socket.assigns.household, item_id, label, tone)
+
     socket
     |> refresh_board()
     |> Modals.refresh_item_detail(item_id)
