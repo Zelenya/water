@@ -96,17 +96,15 @@
 @custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
 @custom-variant phx-change-loading (.phx-change-loading&, .phx-change-loading &);
 
-/* Use the data attribute for dark mode  */
+/* Use the data attribute for dark mode */
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-/* Make LiveView wrapper divs transparent for layout */
 [data-phx-session],
 [data-phx-teleported-src] {
   display: contents;
 }
 
-/* This file is for your main application CSS */
-
+/* Garden theme tokens */
 :root,
 [data-theme="light"] {
   --garden-app-bg: #edf2e6;
@@ -311,1214 +309,1231 @@
   }
 }
 
-.garden-app-main {
-  min-height: calc(100vh - 73px);
-  background:
-    radial-gradient(circle at top, var(--garden-app-glow), transparent 45%),
-    var(--garden-app-bg);
-  color: var(--garden-text-primary);
-}
-
-.garden-shell {
-  color: var(--garden-text-primary);
-}
-
-.garden-panel-hero,
-.garden-panel-soft,
-.garden-panel-card,
-.garden-tool-dock,
-.garden-popover-surface,
-.garden-sheet-surface,
-.garden-modal-surface,
-.garden-detail-card,
-.garden-history-item,
-.garden-empty-state {
-  border: 1px solid var(--garden-border);
-  color: var(--garden-text-primary);
-}
-
-.garden-panel-hero {
-  background: var(--garden-surface-hero);
-  box-shadow: var(--garden-shadow-lg);
-}
-
-.garden-panel-soft {
-  background: var(--garden-surface-soft);
-  box-shadow: var(--garden-shadow-md);
-}
-
-.garden-panel-card,
-.garden-care-tile {
-  border: 1px solid var(--garden-border);
-  background: var(--garden-surface-card);
-  box-shadow: var(--garden-shadow-sm);
-}
-
-.garden-tool-dock {
-  background: var(--garden-surface-elevated);
-  box-shadow: var(--garden-shadow-md);
-  backdrop-filter: blur(18px);
-}
-
-.garden-tool-dock-mobile {
-  border-radius: 1.6rem;
-  background: color-mix(in oklab, var(--garden-surface-elevated) 94%, white);
-  box-shadow: 0 20px 42px -28px rgba(43, 60, 35, 0.48);
-}
-
-.garden-popover-surface,
-.garden-sheet-surface {
-  background: var(--garden-surface-modal);
-  box-shadow: var(--garden-shadow-md);
-}
-
-.garden-sheet-surface {
-  border-bottom-width: 0;
-}
-
-.garden-modal-overlay {
-  background: var(--garden-overlay);
-}
-
-.garden-modal-surface {
-  background: var(--garden-surface-modal);
-  box-shadow: var(--garden-shadow-modal);
-}
-
-.garden-command-launcher-overlay {
-  background: color-mix(in oklab, var(--garden-overlay) 88%, transparent);
-  backdrop-filter: blur(12px);
-}
-
-.garden-command-launcher-surface {
-  background: var(--garden-surface-modal);
-  border: 1px solid var(--garden-border);
-  box-shadow: var(--garden-shadow-modal);
-  min-height: 78vh;
-  max-height: calc(100dvh - 1rem);
-}
-
-.garden-command-launcher-header {
-  border-color: var(--garden-divider);
-}
-
-.garden-command-launcher-search {
-  background: color-mix(
-    in oklab,
-    var(--garden-pill-bg) 86%,
-    var(--garden-surface-muted)
-  );
-  border-color: var(--garden-border);
-  color: var(--garden-text-primary);
-}
-
-.garden-command-launcher-trigger {
-  border: 1px solid var(--garden-border);
-  background: color-mix(in oklab, var(--garden-pill-bg) 88%, white);
-  box-shadow: var(--garden-shadow-sm);
-  color: var(--garden-text-primary);
-}
-
-.garden-command-launcher-row {
-  border: 1px solid transparent;
-}
-
-.garden-command-launcher-row > span:first-child {
-  border-color: color-mix(in oklab, var(--garden-border) 78%, transparent);
-  background: color-mix(in oklab, var(--garden-pill-bg) 72%, transparent);
-}
-
-.garden-command-launcher-row-idle:hover {
-  border-color: var(--garden-border);
-  background: color-mix(in oklab, var(--garden-pill-bg) 70%, transparent);
-}
-
-.garden-command-launcher-row-selected {
-  border-color: var(--garden-water-highlight-border);
-  background: color-mix(in oklab, var(--garden-surface-subtle) 82%, white);
-  box-shadow: inset 0 0 0 1px var(--garden-water-highlight-ring);
-}
-
-.garden-command-launcher-row-disabled {
-  opacity: 0.62;
-}
-
-.garden-command-launcher-row-disabled > span:first-child {
-  background: color-mix(in oklab, var(--garden-surface-muted) 88%, transparent);
-}
-
-.garden-command-launcher-current {
-  border: 1px solid var(--garden-accent-border);
-  background: color-mix(in oklab, var(--garden-accent-bg) 84%, transparent);
-  color: var(--garden-accent-text);
-}
-
-.garden-command-launcher-empty {
-  border: 1px solid var(--garden-border);
-  background: color-mix(
-    in oklab,
-    var(--garden-surface-history) 84%,
-    transparent
-  );
-}
-
-.garden-divider {
-  border-color: var(--garden-divider);
-}
-
-.garden-kicker {
-  color: var(--garden-text-faint);
-}
-
-.garden-heading,
-.garden-text-primary {
-  color: var(--garden-text-primary);
-}
-
-.garden-text-muted {
-  color: var(--garden-text-muted);
-}
-
-.garden-text-faint {
-  color: var(--garden-text-faint);
-}
-
-.garden-text-warm {
-  color: var(--garden-text-warm);
-}
-
-.garden-pill {
-  border: 1px solid var(--garden-border);
-  background: var(--garden-pill-bg);
-  color: var(--garden-text-primary);
-}
-
-.garden-pill-muted {
-  border: 1px solid var(--garden-border);
-  background: var(--garden-pill-muted-bg);
-  color: var(--garden-text-muted);
-}
-
-.garden-filter-group {
-  border: 1px solid var(--garden-border);
-  background: var(--garden-pill-bg);
-  box-shadow: 0 14px 30px -26px rgba(49, 69, 38, 0.42);
-  backdrop-filter: blur(18px);
-  scrollbar-width: none;
-}
-
-.garden-filter-group::-webkit-scrollbar {
-  display: none;
-}
-
-.garden-filter-chip {
-  position: relative;
-  background: transparent;
-  color: var(--garden-text-muted);
-  box-shadow: none;
-}
-
-.garden-filter-chip:first-child {
-  border-top-left-radius: inherit;
-  border-bottom-left-radius: inherit;
-}
-
-.garden-filter-chip:last-child {
-  border-top-right-radius: inherit;
-  border-bottom-right-radius: inherit;
-}
-
-.garden-filter-chip + .garden-filter-chip {
-  border-left: 1px solid
-    color-mix(in oklab, var(--garden-border) 88%, transparent);
-}
-
-.garden-filter-chip:hover {
-  background: color-mix(
-    in oklab,
-    var(--garden-surface-subtle) 90%,
-    transparent
-  );
-  color: var(--garden-text-primary);
-}
-
-.garden-filter-chip-selected {
-  background: var(--garden-selected-bg);
-  color: var(--garden-selected-text);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
-  z-index: 1;
-}
-
-.garden-filter-chip:focus-visible {
-  outline: none;
-  z-index: 2;
-  box-shadow: inset 0 0 0 1px var(--garden-border-strong);
-}
-
-.garden-filter-chip-section {
-  border: 1px solid var(--garden-accent-border);
-  background: var(--garden-accent-bg);
-  color: var(--garden-accent-text);
-}
-
-.garden-filter-chip-section-clear {
-  background: var(--garden-pill-bg);
-  color: inherit;
-}
-
-.garden-filter-chip-section-clear:hover {
-  background: var(--garden-surface-subtle);
-}
-
-.garden-board-toolbar {
-  border: 1px solid var(--garden-border);
-  background: var(--garden-surface-elevated);
-  box-shadow: var(--garden-shadow-sm);
-  backdrop-filter: blur(16px);
-}
-
-.garden-count-card {
-  border: 1px solid var(--garden-border);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.garden-count-card-sky {
-  background: var(--garden-status-sky-bg);
-  border-color: var(--garden-status-sky-border);
-  color: var(--garden-status-sky-text);
-}
-
-.garden-count-card-orange {
-  background: var(--garden-status-orange-bg);
-  border-color: var(--garden-status-orange-border);
-  color: var(--garden-status-orange-text);
-}
-
-.garden-count-card-amber {
-  background: var(--garden-status-amber-bg);
-  border-color: var(--garden-status-amber-border);
-  color: var(--garden-status-amber-text);
-}
-
-.garden-count-card-rose {
-  background: var(--garden-status-rose-bg);
-  border-color: var(--garden-status-rose-border);
-  color: var(--garden-status-rose-text);
-}
-
-.garden-summary-pill {
-  display: inline-flex;
-  min-width: 4.25rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  border: 1px solid var(--garden-border);
-  border-radius: 9999px;
-  padding: 0.25rem 0.625rem;
-  font-size: 0.65rem;
-  font-weight: 600;
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  white-space: nowrap;
-  transition:
-    min-width 180ms ease,
-    padding-inline 180ms ease,
-    letter-spacing 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.garden-section-rename-form .fieldset {
-  margin-bottom: 0;
-}
-
-.garden-section-title-input {
-  border: 1px solid var(--garden-border-strong);
-  background: color-mix(in oklab, var(--garden-surface-card) 72%, transparent);
-  color: var(--garden-text-primary);
-  outline: none;
-  box-shadow: none;
-}
-
-.garden-section-title-input:focus,
-.garden-section-title-input:focus-within {
-  border-color: var(--garden-border-strong);
-  outline: none;
-  box-shadow: none;
-}
-
-.garden-section-rename-save {
-  --btn-color: var(--garden-accent-bg);
-  --btn-fg: var(--garden-accent-text);
-  --btn-border: var(--garden-accent-border);
-}
-
-.garden-summary-pill-compact {
-  width: 2rem;
-  height: 2rem;
-  min-width: 2rem;
-  overflow: hidden;
-  gap: 0;
-  padding-inline: 0;
-  letter-spacing: 0;
-}
-
-.garden-summary-pill-compact .garden-summary-pill-label {
-  max-width: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition:
-    max-width 180ms ease,
-    opacity 140ms ease;
-}
-
-.garden-summary-pill-compact:hover,
-.garden-summary-pill-compact:focus-visible {
-  width: auto;
-  min-width: 4.75rem;
-  gap: 0.25rem;
-  padding-inline: 0.625rem;
-  letter-spacing: 0.12em;
-}
-
-.garden-summary-pill-compact:hover .garden-summary-pill-label,
-.garden-summary-pill-compact:focus-visible .garden-summary-pill-label {
-  max-width: 4rem;
-  opacity: 1;
-}
-
-.garden-status-badge {
-  border: 1px solid var(--garden-border);
-}
-
-.garden-summary-pill-sky,
-.garden-status-badge-sky {
-  background: var(--garden-status-sky-bg);
-  border-color: var(--garden-status-sky-border);
-  color: var(--garden-status-sky-text);
-}
-
-.garden-summary-pill-orange,
-.garden-status-badge-orange {
-  background: var(--garden-status-orange-bg);
-  border-color: var(--garden-status-orange-border);
-  color: var(--garden-status-orange-text);
-}
-
-.garden-summary-pill-amber,
-.garden-status-badge-amber {
-  background: var(--garden-status-amber-bg);
-  border-color: var(--garden-status-amber-border);
-  color: var(--garden-status-amber-text);
-}
-
-.garden-summary-pill-rose,
-.garden-status-badge-rose {
-  background: var(--garden-status-rose-bg);
-  border-color: var(--garden-status-rose-border);
-  color: var(--garden-status-rose-text);
-}
-
-.garden-status-badge-emerald {
-  background: var(--garden-status-emerald-bg);
-  border-color: var(--garden-status-emerald-border);
-  color: var(--garden-status-emerald-text);
-}
-
-.garden-tool-button {
-  border: 1px solid var(--garden-border);
-  background: var(--garden-pill-bg);
-  cursor: pointer;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  transition:
-    border-color 180ms ease,
-    background-color 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
-}
-
-.garden-tool-button-mobile {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-color: transparent;
-  background: transparent;
-  box-shadow: none;
-}
-
-.garden-tool-button-mobile > span:first-child {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-
-.garden-tool-button-active {
-  border-color: var(--garden-selected-border);
-  background: color-mix(in oklab, var(--garden-selected-bg) 82%, transparent);
-  box-shadow: 0 14px 26px -22px rgba(63, 84, 53, 0.6);
-}
-
-.garden-tool-button[data-active="true"] .garden-tool-label {
-  color: var(--garden-selected-text);
-}
-
-.garden-tool-button[data-active="true"] .garden-tool-icon-active {
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
-}
-
-#garden-shell[data-tool-mode="browse"]
-  .garden-tool-button[data-tool-mode="browse"] {
-  border-color: var(--garden-selected-border);
-  background: color-mix(in oklab, var(--garden-selected-bg) 82%, transparent);
-  box-shadow: 0 14px 26px -22px rgba(63, 84, 53, 0.6);
-}
-
-#garden-shell[data-tool-mode="browse"]
-  .garden-tool-button[data-tool-mode="browse"]
-  .garden-tool-label {
-  color: var(--garden-selected-text);
-}
-
-#garden-shell[data-tool-mode="browse"]
-  .garden-tool-button[data-tool-mode="browse"]
-  > span:first-child {
-  background: var(--garden-selected-bg);
-  color: var(--garden-selected-text);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
-}
-
-.garden-tool-button[data-tool-mode="water"][data-active="true"] {
-  border-color: var(--garden-water-highlight-border);
-  background: color-mix(
-    in oklab,
-    var(--garden-status-sky-bg) 88%,
-    var(--garden-pill-bg)
-  );
-  box-shadow:
-    0 0 0 3px var(--garden-water-highlight-ring),
-    0 18px 34px -22px rgba(38, 116, 184, 0.38);
-}
-
-.garden-tool-button[data-tool-mode="water"][data-active="true"]
-  .garden-tool-icon-active {
-  background: color-mix(in oklab, var(--garden-status-sky-bg) 86%, white);
-  color: var(--garden-status-sky-text);
-  box-shadow: inset 0 0 0 1px var(--garden-water-highlight-border);
-}
-
-#garden-shell[data-tool-mode="water"]
-  .garden-tool-button[data-tool-mode="water"] {
-  border-color: var(--garden-water-highlight-border);
-  background: color-mix(
-    in oklab,
-    var(--garden-status-sky-bg) 88%,
-    var(--garden-pill-bg)
-  );
-  box-shadow:
-    0 0 0 3px var(--garden-water-highlight-ring),
-    0 18px 34px -22px rgba(38, 116, 184, 0.38);
-}
-
-#garden-shell[data-tool-mode="water"]
-  .garden-tool-button[data-tool-mode="water"]
-  .garden-tool-label {
-  color: var(--garden-status-sky-text);
-}
-
-#garden-shell[data-tool-mode="water"]
-  .garden-tool-button[data-tool-mode="water"]
-  > span:first-child {
-  background: color-mix(in oklab, var(--garden-status-sky-bg) 86%, white);
-  color: var(--garden-status-sky-text);
-  box-shadow: inset 0 0 0 1px var(--garden-water-highlight-border);
-}
-
-.garden-tool-button[data-tool-mode="soil_check"][data-active="true"] {
-  border-color: color-mix(in oklab, var(--garden-accent-border) 88%, white);
-  background: color-mix(
-    in oklab,
-    var(--garden-accent-bg) 78%,
-    var(--garden-pill-bg)
-  );
-  box-shadow:
-    0 0 0 2px color-mix(in oklab, var(--garden-accent-border) 26%, transparent),
-    0 18px 30px -24px rgba(65, 96, 52, 0.24);
-}
-
-.garden-tool-button[data-tool-mode="soil_check"][data-active="true"]
-  .garden-tool-icon-active {
-  background: color-mix(in oklab, var(--garden-accent-bg) 82%, white);
-  color: var(--garden-accent-text);
-}
-
-#garden-shell[data-tool-mode="soil_check"]
-  .garden-tool-button[data-tool-mode="soil_check"] {
-  border-color: color-mix(in oklab, var(--garden-accent-border) 88%, white);
-  background: color-mix(
-    in oklab,
-    var(--garden-accent-bg) 78%,
-    var(--garden-pill-bg)
-  );
-  box-shadow:
-    0 0 0 2px color-mix(in oklab, var(--garden-accent-border) 26%, transparent),
-    0 18px 30px -24px rgba(65, 96, 52, 0.24);
-}
-
-#garden-shell[data-tool-mode="soil_check"]
-  .garden-tool-button[data-tool-mode="soil_check"]
-  .garden-tool-label {
-  color: var(--garden-selected-text);
-}
-
-#garden-shell[data-tool-mode="soil_check"]
-  .garden-tool-button[data-tool-mode="soil_check"]
-  > span:first-child {
-  background: color-mix(in oklab, var(--garden-accent-bg) 82%, white);
-  color: var(--garden-accent-text);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
-}
-
-.garden-tool-button[data-tool-mode="manual_needs_watering"][data-active="true"] {
-  border-color: color-mix(in oklab, var(--garden-warm-border) 88%, white);
-  background: color-mix(
-    in oklab,
-    var(--garden-warm-bg) 84%,
-    var(--garden-pill-bg)
-  );
-  box-shadow:
-    0 0 0 2px color-mix(in oklab, var(--garden-warm-border) 24%, transparent),
-    0 18px 30px -24px rgba(108, 83, 17, 0.22);
-}
-
-.garden-tool-button[data-tool-mode="manual_needs_watering"][data-active="true"]
-  .garden-tool-icon-active {
-  background: color-mix(in oklab, var(--garden-warm-bg) 86%, white);
-  color: var(--garden-warm-text);
-}
-
-#garden-shell[data-tool-mode="manual_needs_watering"]
-  .garden-tool-button[data-tool-mode="manual_needs_watering"] {
-  border-color: color-mix(in oklab, var(--garden-warm-border) 88%, white);
-  background: color-mix(
-    in oklab,
-    var(--garden-warm-bg) 84%,
-    var(--garden-pill-bg)
-  );
-  box-shadow:
-    0 0 0 2px color-mix(in oklab, var(--garden-warm-border) 24%, transparent),
-    0 18px 30px -24px rgba(108, 83, 17, 0.22);
-}
-
-#garden-shell[data-tool-mode="manual_needs_watering"]
-  .garden-tool-button[data-tool-mode="manual_needs_watering"]
-  .garden-tool-label {
-  color: var(--garden-selected-text);
-}
-
-#garden-shell[data-tool-mode="manual_needs_watering"]
-  .garden-tool-button[data-tool-mode="manual_needs_watering"]
-  > span:first-child {
-  background: color-mix(in oklab, var(--garden-warm-bg) 86%, white);
-  color: var(--garden-warm-text);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
-}
-
-.garden-tool-button-disabled {
-  border-color: var(--garden-border);
-  background: var(--garden-surface-muted);
-  cursor: not-allowed;
-  opacity: 0.9;
-}
-
-.garden-tool-icon {
-  background: var(--garden-accent-bg);
-  color: var(--garden-accent-text);
-}
-
-.garden-tool-icon-active {
-  background: var(--garden-selected-bg);
-  color: var(--garden-selected-text);
-}
-
-.garden-tool-icon-disabled {
-  background: var(--garden-surface-muted);
-  color: var(--garden-text-faint);
-}
-
-.garden-tool-label {
-  color: var(--garden-text-primary);
-}
-
-.garden-tool-note {
-  color: var(--garden-text-faint);
-}
-
-.garden-tool-button:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 2px color-mix(in oklab, var(--garden-border-strong) 30%, transparent),
-    0 14px 26px -22px rgba(63, 84, 53, 0.4);
-}
-
-.garden-item-type-chip {
-  background: var(--garden-accent-bg);
-  color: color-mix(
-    in oklab,
-    var(--garden-accent-text) 82%,
-    var(--garden-text-muted)
-  );
-  transition:
-    background-color 180ms ease,
-    color 180ms ease,
-    transform 180ms ease;
-}
-
-.garden-tile-name {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.garden-tile-detail-row {
-  transition:
-    color 180ms ease,
-    transform 180ms ease;
-}
-
-.garden-status-badge-quiet {
-  opacity: 0.92;
-}
-
-.garden-lucide-icon,
-.garden-lucide-icon > svg {
-  display: block;
-  pointer-events: none;
-}
-
-.garden-lucide-icon > svg {
-  width: 100%;
-  height: 100%;
-}
-
-.garden-weather-pill {
-  border: 1px solid
-    color-mix(in oklab, var(--garden-accent-border) 72%, var(--garden-border));
-  background: color-mix(
-    in oklab,
-    var(--garden-pill-bg) 78%,
-    var(--garden-accent-bg)
-  );
-  color: var(--garden-text-primary);
-  border-radius: 999px;
-  padding: 0.4rem 0.8rem;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.garden-button-primary,
-.garden-button-secondary,
-.garden-button-danger,
-.garden-button-warm,
-.garden-action-option {
-  cursor: pointer;
-  transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease,
-    transform 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.garden-button-primary {
-  background: #2f5a29;
-  color: #fff;
-  box-shadow: 0 18px 28px -20px rgba(47, 90, 41, 0.9);
-}
-
-[data-theme="dark"] .garden-button-primary {
-  background: #3d6f37;
-  box-shadow: 0 18px 28px -20px rgba(24, 38, 22, 0.9);
-}
-
-.garden-button-secondary {
-  border: 1px solid var(--garden-border);
-  background: var(--garden-pill-bg);
-  color: var(--garden-text-primary);
-}
-
-.garden-button-danger {
-  border: 1px solid var(--garden-status-rose-border);
-  background: var(--garden-status-rose-bg);
-  color: var(--garden-status-rose-text);
-  box-shadow: 0 18px 28px -24px
-    color-mix(in oklab, var(--garden-status-rose-border) 58%, transparent);
-}
-
-.garden-button-warm {
-  border: 1px solid var(--garden-warm-border);
-  background: var(--garden-warm-bg);
-  color: var(--garden-warm-text);
-}
-
-.garden-action-option {
-  border: 1px solid var(--garden-border);
-  background: var(--garden-pill-bg);
-  color: var(--garden-text-primary);
-}
-
-.garden-action-option-soft {
-  border-color: var(--garden-accent-border);
-  background: color-mix(in oklab, var(--garden-accent-bg) 82%, transparent);
-  color: var(--garden-text-primary);
-}
-
-.garden-action-option-warm {
-  border-color: var(--garden-warm-border);
-  background: color-mix(in oklab, var(--garden-warm-bg) 84%, transparent);
-  color: var(--garden-warm-text);
-}
-
-.garden-empty-inline {
-  border: 1px dashed var(--garden-border);
-  background: var(--garden-pill-bg);
-  color: var(--garden-text-muted);
-}
-
-.garden-care-sortable-list {
-  min-height: 4.75rem;
-}
-
-.garden-care-sortable-list[data-sortable-enabled="true"].garden-care-sortable-list-empty {
-  border-radius: 1.4rem;
-  outline: 1px dashed color-mix(in oklab, var(--garden-border) 82%, transparent);
-  outline-offset: 0.25rem;
-}
-
-.garden-care-sortable-empty {
-  pointer-events: none;
-}
-
-.garden-empty-state {
-  background: var(--garden-surface-elevated);
-  box-shadow: var(--garden-shadow-md);
-}
-
-.garden-detail-card,
-.garden-history-item {
-  background: var(--garden-surface-history);
-}
-
-.garden-care-tile {
-  overflow: clip;
-  position: relative;
-}
-
-.garden-care-tile-sortable {
-  touch-action: manipulation;
-}
-
-.garden-care-drag-handle {
-  color: var(--garden-text-faint);
-  transition:
-    background-color 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
-}
-
-.garden-care-drag-ghost {
-  opacity: 0.42;
-}
-
-.garden-care-drag-active {
-  box-shadow: var(--garden-shadow-md);
-}
-
-.garden-care-feedback-default {
-  border-color: color-mix(in oklab, var(--garden-feedback-border) 84%, white);
-  background: color-mix(
-    in oklab,
-    var(--garden-surface-card) 88%,
-    var(--garden-feedback-bg)
-  );
-  box-shadow:
-    0 0 0 1px
-      color-mix(in oklab, var(--garden-feedback-border) 28%, transparent),
-    0 22px 40px -28px rgba(71, 88, 57, 0.32);
-}
-
-.garden-care-feedback-default .garden-tile-detail-feedback,
-.garden-care-feedback-default .garden-status-badge {
-  color: var(--garden-feedback-text);
-}
-
-.garden-care-feedback-default .garden-tile-detail-feedback {
-  font-weight: 700;
-}
-
-.garden-detail-card-feedback {
-  border: 1px solid var(--garden-feedback-border);
-  background: color-mix(
-    in oklab,
-    var(--garden-surface-history) 72%,
-    var(--garden-feedback-bg)
-  );
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
-    0 14px 30px -26px rgba(71, 88, 57, 0.38);
-}
-
-.garden-care-feedback-water {
-  border-color: var(--garden-water-highlight-border);
-  background: color-mix(
-    in oklab,
-    var(--garden-surface-card) 78%,
-    var(--garden-status-sky-bg)
-  );
-  box-shadow:
-    0 0 0 2px var(--garden-water-highlight-ring),
-    0 22px 40px -26px rgba(60, 123, 180, 0.28);
-}
-
-.garden-care-feedback-water .garden-item-type-chip {
-  background: color-mix(in oklab, var(--garden-status-sky-bg) 86%, white);
-  color: var(--garden-status-sky-text);
-  transform: translateY(-1px);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .garden-care-feedback-default {
-    animation: garden-care-confirm 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+/* Garden component layer */
+@layer components {
+  .garden-app-main {
+    min-height: calc(100vh - 73px);
+    background:
+      radial-gradient(circle at top, var(--garden-app-glow), transparent 45%),
+      var(--garden-app-bg);
+    color: var(--garden-text-primary);
   }
 
-  .garden-care-feedback-default .garden-tile-detail-feedback,
-  .garden-care-feedback-default .garden-status-badge,
-  .garden-detail-card-feedback {
-    animation: garden-care-detail-pop 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  .garden-shell {
+    color: var(--garden-text-primary);
   }
 
-  .garden-care-feedback-water {
-    animation: garden-water-splash-tile 760ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  .garden-panel-hero,
+  .garden-panel-soft,
+  .garden-panel-card,
+  .garden-tool-dock,
+  .garden-popover-surface,
+  .garden-sheet-surface,
+  .garden-modal-surface,
+  .garden-detail-card,
+  .garden-history-item,
+  .garden-empty-state {
+    border: 1px solid var(--garden-border);
+    color: var(--garden-text-primary);
   }
 
-  /* water droplets */
-  .garden-care-feedback-water::before,
-  .garden-care-feedback-water::after {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-    border-radius: 999px;
+  .garden-panel-hero {
+    background: var(--garden-surface-hero);
+    box-shadow: var(--garden-shadow-lg);
+  }
+
+  .garden-panel-soft {
+    background: var(--garden-surface-soft);
+    box-shadow: var(--garden-shadow-md);
+  }
+
+  .garden-panel-card,
+  .garden-care-tile {
+    border: 1px solid var(--garden-border);
+    background: var(--garden-surface-card);
+    box-shadow: var(--garden-shadow-sm);
+  }
+
+  .garden-tool-dock {
+    background: var(--garden-surface-elevated);
+    box-shadow: var(--garden-shadow-md);
+    backdrop-filter: blur(18px);
+  }
+
+  .garden-tool-dock-mobile {
+    border-radius: 1.6rem;
+    background: color-mix(in oklab, var(--garden-surface-elevated) 94%, white);
+    box-shadow: 0 20px 42px -28px rgba(43, 60, 35, 0.48);
+  }
+
+  .garden-popover-surface,
+  .garden-sheet-surface {
+    background: var(--garden-surface-modal);
+    box-shadow: var(--garden-shadow-md);
+  }
+
+  .garden-sheet-surface {
+    border-bottom-width: 0;
+  }
+
+  .garden-modal-overlay {
+    background: var(--garden-overlay);
+  }
+
+  .garden-modal-surface {
+    background: var(--garden-surface-modal);
+    box-shadow: var(--garden-shadow-modal);
+  }
+
+  .garden-command-launcher-overlay {
+    background: color-mix(in oklab, var(--garden-overlay) 88%, transparent);
+    backdrop-filter: blur(12px);
+  }
+
+  .garden-command-launcher-surface {
+    background: var(--garden-surface-modal);
+    border: 1px solid var(--garden-border);
+    box-shadow: var(--garden-shadow-modal);
+    min-height: 78vh;
+    max-height: calc(100dvh - 1rem);
+  }
+
+  .garden-command-launcher-header {
+    border-color: var(--garden-divider);
+  }
+
+  .garden-command-launcher-search {
     background: color-mix(
       in oklab,
-      var(--garden-water-highlight-border) 82%,
-      white
+      var(--garden-pill-bg) 86%,
+      var(--garden-surface-muted)
     );
+    border-color: var(--garden-border);
+    color: var(--garden-text-primary);
+  }
+
+  .garden-command-launcher-trigger {
+    border: 1px solid var(--garden-border);
+    background: color-mix(in oklab, var(--garden-pill-bg) 88%, white);
+    box-shadow: var(--garden-shadow-sm);
+    color: var(--garden-text-primary);
+  }
+
+  .garden-command-launcher-row {
+    border: 1px solid transparent;
+  }
+
+  .garden-command-launcher-row > span:first-child {
+    border-color: color-mix(in oklab, var(--garden-border) 78%, transparent);
+    background: color-mix(in oklab, var(--garden-pill-bg) 72%, transparent);
+  }
+
+  .garden-command-launcher-row-idle:hover {
+    border-color: var(--garden-border);
+    background: color-mix(in oklab, var(--garden-pill-bg) 70%, transparent);
+  }
+
+  .garden-command-launcher-row-selected {
+    border-color: var(--garden-water-highlight-border);
+    background: color-mix(in oklab, var(--garden-surface-subtle) 82%, white);
+    box-shadow: inset 0 0 0 1px var(--garden-water-highlight-ring);
+  }
+
+  .garden-command-launcher-row-disabled {
+    opacity: 0.62;
+  }
+
+  .garden-command-launcher-row-disabled > span:first-child {
+    background: color-mix(
+      in oklab,
+      var(--garden-surface-muted) 88%,
+      transparent
+    );
+  }
+
+  .garden-command-launcher-current {
+    border: 1px solid var(--garden-accent-border);
+    background: color-mix(in oklab, var(--garden-accent-bg) 84%, transparent);
+    color: var(--garden-accent-text);
+  }
+
+  .garden-command-launcher-empty {
+    border: 1px solid var(--garden-border);
+    background: color-mix(
+      in oklab,
+      var(--garden-surface-history) 84%,
+      transparent
+    );
+  }
+
+  .garden-divider {
+    border-color: var(--garden-divider);
+  }
+
+  .garden-kicker {
+    color: var(--garden-text-faint);
+  }
+
+  .garden-heading,
+  .garden-text-primary {
+    color: var(--garden-text-primary);
+  }
+
+  .garden-text-muted {
+    color: var(--garden-text-muted);
+  }
+
+  .garden-text-faint {
+    color: var(--garden-text-faint);
+  }
+
+  .garden-text-warm {
+    color: var(--garden-text-warm);
+  }
+
+  .garden-pill {
+    border: 1px solid var(--garden-border);
+    background: var(--garden-pill-bg);
+    color: var(--garden-text-primary);
+  }
+
+  .garden-pill-muted {
+    border: 1px solid var(--garden-border);
+    background: var(--garden-pill-muted-bg);
+    color: var(--garden-text-muted);
+  }
+
+  .garden-filter-group {
+    border: 1px solid var(--garden-border);
+    background: var(--garden-pill-bg);
+    box-shadow: 0 14px 30px -26px rgba(49, 69, 38, 0.42);
+    backdrop-filter: blur(18px);
+    scrollbar-width: none;
+  }
+
+  .garden-filter-group::-webkit-scrollbar {
+    display: none;
+  }
+
+  .garden-filter-chip {
+    position: relative;
+    background: transparent;
+    color: var(--garden-text-muted);
+    box-shadow: none;
+  }
+
+  .garden-filter-chip:first-child {
+    border-top-left-radius: inherit;
+    border-bottom-left-radius: inherit;
+  }
+
+  .garden-filter-chip:last-child {
+    border-top-right-radius: inherit;
+    border-bottom-right-radius: inherit;
+  }
+
+  .garden-filter-chip + .garden-filter-chip {
+    border-left: 1px solid
+      color-mix(in oklab, var(--garden-border) 88%, transparent);
+  }
+
+  .garden-filter-chip:hover {
+    background: color-mix(
+      in oklab,
+      var(--garden-surface-subtle) 90%,
+      transparent
+    );
+    color: var(--garden-text-primary);
+  }
+
+  .garden-filter-chip-selected {
+    background: var(--garden-selected-bg);
+    color: var(--garden-selected-text);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    z-index: 1;
+  }
+
+  .garden-filter-chip:focus-visible {
+    outline: none;
+    z-index: 2;
+    box-shadow: inset 0 0 0 1px var(--garden-border-strong);
+  }
+
+  .garden-filter-chip-section {
+    border: 1px solid var(--garden-accent-border);
+    background: var(--garden-accent-bg);
+    color: var(--garden-accent-text);
+  }
+
+  .garden-filter-chip-section-clear {
+    background: var(--garden-pill-bg);
+    color: inherit;
+  }
+
+  .garden-filter-chip-section-clear:hover {
+    background: var(--garden-surface-subtle);
+  }
+
+  .garden-board-toolbar {
+    border: 1px solid var(--garden-border);
+    background: var(--garden-surface-elevated);
+    box-shadow: var(--garden-shadow-sm);
+    backdrop-filter: blur(16px);
+  }
+
+  .garden-count-card {
+    border: 1px solid var(--garden-border);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .garden-count-card-sky {
+    background: var(--garden-status-sky-bg);
+    border-color: var(--garden-status-sky-border);
+    color: var(--garden-status-sky-text);
+  }
+
+  .garden-count-card-orange {
+    background: var(--garden-status-orange-bg);
+    border-color: var(--garden-status-orange-border);
+    color: var(--garden-status-orange-text);
+  }
+
+  .garden-count-card-amber {
+    background: var(--garden-status-amber-bg);
+    border-color: var(--garden-status-amber-border);
+    color: var(--garden-status-amber-text);
+  }
+
+  .garden-count-card-rose {
+    background: var(--garden-status-rose-bg);
+    border-color: var(--garden-status-rose-border);
+    color: var(--garden-status-rose-text);
+  }
+
+  .garden-summary-pill {
+    display: inline-flex;
+    min-width: 4.25rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    border: 1px solid var(--garden-border);
+    border-radius: 9999px;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+    transition:
+      min-width 180ms ease,
+      padding-inline 180ms ease,
+      letter-spacing 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .garden-section-rename-form .fieldset {
+    margin-bottom: 0;
+  }
+
+  .garden-section-title-input {
+    border: 1px solid var(--garden-border-strong);
+    background: color-mix(
+      in oklab,
+      var(--garden-surface-card) 72%,
+      transparent
+    );
+    color: var(--garden-text-primary);
+    outline: none;
+    box-shadow: none;
+  }
+
+  .garden-section-title-input:focus,
+  .garden-section-title-input:focus-within {
+    border-color: var(--garden-border-strong);
+    outline: none;
+    box-shadow: none;
+  }
+
+  .garden-section-rename-save {
+    --btn-color: var(--garden-accent-bg);
+    --btn-fg: var(--garden-accent-text);
+    --btn-border: var(--garden-accent-border);
+  }
+
+  .garden-summary-pill-compact {
+    width: 2rem;
+    height: 2rem;
+    min-width: 2rem;
+    overflow: hidden;
+    gap: 0;
+    padding-inline: 0;
+    letter-spacing: 0;
+  }
+
+  .garden-summary-pill-compact .garden-summary-pill-label {
+    max-width: 0;
     opacity: 0;
+    overflow: hidden;
+    transition:
+      max-width 180ms ease,
+      opacity 140ms ease;
   }
 
-  .garden-care-feedback-water::before {
-    top: 0.7rem;
-    right: 1.1rem;
-    width: 0.32rem;
-    height: 0.5rem;
-    animation: garden-water-droplet-a 760ms ease-out;
+  .garden-summary-pill-compact:hover,
+  .garden-summary-pill-compact:focus-visible {
+    width: auto;
+    min-width: 4.75rem;
+    gap: 0.25rem;
+    padding-inline: 0.625rem;
+    letter-spacing: 0.12em;
+  }
+
+  .garden-summary-pill-compact:hover .garden-summary-pill-label,
+  .garden-summary-pill-compact:focus-visible .garden-summary-pill-label {
+    max-width: 4rem;
+    opacity: 1;
+  }
+
+  .garden-status-badge {
+    border: 1px solid var(--garden-border);
+  }
+
+  .garden-summary-pill-sky,
+  .garden-status-badge-sky {
+    background: var(--garden-status-sky-bg);
+    border-color: var(--garden-status-sky-border);
+    color: var(--garden-status-sky-text);
+  }
+
+  .garden-summary-pill-orange,
+  .garden-status-badge-orange {
+    background: var(--garden-status-orange-bg);
+    border-color: var(--garden-status-orange-border);
+    color: var(--garden-status-orange-text);
+  }
+
+  .garden-summary-pill-amber,
+  .garden-status-badge-amber {
+    background: var(--garden-status-amber-bg);
+    border-color: var(--garden-status-amber-border);
+    color: var(--garden-status-amber-text);
+  }
+
+  .garden-summary-pill-rose,
+  .garden-status-badge-rose {
+    background: var(--garden-status-rose-bg);
+    border-color: var(--garden-status-rose-border);
+    color: var(--garden-status-rose-text);
+  }
+
+  .garden-status-badge-emerald {
+    background: var(--garden-status-emerald-bg);
+    border-color: var(--garden-status-emerald-border);
+    color: var(--garden-status-emerald-text);
+  }
+
+  .garden-tool-button {
+    border: 1px solid var(--garden-border);
+    background: var(--garden-pill-bg);
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
+  }
+
+  .garden-tool-button-mobile {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .garden-tool-button-mobile > span:first-child {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+
+  .garden-tool-button-active {
+    border-color: var(--garden-selected-border);
+    background: color-mix(in oklab, var(--garden-selected-bg) 82%, transparent);
+    box-shadow: 0 14px 26px -22px rgba(63, 84, 53, 0.6);
+  }
+
+  .garden-tool-button[data-active="true"] .garden-tool-label {
+    color: var(--garden-selected-text);
+  }
+
+  .garden-tool-button[data-active="true"] .garden-tool-icon-active {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+  }
+
+  #garden-shell[data-tool-mode="browse"]
+    .garden-tool-button[data-tool-mode="browse"] {
+    border-color: var(--garden-selected-border);
+    background: color-mix(in oklab, var(--garden-selected-bg) 82%, transparent);
+    box-shadow: 0 14px 26px -22px rgba(63, 84, 53, 0.6);
+  }
+
+  #garden-shell[data-tool-mode="browse"]
+    .garden-tool-button[data-tool-mode="browse"]
+    .garden-tool-label {
+    color: var(--garden-selected-text);
+  }
+
+  #garden-shell[data-tool-mode="browse"]
+    .garden-tool-button[data-tool-mode="browse"]
+    > span:first-child {
+    background: var(--garden-selected-bg);
+    color: var(--garden-selected-text);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+  }
+
+  .garden-tool-button[data-tool-mode="water"][data-active="true"] {
+    border-color: var(--garden-water-highlight-border);
+    background: color-mix(
+      in oklab,
+      var(--garden-status-sky-bg) 88%,
+      var(--garden-pill-bg)
+    );
     box-shadow:
-      -0.7rem 0.45rem 0 -0.06rem
-        color-mix(in oklab, var(--garden-water-highlight-border) 70%, white),
-      0.52rem 0.56rem 0 -0.1rem
-        color-mix(in oklab, var(--garden-water-highlight-border) 68%, white);
+      0 0 0 3px var(--garden-water-highlight-ring),
+      0 18px 34px -22px rgba(38, 116, 184, 0.38);
   }
 
-  .garden-care-feedback-water::after {
-    bottom: 0.75rem;
-    left: 1.15rem;
-    width: 0.38rem;
-    height: 0.38rem;
-    animation: garden-water-droplet-b 760ms ease-out 80ms;
+  .garden-tool-button[data-tool-mode="water"][data-active="true"]
+    .garden-tool-icon-active {
+    background: color-mix(in oklab, var(--garden-status-sky-bg) 86%, white);
+    color: var(--garden-status-sky-text);
+    box-shadow: inset 0 0 0 1px var(--garden-water-highlight-border);
+  }
+
+  #garden-shell[data-tool-mode="water"]
+    .garden-tool-button[data-tool-mode="water"] {
+    border-color: var(--garden-water-highlight-border);
+    background: color-mix(
+      in oklab,
+      var(--garden-status-sky-bg) 88%,
+      var(--garden-pill-bg)
+    );
     box-shadow:
-      0.72rem -0.12rem 0 -0.09rem
-        color-mix(in oklab, var(--garden-water-highlight-border) 66%, white),
-      -0.55rem -0.28rem 0 -0.12rem
-        color-mix(in oklab, var(--garden-water-highlight-border) 64%, white);
+      0 0 0 3px var(--garden-water-highlight-ring),
+      0 18px 34px -22px rgba(38, 116, 184, 0.38);
   }
-}
 
-@keyframes garden-care-confirm {
-  0% {
+  #garden-shell[data-tool-mode="water"]
+    .garden-tool-button[data-tool-mode="water"]
+    .garden-tool-label {
+    color: var(--garden-status-sky-text);
+  }
+
+  #garden-shell[data-tool-mode="water"]
+    .garden-tool-button[data-tool-mode="water"]
+    > span:first-child {
+    background: color-mix(in oklab, var(--garden-status-sky-bg) 86%, white);
+    color: var(--garden-status-sky-text);
+    box-shadow: inset 0 0 0 1px var(--garden-water-highlight-border);
+  }
+
+  .garden-tool-button[data-tool-mode="soil_check"][data-active="true"] {
+    border-color: color-mix(in oklab, var(--garden-accent-border) 88%, white);
+    background: color-mix(
+      in oklab,
+      var(--garden-accent-bg) 78%,
+      var(--garden-pill-bg)
+    );
     box-shadow:
-      0 0 0 0
-        color-mix(in oklab, var(--garden-feedback-border) 44%, transparent),
-      0 12px 24px -24px rgba(71, 88, 57, 0.3);
-    transform: translateY(0) scale(1);
+      0 0 0 2px
+        color-mix(in oklab, var(--garden-accent-border) 26%, transparent),
+      0 18px 30px -24px rgba(65, 96, 52, 0.24);
   }
 
-  42% {
+  .garden-tool-button[data-tool-mode="soil_check"][data-active="true"]
+    .garden-tool-icon-active {
+    background: color-mix(in oklab, var(--garden-accent-bg) 82%, white);
+    color: var(--garden-accent-text);
+  }
+
+  #garden-shell[data-tool-mode="soil_check"]
+    .garden-tool-button[data-tool-mode="soil_check"] {
+    border-color: color-mix(in oklab, var(--garden-accent-border) 88%, white);
+    background: color-mix(
+      in oklab,
+      var(--garden-accent-bg) 78%,
+      var(--garden-pill-bg)
+    );
     box-shadow:
-      0 0 0 7px transparent,
-      0 18px 32px -26px rgba(71, 88, 57, 0.34);
-    transform: translateY(-1px) scale(1.004);
+      0 0 0 2px
+        color-mix(in oklab, var(--garden-accent-border) 26%, transparent),
+      0 18px 30px -24px rgba(65, 96, 52, 0.24);
   }
 
-  100% {
+  #garden-shell[data-tool-mode="soil_check"]
+    .garden-tool-button[data-tool-mode="soil_check"]
+    .garden-tool-label {
+    color: var(--garden-selected-text);
+  }
+
+  #garden-shell[data-tool-mode="soil_check"]
+    .garden-tool-button[data-tool-mode="soil_check"]
+    > span:first-child {
+    background: color-mix(in oklab, var(--garden-accent-bg) 82%, white);
+    color: var(--garden-accent-text);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+  }
+
+  .garden-tool-button[data-tool-mode="manual_needs_watering"][data-active="true"] {
+    border-color: color-mix(in oklab, var(--garden-warm-border) 88%, white);
+    background: color-mix(
+      in oklab,
+      var(--garden-warm-bg) 84%,
+      var(--garden-pill-bg)
+    );
+    box-shadow:
+      0 0 0 2px color-mix(in oklab, var(--garden-warm-border) 24%, transparent),
+      0 18px 30px -24px rgba(108, 83, 17, 0.22);
+  }
+
+  .garden-tool-button[data-tool-mode="manual_needs_watering"][data-active="true"]
+    .garden-tool-icon-active {
+    background: color-mix(in oklab, var(--garden-warm-bg) 86%, white);
+    color: var(--garden-warm-text);
+  }
+
+  #garden-shell[data-tool-mode="manual_needs_watering"]
+    .garden-tool-button[data-tool-mode="manual_needs_watering"] {
+    border-color: color-mix(in oklab, var(--garden-warm-border) 88%, white);
+    background: color-mix(
+      in oklab,
+      var(--garden-warm-bg) 84%,
+      var(--garden-pill-bg)
+    );
+    box-shadow:
+      0 0 0 2px color-mix(in oklab, var(--garden-warm-border) 24%, transparent),
+      0 18px 30px -24px rgba(108, 83, 17, 0.22);
+  }
+
+  #garden-shell[data-tool-mode="manual_needs_watering"]
+    .garden-tool-button[data-tool-mode="manual_needs_watering"]
+    .garden-tool-label {
+    color: var(--garden-selected-text);
+  }
+
+  #garden-shell[data-tool-mode="manual_needs_watering"]
+    .garden-tool-button[data-tool-mode="manual_needs_watering"]
+    > span:first-child {
+    background: color-mix(in oklab, var(--garden-warm-bg) 86%, white);
+    color: var(--garden-warm-text);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+  }
+
+  .garden-tool-button-disabled {
+    border-color: var(--garden-border);
+    background: var(--garden-surface-muted);
+    cursor: not-allowed;
+    opacity: 0.9;
+  }
+
+  .garden-tool-icon {
+    background: var(--garden-accent-bg);
+    color: var(--garden-accent-text);
+  }
+
+  .garden-tool-icon-active {
+    background: var(--garden-selected-bg);
+    color: var(--garden-selected-text);
+  }
+
+  .garden-tool-icon-disabled {
+    background: var(--garden-surface-muted);
+    color: var(--garden-text-faint);
+  }
+
+  .garden-tool-label {
+    color: var(--garden-text-primary);
+  }
+
+  .garden-tool-note {
+    color: var(--garden-text-faint);
+  }
+
+  .garden-tool-button:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px
+        color-mix(in oklab, var(--garden-border-strong) 30%, transparent),
+      0 14px 26px -22px rgba(63, 84, 53, 0.4);
+  }
+
+  .garden-item-type-chip {
+    background: var(--garden-accent-bg);
+    color: color-mix(
+      in oklab,
+      var(--garden-accent-text) 82%,
+      var(--garden-text-muted)
+    );
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      transform 180ms ease;
+  }
+
+  .garden-tile-name {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .garden-tile-detail-row {
+    transition:
+      color 180ms ease,
+      transform 180ms ease;
+  }
+
+  .garden-status-badge-quiet {
+    opacity: 0.92;
+  }
+
+  .garden-lucide-icon,
+  .garden-lucide-icon > svg {
+    display: block;
+    pointer-events: none;
+  }
+
+  .garden-lucide-icon > svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .garden-weather-pill {
+    border: 1px solid
+      color-mix(in oklab, var(--garden-accent-border) 72%, var(--garden-border));
+    background: color-mix(
+      in oklab,
+      var(--garden-pill-bg) 78%,
+      var(--garden-accent-bg)
+    );
+    color: var(--garden-text-primary);
+    border-radius: 999px;
+    padding: 0.4rem 0.8rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  .garden-button-primary,
+  .garden-button-secondary,
+  .garden-button-danger,
+  .garden-button-warm,
+  .garden-action-option {
+    cursor: pointer;
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .garden-button-primary {
+    background: #2f5a29;
+    color: #fff;
+    box-shadow: 0 18px 28px -20px rgba(47, 90, 41, 0.9);
+  }
+
+  [data-theme="dark"] .garden-button-primary {
+    background: #3d6f37;
+    box-shadow: 0 18px 28px -20px rgba(24, 38, 22, 0.9);
+  }
+
+  .garden-button-secondary {
+    border: 1px solid var(--garden-border);
+    background: var(--garden-pill-bg);
+    color: var(--garden-text-primary);
+  }
+
+  .garden-button-danger {
+    border: 1px solid var(--garden-status-rose-border);
+    background: var(--garden-status-rose-bg);
+    color: var(--garden-status-rose-text);
+    box-shadow: 0 18px 28px -24px
+      color-mix(in oklab, var(--garden-status-rose-border) 58%, transparent);
+  }
+
+  .garden-button-warm {
+    border: 1px solid var(--garden-warm-border);
+    background: var(--garden-warm-bg);
+    color: var(--garden-warm-text);
+  }
+
+  .garden-action-option {
+    border: 1px solid var(--garden-border);
+    background: var(--garden-pill-bg);
+    color: var(--garden-text-primary);
+  }
+
+  .garden-action-option-soft {
+    border-color: var(--garden-accent-border);
+    background: color-mix(in oklab, var(--garden-accent-bg) 82%, transparent);
+    color: var(--garden-text-primary);
+  }
+
+  .garden-action-option-warm {
+    border-color: var(--garden-warm-border);
+    background: color-mix(in oklab, var(--garden-warm-bg) 84%, transparent);
+    color: var(--garden-warm-text);
+  }
+
+  .garden-empty-inline {
+    border: 1px dashed var(--garden-border);
+    background: var(--garden-pill-bg);
+    color: var(--garden-text-muted);
+  }
+
+  .garden-care-sortable-list {
+    min-height: 4.75rem;
+  }
+
+  .garden-care-sortable-list[data-sortable-enabled="true"].garden-care-sortable-list-empty {
+    border-radius: 1.4rem;
+    outline: 1px dashed
+      color-mix(in oklab, var(--garden-border) 82%, transparent);
+    outline-offset: 0.25rem;
+  }
+
+  .garden-care-sortable-empty {
+    pointer-events: none;
+  }
+
+  .garden-empty-state {
+    background: var(--garden-surface-elevated);
+    box-shadow: var(--garden-shadow-md);
+  }
+
+  .garden-detail-card,
+  .garden-history-item {
+    background: var(--garden-surface-history);
+  }
+
+  .garden-care-tile {
+    overflow: clip;
+    position: relative;
+  }
+
+  .garden-care-tile-sortable {
+    touch-action: manipulation;
+  }
+
+  .garden-care-drag-handle {
+    color: var(--garden-text-faint);
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      transform 160ms ease;
+  }
+
+  .garden-care-drag-ghost {
+    opacity: 0.42;
+  }
+
+  .garden-care-drag-active {
+    box-shadow: var(--garden-shadow-md);
+  }
+
+  .garden-care-feedback-default {
+    border-color: color-mix(in oklab, var(--garden-feedback-border) 84%, white);
+    background: color-mix(
+      in oklab,
+      var(--garden-surface-card) 88%,
+      var(--garden-feedback-bg)
+    );
     box-shadow:
       0 0 0 1px
         color-mix(in oklab, var(--garden-feedback-border) 28%, transparent),
       0 22px 40px -28px rgba(71, 88, 57, 0.32);
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes garden-care-detail-pop {
-  0% {
-    filter: saturate(1);
-    transform: translateY(0) scale(1) rotate(0deg);
   }
 
-  36% {
-    filter: saturate(1.28);
-    transform: translateY(-2px) scale(1.045) rotate(-0.6deg);
+  .garden-care-feedback-default .garden-tile-detail-feedback,
+  .garden-care-feedback-default .garden-status-badge {
+    color: var(--garden-feedback-text);
   }
 
-  64% {
-    transform: translateY(0) scale(0.995) rotate(0deg);
+  .garden-care-feedback-default .garden-tile-detail-feedback {
+    font-weight: 700;
   }
 
-  100% {
-    filter: saturate(1);
-    transform: translateY(0) scale(1) rotate(0deg);
-  }
-}
-
-@keyframes garden-water-splash-tile {
-  0% {
+  .garden-detail-card-feedback {
+    border: 1px solid var(--garden-feedback-border);
+    background: color-mix(
+      in oklab,
+      var(--garden-surface-history) 72%,
+      var(--garden-feedback-bg)
+    );
     box-shadow:
-      0 0 0 0 var(--garden-water-highlight-ring),
-      0 12px 28px -24px rgba(38, 116, 184, 0.34);
-    transform: translateY(0) scale(1);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+      0 14px 30px -26px rgba(71, 88, 57, 0.38);
   }
 
-  42% {
-    box-shadow:
-      0 0 0 18px transparent,
-      0 24px 48px -30px rgba(38, 116, 184, 0.36);
-    transform: translateY(-2px) scale(1.006);
-  }
-
-  100% {
+  .garden-care-feedback-water {
+    border-color: var(--garden-water-highlight-border);
+    background: color-mix(
+      in oklab,
+      var(--garden-surface-card) 78%,
+      var(--garden-status-sky-bg)
+    );
     box-shadow:
       0 0 0 2px var(--garden-water-highlight-ring),
       0 22px 40px -26px rgba(60, 123, 180, 0.28);
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes garden-water-droplet-a {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 0.45rem, 0) scale(0.7) rotate(18deg);
   }
 
-  35% {
-    opacity: 0.95;
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate3d(0.4rem, -0.7rem, 0) scale(1) rotate(18deg);
-  }
-}
-
-@keyframes garden-water-droplet-b {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, -0.2rem, 0) scale(0.65);
-  }
-
-  35% {
-    opacity: 0.85;
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate3d(-0.35rem, 0.55rem, 0) scale(1);
-  }
-}
-
-#garden-shell[data-tool-mode="water"] .garden-care-target {
-  border-color: var(--garden-water-highlight-border);
-  box-shadow: 0 0 0 1px var(--garden-water-highlight-ring);
-}
-
-#garden-shell[data-tool-mode="soil_check"] .garden-care-target {
-  border-color: color-mix(in oklab, var(--garden-accent-border) 84%, white);
-  box-shadow: 0 0 0 1px
-    color-mix(in oklab, var(--garden-accent-border) 26%, transparent);
-}
-
-#garden-shell[data-tool-mode="manual_needs_watering"] .garden-care-target {
-  border-color: color-mix(in oklab, var(--garden-warm-border) 88%, white);
-  box-shadow: 0 0 0 1px
-    color-mix(in oklab, var(--garden-warm-border) 28%, transparent);
-}
-
-.garden-care-target-water {
-  border-color: var(--garden-water-highlight-border);
-}
-
-.garden-care-target-soil {
-  background: color-mix(
-    in oklab,
-    var(--garden-surface-card) 82%,
-    var(--garden-accent-bg)
-  );
-}
-
-.garden-care-target-manual {
-  background: color-mix(
-    in oklab,
-    var(--garden-surface-card) 80%,
-    var(--garden-warm-bg)
-  );
-  border-color: color-mix(in oklab, var(--garden-warm-border) 86%, white);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .garden-tool-button:hover {
-    border-color: var(--garden-border-strong);
-    background: var(--garden-surface-subtle);
-    box-shadow: 0 18px 30px -28px rgba(49, 69, 38, 0.52);
+  .garden-care-feedback-water .garden-item-type-chip {
+    background: color-mix(in oklab, var(--garden-status-sky-bg) 86%, white);
+    color: var(--garden-status-sky-text);
     transform: translateY(-1px);
   }
 
-  .garden-button-primary:hover {
-    background: #274d22;
-    box-shadow: 0 22px 34px -24px rgba(47, 90, 41, 0.72);
-    transform: translateY(-1px);
+  @media (prefers-reduced-motion: no-preference) {
+    .garden-care-feedback-default {
+      animation: garden-care-confirm 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .garden-care-feedback-default .garden-tile-detail-feedback,
+    .garden-care-feedback-default .garden-status-badge,
+    .garden-detail-card-feedback {
+      animation: garden-care-detail-pop 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .garden-care-feedback-water {
+      animation: garden-water-splash-tile 760ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    /* water droplets */
+    .garden-care-feedback-water::before,
+    .garden-care-feedback-water::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      border-radius: 999px;
+      background: color-mix(
+        in oklab,
+        var(--garden-water-highlight-border) 82%,
+        white
+      );
+      opacity: 0;
+    }
+
+    .garden-care-feedback-water::before {
+      top: 0.7rem;
+      right: 1.1rem;
+      width: 0.32rem;
+      height: 0.5rem;
+      animation: garden-water-droplet-a 760ms ease-out;
+      box-shadow:
+        -0.7rem 0.45rem 0 -0.06rem
+          color-mix(in oklab, var(--garden-water-highlight-border) 70%, white),
+        0.52rem 0.56rem 0 -0.1rem
+          color-mix(in oklab, var(--garden-water-highlight-border) 68%, white);
+    }
+
+    .garden-care-feedback-water::after {
+      bottom: 0.75rem;
+      left: 1.15rem;
+      width: 0.38rem;
+      height: 0.38rem;
+      animation: garden-water-droplet-b 760ms ease-out 80ms;
+      box-shadow:
+        0.72rem -0.12rem 0 -0.09rem
+          color-mix(in oklab, var(--garden-water-highlight-border) 66%, white),
+        -0.55rem -0.28rem 0 -0.12rem
+          color-mix(in oklab, var(--garden-water-highlight-border) 64%, white);
+    }
   }
 
-  [data-theme="dark"] .garden-button-primary:hover {
-    background: #487f41;
+  /* Care feedback keyframes */
+  @keyframes garden-care-confirm {
+    0% {
+      box-shadow:
+        0 0 0 0
+          color-mix(in oklab, var(--garden-feedback-border) 44%, transparent),
+        0 12px 24px -24px rgba(71, 88, 57, 0.3);
+      transform: translateY(0) scale(1);
+    }
+
+    42% {
+      box-shadow:
+        0 0 0 7px transparent,
+        0 18px 32px -26px rgba(71, 88, 57, 0.34);
+      transform: translateY(-1px) scale(1.004);
+    }
+
+    100% {
+      box-shadow:
+        0 0 0 1px
+          color-mix(in oklab, var(--garden-feedback-border) 28%, transparent),
+        0 22px 40px -28px rgba(71, 88, 57, 0.32);
+      transform: translateY(0) scale(1);
+    }
   }
 
-  .garden-button-secondary:hover {
-    border-color: var(--garden-border-strong);
-    background: var(--garden-surface-subtle);
-    box-shadow: 0 18px 28px -26px rgba(31, 42, 27, 0.4);
-    transform: translateY(-1px);
+  @keyframes garden-care-detail-pop {
+    0% {
+      filter: saturate(1);
+      transform: translateY(0) scale(1) rotate(0deg);
+    }
+
+    36% {
+      filter: saturate(1.28);
+      transform: translateY(-2px) scale(1.045) rotate(-0.6deg);
+    }
+
+    64% {
+      transform: translateY(0) scale(0.995) rotate(0deg);
+    }
+
+    100% {
+      filter: saturate(1);
+      transform: translateY(0) scale(1) rotate(0deg);
+    }
   }
 
-  .garden-button-danger:hover {
-    border-color: color-mix(
+  @keyframes garden-water-splash-tile {
+    0% {
+      box-shadow:
+        0 0 0 0 var(--garden-water-highlight-ring),
+        0 12px 28px -24px rgba(38, 116, 184, 0.34);
+      transform: translateY(0) scale(1);
+    }
+
+    42% {
+      box-shadow:
+        0 0 0 18px transparent,
+        0 24px 48px -30px rgba(38, 116, 184, 0.36);
+      transform: translateY(-2px) scale(1.006);
+    }
+
+    100% {
+      box-shadow:
+        0 0 0 2px var(--garden-water-highlight-ring),
+        0 22px 40px -26px rgba(60, 123, 180, 0.28);
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes garden-water-droplet-a {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 0.45rem, 0) scale(0.7) rotate(18deg);
+    }
+
+    35% {
+      opacity: 0.95;
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate3d(0.4rem, -0.7rem, 0) scale(1) rotate(18deg);
+    }
+  }
+
+  @keyframes garden-water-droplet-b {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, -0.2rem, 0) scale(0.65);
+    }
+
+    35% {
+      opacity: 0.85;
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate3d(-0.35rem, 0.55rem, 0) scale(1);
+    }
+  }
+
+  /* Tool-mode targeting and cursors */
+  #garden-shell[data-tool-mode="water"] .garden-care-target {
+    border-color: var(--garden-water-highlight-border);
+    box-shadow: 0 0 0 1px var(--garden-water-highlight-ring);
+  }
+
+  #garden-shell[data-tool-mode="soil_check"] .garden-care-target {
+    border-color: color-mix(in oklab, var(--garden-accent-border) 84%, white);
+    box-shadow: 0 0 0 1px
+      color-mix(in oklab, var(--garden-accent-border) 26%, transparent);
+  }
+
+  #garden-shell[data-tool-mode="manual_needs_watering"] .garden-care-target {
+    border-color: color-mix(in oklab, var(--garden-warm-border) 88%, white);
+    box-shadow: 0 0 0 1px
+      color-mix(in oklab, var(--garden-warm-border) 28%, transparent);
+  }
+
+  .garden-care-target-water {
+    border-color: var(--garden-water-highlight-border);
+  }
+
+  .garden-care-target-soil {
+    background: color-mix(
       in oklab,
-      var(--garden-status-rose-border) 82%,
-      white
+      var(--garden-surface-card) 82%,
+      var(--garden-accent-bg)
     );
-    background: color-mix(in oklab, var(--garden-status-rose-bg) 86%, white);
-    box-shadow: 0 18px 28px -24px
-      color-mix(in oklab, var(--garden-status-rose-border) 72%, transparent);
-    transform: translateY(-1px);
   }
 
-  .garden-command-launcher-trigger:hover {
-    background: color-mix(in oklab, var(--garden-pill-bg) 78%, white);
-    transform: translateY(-1px);
+  .garden-care-target-manual {
+    background: color-mix(
+      in oklab,
+      var(--garden-surface-card) 80%,
+      var(--garden-warm-bg)
+    );
+    border-color: color-mix(in oklab, var(--garden-warm-border) 86%, white);
   }
 
-  .garden-button-warm:hover {
-    border-color: color-mix(in oklab, var(--garden-warm-border) 80%, white);
-    box-shadow: 0 18px 28px -26px rgba(94, 74, 19, 0.34);
-    transform: translateY(-1px);
+  @media (hover: hover) and (pointer: fine) {
+    .garden-tool-button:hover {
+      border-color: var(--garden-border-strong);
+      background: var(--garden-surface-subtle);
+      box-shadow: 0 18px 30px -28px rgba(49, 69, 38, 0.52);
+      transform: translateY(-1px);
+    }
+
+    .garden-button-primary:hover {
+      background: #274d22;
+      box-shadow: 0 22px 34px -24px rgba(47, 90, 41, 0.72);
+      transform: translateY(-1px);
+    }
+
+    [data-theme="dark"] .garden-button-primary:hover {
+      background: #487f41;
+    }
+
+    .garden-button-secondary:hover {
+      border-color: var(--garden-border-strong);
+      background: var(--garden-surface-subtle);
+      box-shadow: 0 18px 28px -26px rgba(31, 42, 27, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .garden-button-danger:hover {
+      border-color: color-mix(
+        in oklab,
+        var(--garden-status-rose-border) 82%,
+        white
+      );
+      background: color-mix(in oklab, var(--garden-status-rose-bg) 86%, white);
+      box-shadow: 0 18px 28px -24px
+        color-mix(in oklab, var(--garden-status-rose-border) 72%, transparent);
+      transform: translateY(-1px);
+    }
+
+    .garden-command-launcher-trigger:hover {
+      background: color-mix(in oklab, var(--garden-pill-bg) 78%, white);
+      transform: translateY(-1px);
+    }
+
+    .garden-button-warm:hover {
+      border-color: color-mix(in oklab, var(--garden-warm-border) 80%, white);
+      box-shadow: 0 18px 28px -26px rgba(94, 74, 19, 0.34);
+      transform: translateY(-1px);
+    }
+
+    .garden-action-option:hover {
+      border-color: var(--garden-border-strong);
+      background: var(--garden-surface-subtle);
+      box-shadow: 0 18px 28px -26px rgba(31, 42, 27, 0.34);
+      transform: translateY(-1px);
+    }
+
+    .garden-care-target-browse:hover,
+    .garden-care-target-water:hover,
+    .garden-care-target-soil:hover,
+    .garden-care-target-manual:hover {
+      transform: translateY(-2px);
+    }
+
+    .garden-care-target-browse:hover {
+      border-color: var(--garden-border-strong);
+      box-shadow: 0 24px 40px -30px rgba(50, 69, 43, 0.42);
+    }
+
+    .garden-care-target-browse:hover .garden-item-type-chip {
+      background: color-mix(in oklab, var(--garden-accent-bg) 72%, white);
+      color: var(--garden-selected-text);
+      transform: translateY(-1px);
+    }
+
+    .garden-care-target-browse:hover .garden-status-badge {
+      border-color: var(--garden-border-strong);
+    }
+
+    #garden-shell[data-tool-mode="browse"] .garden-care-tile,
+    #garden-shell[data-tool-mode="browse"] .garden-care-tile button {
+      cursor: pointer;
+    }
+
+    #garden-shell[data-tool-mode="browse"]
+      .garden-care-tile
+      .garden-care-drag-handle {
+      cursor: grab;
+    }
+
+    #garden-shell[data-tool-mode="browse"]
+      .garden-care-tile
+      .garden-care-drag-handle:active {
+      cursor: grabbing;
+    }
+
+    #garden-shell[data-tool-mode="water"] {
+      cursor:
+        url("/images/cursors/water-drop.svg") 16 28,
+        pointer;
+    }
+
+    #garden-shell[data-tool-mode="water"] .garden-care-tile,
+    #garden-shell[data-tool-mode="water"] .garden-care-tile button {
+      cursor:
+        url("/images/cursors/water-drop.svg") 16 28,
+        pointer;
+    }
+
+    #garden-shell[data-tool-mode="soil_check"] {
+      cursor:
+        url("/images/cursors/shovel.svg") 6 26,
+        pointer;
+    }
+
+    #garden-shell[data-tool-mode="soil_check"] .garden-care-tile,
+    #garden-shell[data-tool-mode="soil_check"] .garden-care-tile button {
+      cursor:
+        url("/images/cursors/shovel.svg") 6 26,
+        pointer;
+    }
+
+    #garden-shell[data-tool-mode="manual_needs_watering"] {
+      cursor:
+        url("/images/cursors/flag.svg") 5 4,
+        pointer;
+    }
+
+    #garden-shell[data-tool-mode="manual_needs_watering"] .garden-care-tile,
+    #garden-shell[data-tool-mode="manual_needs_watering"]
+      .garden-care-tile
+      button {
+      cursor:
+        url("/images/cursors/flag.svg") 5 4,
+        pointer;
+    }
   }
 
-  .garden-action-option:hover {
-    border-color: var(--garden-border-strong);
-    background: var(--garden-surface-subtle);
-    box-shadow: 0 18px 28px -26px rgba(31, 42, 27, 0.34);
-    transform: translateY(-1px);
-  }
-
-  .garden-care-target-browse:hover,
-  .garden-care-target-water:hover,
-  .garden-care-target-soil:hover,
-  .garden-care-target-manual:hover {
-    transform: translateY(-2px);
-  }
-
-  .garden-care-target-browse:hover {
-    border-color: var(--garden-border-strong);
-    box-shadow: 0 24px 40px -30px rgba(50, 69, 43, 0.42);
-  }
-
-  .garden-care-target-browse:hover .garden-item-type-chip {
-    background: color-mix(in oklab, var(--garden-accent-bg) 72%, white);
-    color: var(--garden-selected-text);
-    transform: translateY(-1px);
-  }
-
-  .garden-care-target-browse:hover .garden-status-badge {
-    border-color: var(--garden-border-strong);
-  }
-
-  #garden-shell[data-tool-mode="browse"] .garden-care-tile,
-  #garden-shell[data-tool-mode="browse"] .garden-care-tile button {
-    cursor: pointer;
-  }
-
-  #garden-shell[data-tool-mode="browse"]
-    .garden-care-tile
-    .garden-care-drag-handle {
-    cursor: grab;
-  }
-
-  #garden-shell[data-tool-mode="browse"]
-    .garden-care-tile
-    .garden-care-drag-handle:active {
-    cursor: grabbing;
-  }
-
-  #garden-shell[data-tool-mode="water"] {
-    cursor:
-      url("/images/cursors/water-drop.svg") 16 28,
-      pointer;
-  }
-
-  #garden-shell[data-tool-mode="water"] .garden-care-tile,
-  #garden-shell[data-tool-mode="water"] .garden-care-tile button {
-    cursor:
-      url("/images/cursors/water-drop.svg") 16 28,
-      pointer;
-  }
-
-  #garden-shell[data-tool-mode="soil_check"] {
-    cursor:
-      url("/images/cursors/shovel.svg") 6 26,
-      pointer;
-  }
-
-  #garden-shell[data-tool-mode="soil_check"] .garden-care-tile,
-  #garden-shell[data-tool-mode="soil_check"] .garden-care-tile button {
-    cursor:
-      url("/images/cursors/shovel.svg") 6 26,
-      pointer;
-  }
-
-  #garden-shell[data-tool-mode="manual_needs_watering"] {
-    cursor:
-      url("/images/cursors/flag.svg") 5 4,
-      pointer;
-  }
-
-  #garden-shell[data-tool-mode="manual_needs_watering"] .garden-care-tile,
-  #garden-shell[data-tool-mode="manual_needs_watering"]
-    .garden-care-tile
-    button {
-    cursor:
-      url("/images/cursors/flag.svg") 5 4,
-      pointer;
-  }
-}
-
-@media (min-width: 768px) {
-  .garden-command-launcher-surface {
-    min-height: 0;
-    max-height: min(70vh, 42rem);
+  @media (min-width: 768px) {
+    .garden-command-launcher-surface {
+      min-height: 0;
+      max-height: min(70vh, 42rem);
+    }
   }
 }
