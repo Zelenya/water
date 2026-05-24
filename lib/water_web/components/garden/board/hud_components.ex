@@ -159,16 +159,27 @@ defmodule WaterWeb.Garden.Board.HudComponents do
   @spec weather_card_classes(String.t(), boolean()) :: [String.t()]
   defp weather_card_classes(tone, linked?) do
     [
-      "garden-count-card rounded-[1.35rem] px-2.5 py-2 shadow-sm no-underline sm:rounded-[1.5rem] sm:px-4 sm:py-2.5",
+      "rounded-[1.35rem] border px-2.5 py-2 shadow-sm no-underline sm:rounded-[1.5rem] sm:px-4 sm:py-2.5",
       weather_card_tone_class(tone),
       linked? && "transition hover:-translate-y-0.5 hover:shadow-md"
     ]
   end
 
-  defp weather_card_tone_class("orange"), do: "garden-count-card-orange"
-  defp weather_card_tone_class("sky"), do: "garden-count-card-sky"
-  defp weather_card_tone_class("amber"), do: "garden-count-card-amber"
-  defp weather_card_tone_class("rose"), do: "garden-count-card-rose"
+  defp weather_card_tone_class("orange") do
+    "border-[var(--garden-status-orange-border)] bg-[var(--garden-status-orange-bg)] text-[var(--garden-status-orange-text)]"
+  end
+
+  defp weather_card_tone_class("sky") do
+    "border-[var(--garden-status-sky-border)] bg-[var(--garden-status-sky-bg)] text-[var(--garden-status-sky-text)]"
+  end
+
+  defp weather_card_tone_class("amber") do
+    "border-[var(--garden-status-amber-border)] bg-[var(--garden-status-amber-bg)] text-[var(--garden-status-amber-text)]"
+  end
+
+  defp weather_card_tone_class("rose") do
+    "border-[var(--garden-status-rose-border)] bg-[var(--garden-status-rose-bg)] text-[var(--garden-status-rose-text)]"
+  end
 
   @spec today_card_icon_name(:loading | {:ok, Forecast.t()} | {:error, term()}) :: String.t()
   defp today_card_icon_name(:loading), do: "sun"
