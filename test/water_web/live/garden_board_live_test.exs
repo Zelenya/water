@@ -31,6 +31,13 @@ defmodule WaterWeb.GardenBoardLiveTest do
       {:ok, view, _html} = live(conn, ~p"/")
 
       assert has_element?(view, "#garden-shell")
+      assert has_element?(view, "#garden-daily-reminder")
+
+      assert has_element?(
+               view,
+               "#garden-daily-reminder[data-daily-reminder-date='#{Date.to_iso8601(today)}'][data-daily-reminder-body='1 item due today.']"
+             )
+
       assert has_element?(view, "#garden-top-hud")
       assert has_element?(view, "#garden-weather-cards.grid-cols-3")
       assert has_element?(view, "#garden-weather-hook")

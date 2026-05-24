@@ -37,6 +37,8 @@ defmodule WaterWeb.GardenLive do
   @section_form_as :section
   @section_form_param "section"
   @schedule_form_param "schedule_watering"
+  @day_rollover_message :garden_day_rollover
+  @day_rollover_padding_ms 1_000
 
   @impl true
   def mount(_params, session, socket) do
@@ -56,6 +58,7 @@ defmodule WaterWeb.GardenLive do
 
     if connected?(socket) do
       :ok = Garden.subscribe(household)
+      :ok = schedule_day_rollover(household)
     end
 
     {:ok,
@@ -93,6 +96,25 @@ defmodule WaterWeb.GardenLive do
 
   @impl true
   def handle_info({Water.Garden.Events, %Event{}}, socket), do: {:noreply, socket}
+
+  @impl true
+  def handle_info(@day_rollover_message, socket) do
+    :ok = schedule_day_rollover(socket.assigns.household)
+
+    today = Navigation.household_today(socket.assigns.household)
+
+    socket =
+      if today == socket.assigns.today do
+        socket
+      else
+        socket
+        |> assign(:today, today)
+        |> refresh_board()
+        |> sync_command_launcher()
+      end
+
+    {:noreply, socket}
+  end
 
   @impl true
   def handle_params(params, _uri, socket) do
@@ -604,6 +626,8 @@ defmodule WaterWeb.GardenLive do
 
   @impl true
   def render(assigns) do
+    assigns = assign(assigns, :daily_reminder, daily_reminder(assigns))
+
     ~H"""
     <Layouts.app flash={@flash} active_member={@active_member}>
       <:header_actions>
@@ -618,6 +642,16 @@ defmodule WaterWeb.GardenLive do
         phx-window-keydown="escape_tool_mode"
         class="garden-shell space-y-6 pb-28 md:pb-8"
       >
+        <div
+          :if={@daily_reminder}
+          id="garden-daily-reminder"
+          class="hidden"
+          phx-hook="GardenDailyReminder"
+          data-daily-reminder-date={Date.to_iso8601(@daily_reminder.date)}
+          data-daily-reminder-notify-at-ms={@daily_reminder.notify_at_ms}
+          data-daily-reminder-body={@daily_reminder.body}
+        >
+        </div>
         <HudComponents.hud_section
           today={@today}
           weather_forecast_state={@weather_forecast_state}
@@ -888,6 +922,47 @@ defmodule WaterWeb.GardenLive do
   defp parse_weather_reason(%{"reason" => "unsupported"}), do: :unsupported
   defp parse_weather_reason(%{"reason" => "timeout"}), do: :timeout
   defp parse_weather_reason(_params), do: :unavailable
+
+  @spec daily_reminder(map()) :: Garden.DailyReminder.t() | nil
+  defp daily_reminder(%{board: nil}), do: nil
+
+  defp daily_reminder(%{household: household, board: board, today: today}) do
+    Garden.daily_reminder(household, board, today)
+  end
+
+  defp daily_reminder(_assigns), do: nil
+
+  @spec schedule_day_rollover(map()) :: :ok
+  defp schedule_day_rollover(%{timezone: timezone}) when is_binary(timezone) do
+    with {:ok, now} <- DateTime.now(timezone),
+         {:ok, next_midnight} <- next_midnight(now, timezone) do
+      delay_ms =
+        next_midnight
+        |> DateTime.diff(now, :millisecond)
+        |> Kernel.+(@day_rollover_padding_ms)
+        |> max(@day_rollover_padding_ms)
+
+      _timer = Process.send_after(self(), @day_rollover_message, delay_ms)
+    end
+
+    :ok
+  end
+
+  defp schedule_day_rollover(_household), do: :ok
+
+  @spec next_midnight(DateTime.t(), String.t()) :: {:ok, DateTime.t()} | :error
+  defp next_midnight(%DateTime{} = now, timezone) when is_binary(timezone) do
+    now
+    |> DateTime.to_date()
+    |> Date.add(1)
+    |> DateTime.new(~T[00:00:00], timezone)
+    |> case do
+      {:ok, date_time} -> {:ok, date_time}
+      {:ambiguous, first_date_time, _second_date_time} -> {:ok, first_date_time}
+      {:gap, _before_gap, after_gap} -> {:ok, after_gap}
+      {:error, _reason} -> :error
+    end
+  end
 
   @spec apply_garden_event(Phoenix.LiveView.Socket.t(), Event.t()) :: Phoenix.LiveView.Socket.t()
   defp apply_garden_event(socket, %Event{} = event) do

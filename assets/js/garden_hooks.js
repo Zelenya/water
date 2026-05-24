@@ -1,30 +1,7 @@
 import Sortable from "sortablejs";
-
-const launcherOpen = () =>
-  Boolean(document.getElementById("garden-command-launcher"));
-
-const launcherEnabled = () => {
-  const shell = document.getElementById("garden-shell");
-  return shell?.dataset.commandLauncherEnabled === "true";
-};
+import { GardenDailyReminder } from "./daily_reminder_hook";
 
 const mobileViewportQuery = "(max-width: 767px)";
-
-// Shortcut gating for the command launcher
-const shouldCaptureLauncherShortcut = (event) => {
-  const cmdK =
-    (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
-
-  if (!cmdK) {
-    return false;
-  }
-
-  if (!launcherOpen() && !launcherEnabled()) {
-    return false;
-  }
-
-  return !event.defaultPrevented;
-};
 
 const focusLauncherInput = (root) => {
   const input = root.querySelector("#garden-command-launcher-input");
@@ -90,7 +67,18 @@ export const createGardenHooks = ({ renderGardenLucideIcons }) => ({
       };
 
       this.handleLauncherShortcut = (event) => {
-        if (!shouldCaptureLauncherShortcut(event)) return;
+        const cmdK =
+          (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
+
+        if (!cmdK || event.defaultPrevented) return;
+
+        const launcherOpen = Boolean(
+          document.getElementById("garden-command-launcher"),
+        );
+        const launcherEnabled =
+          this.el.dataset.commandLauncherEnabled === "true";
+
+        if (!launcherOpen && !launcherEnabled) return;
 
         event.preventDefault();
         this.pushEvent("toggle_command_launcher", {});
@@ -116,6 +104,8 @@ export const createGardenHooks = ({ renderGardenLucideIcons }) => ({
       );
     },
   },
+
+  GardenDailyReminder,
 
   // Maps focus and keyboard interactions into LiveView events
   GardenCommandLauncher: {
@@ -218,7 +208,8 @@ export const createGardenHooks = ({ renderGardenLucideIcons }) => ({
         dragClass: "garden-care-drag-active",
         onEnd: (event) => {
           if (!event.item?.dataset?.careItemId) return;
-          if (event.from === event.to && event.oldIndex === event.newIndex) return;
+          if (event.from === event.to && event.oldIndex === event.newIndex)
+            return;
 
           this.pushEvent("reposition_care_item", {
             item_id: event.item.dataset.careItemId,

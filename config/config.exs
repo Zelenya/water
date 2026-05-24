@@ -10,7 +10,8 @@ import Config
 config :water,
   ecto_repos: [Water.Repo],
   generators: [timestamp_type: :utc_datetime],
-  authenticated_session_max_age: 2_592_000
+  authenticated_session_max_age: 2_592_000,
+  daily_reminders: [enabled: true, time: "07:00"]
 
 # Configure the endpoint
 config :water, WaterWeb.Endpoint,

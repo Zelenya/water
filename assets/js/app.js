@@ -25,6 +25,11 @@ import { LiveSocket } from "phoenix_live_view";
 import { hooks as colocatedHooks } from "phoenix-colocated/water";
 import { createGardenHooks } from "./garden_hooks";
 import {
+  getLocalStorageItem,
+  removeLocalStorageItem,
+  setLocalStorageItem,
+} from "./local_storage";
+import {
   BedSingle,
   Calendar1,
   Cloud,
@@ -85,16 +90,16 @@ const gardenHooks = createGardenHooks({ renderGardenLucideIcons });
 
 const applyTheme = (theme) => {
   if (theme === "system") {
-    localStorage.removeItem(themeStorageKey);
+    removeLocalStorageItem(themeStorageKey);
     document.documentElement.removeAttribute("data-theme");
   } else {
-    localStorage.setItem(themeStorageKey, theme);
+    setLocalStorageItem(themeStorageKey, theme);
     document.documentElement.setAttribute("data-theme", theme);
   }
 };
 
 if (!document.documentElement.hasAttribute("data-theme")) {
-  applyTheme(localStorage.getItem(themeStorageKey) || "system");
+  applyTheme(getLocalStorageItem(themeStorageKey) || "system");
 }
 
 window.addEventListener("storage", (event) => {
