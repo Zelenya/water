@@ -28,6 +28,14 @@ defmodule WaterWeb.Garden.Shared.VisualComponents do
     """
   end
 
+  @spec item_type_chip_classes(String.t() | [String.t()]) :: [String.t()]
+  def item_type_chip_classes(extra_classes) do
+    [
+      "garden-item-type-chip inline-flex items-center justify-center",
+      extra_classes
+    ]
+  end
+
   attr :id, :string, default: nil
   attr :label, :string, required: true
   attr :value, :integer, required: true

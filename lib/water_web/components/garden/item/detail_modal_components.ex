@@ -33,7 +33,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div class="space-y-2">
             <div class="flex items-center gap-3">
-              <span class="garden-item-type-chip inline-flex size-10 items-center justify-center rounded-2xl">
+              <span class={VisualComponents.item_type_chip_classes("size-10 rounded-2xl")}>
                 <VisualComponents.garden_icon
                   name={VisualComponents.item_icon_name(@modal.item_detail.item_card.item.type)}
                   class="size-5"

@@ -27,7 +27,7 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
       class={[
         "garden-care-tile garden-care-sortable-item rounded-[1.4rem] transition duration-200",
         @sortable? && "px-4 py-3.5",
-        @sortable? && "garden-care-tile-sortable",
+        @sortable? && "garden-care-tile-sortable touch-manipulation",
         actionable_tile_classes(@tool_mode),
         @feedback_tone && "garden-care-feedback",
         @feedback_tone == :default && "garden-care-feedback-default",
@@ -50,7 +50,7 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
             <span
               id={"#{@id}-type-marker"}
               data-item-icon={VisualComponents.item_icon_name(@item_card.item.type)}
-              class="garden-item-type-chip inline-flex size-7 shrink-0 items-center justify-center rounded-xl"
+              class={VisualComponents.item_type_chip_classes("size-7 shrink-0 rounded-xl")}
             >
               <VisualComponents.garden_icon
                 name={VisualComponents.item_icon_name(@item_card.item.type)}
@@ -65,7 +65,7 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
               >
                 <p
                   id={"#{@id}-name"}
-                  class="garden-tile-name text-base-content text-[1.05rem] font-semibold tracking-tight"
+                  class="garden-tile-name text-base-content block overflow-hidden text-ellipsis whitespace-nowrap text-[1.05rem] font-semibold tracking-tight"
                 >
                   {@item_card.item.name}
                 </p>
@@ -80,7 +80,7 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
               <div
                 id={"#{@id}-detail"}
                 class={[
-                  "garden-tile-detail-row text-base-content/55 shrink-0 text-sm",
+                  "garden-tile-detail-row text-base-content/55 shrink-0 text-sm transition-[color,transform] duration-200",
                   @feedback_tone == :default && "garden-tile-detail-feedback"
                 ]}
               >
@@ -93,7 +93,7 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
           :if={@sortable?}
           id={"#{@id}-drag-handle"}
           type="button"
-          class="garden-care-drag-handle shrink-0 cursor-grab touch-none"
+          class="garden-care-drag-handle shrink-0 cursor-grab touch-none text-[var(--garden-text-faint)] transition-[background-color,color,transform] duration-150"
           aria-label={"Drag #{@item_card.item.name} to reorder or move sections"}
           title="Drag to move"
         >

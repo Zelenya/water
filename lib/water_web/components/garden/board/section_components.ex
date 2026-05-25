@@ -22,7 +22,7 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
       class={[
         SurfaceClasses.panel_card(),
         "garden-section-sortable-item rounded-[1.8rem] p-5",
-        @sortable? && "garden-section-sortable"
+        @sortable? && "garden-section-sortable touch-manipulation"
       ]}
     >
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -31,7 +31,7 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
             :if={@sortable?}
             id={"garden-section-#{@section_card.section.id}-drag-handle"}
             type="button"
-            class="garden-section-drag-handle inline-flex size-10 shrink-0 cursor-grab touch-none items-center justify-center rounded-full"
+            class="garden-section-drag-handle inline-flex size-10 shrink-0 cursor-grab touch-none items-center justify-center rounded-full text-[var(--garden-text-faint)] transition-[background-color,color,transform] duration-150 hover:-translate-y-px hover:bg-[var(--garden-control-bg)] hover:text-[var(--garden-text-muted)]"
             aria-label={"Drag #{@section_card.section.name} to reorder sections"}
             title="Drag to move section"
           >

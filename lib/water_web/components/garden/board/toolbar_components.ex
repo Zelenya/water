@@ -6,10 +6,17 @@ defmodule WaterWeb.Garden.Board.ToolbarComponents do
 
   @tool_dock_class "border border-[var(--garden-border)] bg-[var(--garden-surface-elevated)] text-[var(--garden-text-primary)] shadow-[var(--garden-shadow-md)] backdrop-blur-[18px]"
   @tool_dock_mobile_class "rounded-[1.6rem] bg-[color-mix(in_oklab,var(--garden-surface-elevated)_94%,white)] shadow-[0_20px_42px_-28px_rgba(43,60,35,0.48)]"
-  @tool_button_base_class "border border-[var(--garden-border)] bg-[var(--garden-control-bg)] cursor-pointer touch-manipulation select-none text-left [-webkit-tap-highlight-color:transparent] transition-[border-color,background-color,box-shadow,transform] duration-200 focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_color-mix(in_oklab,var(--garden-border-strong)_30%,transparent),0_14px_26px_-22px_rgba(63,84,53,0.4)]"
+  @tool_button_base_class "border border-[var(--garden-border)] bg-[var(--garden-control-bg)] cursor-pointer touch-manipulation select-none text-left [-webkit-tap-highlight-color:transparent] transition-[border-color,background-color,box-shadow,transform] duration-200 hover:-translate-y-px hover:border-[var(--garden-border-strong)] hover:bg-[var(--garden-surface-subtle)] hover:shadow-[0_18px_30px_-28px_rgba(49,69,38,0.52)] focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_color-mix(in_oklab,var(--garden-border-strong)_30%,transparent),0_14px_26px_-22px_rgba(63,84,53,0.4)]"
   @tool_icon_class "bg-[var(--garden-control-icon-bg)] text-[var(--garden-accent-text)]"
-  @tool_icon_active_class "bg-[var(--garden-selected-bg)] text-[var(--garden-selected-text)]"
   @tool_icon_disabled_class "bg-[var(--garden-surface-muted)] text-[var(--garden-text-faint)]"
+  @tool_button_active_browse_class "border-[var(--garden-selected-border)] bg-[color-mix(in_oklab,var(--garden-selected-bg)_82%,transparent)] shadow-[0_14px_26px_-22px_rgba(63,84,53,0.6)]"
+  @tool_button_active_water_class "border-[var(--garden-water-highlight-border)] bg-[color-mix(in_oklab,var(--garden-status-sky-bg)_88%,var(--garden-pill-bg))] shadow-[0_0_0_3px_var(--garden-water-highlight-ring),0_18px_34px_-22px_rgba(38,116,184,0.38)]"
+  @tool_button_active_soil_class "border-[color-mix(in_oklab,var(--garden-accent-border)_88%,white)] bg-[color-mix(in_oklab,var(--garden-accent-bg)_78%,var(--garden-pill-bg))] shadow-[0_0_0_2px_color-mix(in_oklab,var(--garden-accent-border)_26%,transparent),0_18px_30px_-24px_rgba(65,96,52,0.24)]"
+  @tool_button_active_manual_class "border-[color-mix(in_oklab,var(--garden-warm-border)_88%,white)] bg-[color-mix(in_oklab,var(--garden-warm-bg)_84%,var(--garden-pill-bg))] shadow-[0_0_0_2px_color-mix(in_oklab,var(--garden-warm-border)_24%,transparent),0_18px_30px_-24px_rgba(108,83,17,0.22)]"
+  @tool_icon_active_browse_class "bg-[var(--garden-selected-bg)] text-[var(--garden-selected-text)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.28)]"
+  @tool_icon_active_water_class "bg-[color-mix(in_oklab,var(--garden-status-sky-bg)_86%,white)] text-[var(--garden-status-sky-text)] shadow-[inset_0_0_0_1px_var(--garden-water-highlight-border)]"
+  @tool_icon_active_soil_class "bg-[color-mix(in_oklab,var(--garden-accent-bg)_82%,white)] text-[var(--garden-accent-text)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.28)]"
+  @tool_icon_active_manual_class "bg-[color-mix(in_oklab,var(--garden-warm-bg)_86%,white)] text-[var(--garden-warm-text)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.28)]"
   @filter_group_class "border border-[var(--garden-border)] bg-[var(--garden-control-bg)] shadow-[0_14px_30px_-26px_rgba(49,69,38,0.42)] backdrop-blur-[18px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
   @filter_chip_class "relative bg-transparent text-[var(--garden-text-muted)] shadow-none transition hover:bg-[var(--garden-control-hover-bg)] hover:text-[var(--garden-text-primary)] focus-visible:z-[2] focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--garden-border-strong)] first:rounded-l-[inherit] last:rounded-r-[inherit]"
   @filter_chip_selected_class "z-[1] bg-[var(--garden-selected-bg)] text-[var(--garden-selected-text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.28)]"
@@ -279,7 +286,7 @@ defmodule WaterWeb.Garden.Board.ToolbarComponents do
       phx-click="switch_tool_mode"
       phx-value-mode={@mode}
       title={@label}
-      class={tool_button_classes(@active, @disabled, @compact?, @mobile?)}
+      class={tool_button_classes(@active, @disabled, @compact?, @mobile?, @mode)}
     >
       <span class={[
         "inline-flex items-center justify-center rounded-2xl transition",
@@ -287,7 +294,7 @@ defmodule WaterWeb.Garden.Board.ToolbarComponents do
         @mobile? && "shadow-[inset_0_1px_0_rgba(255,255,255,0.22)]",
         !@mobile? && @compact? && "size-9",
         !@mobile? && !@compact? && "size-10",
-        @active && ["garden-tool-icon-active", tool_icon_active_class()],
+        @active && ["garden-tool-icon-active", active_tool_icon_class(@mode)],
         !@active && !@disabled && ["garden-tool-icon", tool_icon_class()],
         @disabled && ["garden-tool-icon-disabled", tool_icon_disabled_class()]
       ]}>
@@ -307,6 +314,7 @@ defmodule WaterWeb.Garden.Board.ToolbarComponents do
           <span class={[
             "garden-tool-label block whitespace-nowrap font-semibold",
             "text-[var(--garden-text-primary)]",
+            @active && active_tool_label_class(@mode),
             @compact? && "text-[0.95rem]",
             !@compact? && "text-sm",
             @disabled && "opacity-70"
@@ -326,8 +334,10 @@ defmodule WaterWeb.Garden.Board.ToolbarComponents do
   defp root_path(params) when map_size(params) == 0, do: ~p"/"
   defp root_path(params), do: ~p"/?#{params}"
 
-  @spec tool_button_classes(boolean(), boolean(), boolean(), boolean()) :: [String.t()]
-  defp tool_button_classes(active, disabled, compact?, mobile?) do
+  @spec tool_button_classes(boolean(), boolean(), boolean(), boolean(), String.t() | nil) :: [
+          String.t()
+        ]
+  defp tool_button_classes(active, disabled, compact?, mobile?, mode \\ nil) do
     [
       "garden-tool-button flex min-w-0 items-center",
       tool_button_base_class(),
@@ -335,16 +345,28 @@ defmodule WaterWeb.Garden.Board.ToolbarComponents do
         "garden-tool-button-mobile aspect-square w-full justify-center rounded-[1.25rem] border-transparent bg-transparent p-0 shadow-none",
       !compact? && !mobile? && "flex-1 gap-3 rounded-[1.35rem] px-3 py-3",
       compact? && !mobile? && "shrink-0 gap-2 rounded-[1.25rem] px-2.5 py-2.5",
-      active && "garden-tool-button-active",
+      active && ["garden-tool-button-active", active_tool_button_class(mode)],
       disabled && "opacity-60"
     ]
   end
+
+  defp active_tool_button_class("water"), do: @tool_button_active_water_class
+  defp active_tool_button_class("soil_check"), do: @tool_button_active_soil_class
+  defp active_tool_button_class("manual_needs_watering"), do: @tool_button_active_manual_class
+  defp active_tool_button_class(_mode), do: @tool_button_active_browse_class
+
+  defp active_tool_icon_class("water"), do: @tool_icon_active_water_class
+  defp active_tool_icon_class("soil_check"), do: @tool_icon_active_soil_class
+  defp active_tool_icon_class("manual_needs_watering"), do: @tool_icon_active_manual_class
+  defp active_tool_icon_class(_mode), do: @tool_icon_active_browse_class
+
+  defp active_tool_label_class("water"), do: "text-[var(--garden-status-sky-text)]"
+  defp active_tool_label_class(_mode), do: "text-[var(--garden-selected-text)]"
 
   defp tool_dock_class, do: @tool_dock_class
   defp tool_dock_mobile_class, do: @tool_dock_mobile_class
   defp tool_button_base_class, do: @tool_button_base_class
   defp tool_icon_class, do: @tool_icon_class
-  defp tool_icon_active_class, do: @tool_icon_active_class
   defp tool_icon_disabled_class, do: @tool_icon_disabled_class
   defp filter_group_class, do: @filter_group_class
   defp filter_chip_class, do: @filter_chip_class
