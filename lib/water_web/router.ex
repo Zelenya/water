@@ -14,8 +14,24 @@ defmodule WaterWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :browser_session do
+    plug :accepts, ["html"]
+    plug :fetch_cookies
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  scope "/", WaterWeb do
+    pipe_through :browser_session
+
+    get "/logout", SessionController, :show
+    delete "/logout", SessionController, :delete
   end
 
   scope "/", WaterWeb do

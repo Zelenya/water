@@ -29,6 +29,13 @@ defmodule WaterWeb.Plugs.BasicAuth do
   @impl true
   def init(opts), do: opts
 
+  @spec clear_authenticated_session(Plug.Conn.t()) :: Plug.Conn.t()
+  def clear_authenticated_session(conn) do
+    conn
+    |> delete_session(@auth_session_key)
+    |> delete_session(@active_member_session_key)
+  end
+
   @impl true
   def call(conn, _opts) do
     household = Households.get_default_household!()
@@ -124,8 +131,7 @@ defmodule WaterWeb.Plugs.BasicAuth do
   # Clear auth-related session state before asking the browser to authenticate again.
   defp challenge(conn) do
     conn
-    |> delete_session(@auth_session_key)
-    |> delete_session(@active_member_session_key)
+    |> clear_authenticated_session()
     |> request_basic_auth(realm: @realm)
     |> halt()
   end

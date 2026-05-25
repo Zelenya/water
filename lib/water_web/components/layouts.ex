@@ -61,7 +61,7 @@ defmodule WaterWeb.Layouts do
         <div class="flex items-center gap-3">
           {render_slot(@header_actions)}
           <.reconnect_indicator />
-          <span
+          <div
             :if={@active_member}
             id="header-active-member"
             class="garden-pill inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium shadow-sm"
@@ -72,7 +72,20 @@ defmodule WaterWeb.Layouts do
             />
             <span class="sm:hidden">{@active_member.name}</span>
             <span class="hidden sm:inline">Active member: {@active_member.name}</span>
-          </span>
+            <form id="header-logout-form" action={~p"/logout"} method="post" class="contents">
+              <input type="hidden" name="_method" value="delete" />
+              <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
+              <button
+                id="header-forget-browser"
+                type="submit"
+                class="inline-flex size-6 items-center justify-center rounded-full text-base-content/55 transition-[background-color,color,transform] duration-150 hover:-translate-y-px hover:bg-base-200 hover:text-base-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-base-content/20"
+                title="Forget this browser"
+                aria-label="Forget this browser"
+              >
+                <.icon name="hero-arrow-right-on-rectangle-mini" class="size-4" />
+              </button>
+            </form>
+          </div>
           <.theme_toggle />
         </div>
       </div>
