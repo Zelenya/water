@@ -79,6 +79,10 @@ defmodule Water.Garden do
   @spec update_section(Section.t(), map()) :: result(Section.t())
   defdelegate update_section(section, attrs), to: Sections
 
+  @spec reposition_section(Household.t(), Member.t(), Section.id(), [Section.id()]) ::
+          {:ok, Section.t()} | {:error, Sections.reposition_error()}
+  defdelegate reposition_section(household, member, section_id, section_ids), to: Sections
+
   @spec delete_section(Section.t()) :: result(Section.t())
   defdelegate delete_section(section), to: Sections
 

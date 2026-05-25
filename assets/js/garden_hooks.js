@@ -43,6 +43,11 @@ const uniqueCareSortableSections = (...sectionEls) => {
   });
 };
 
+const sectionSortablePayload = (boardEl) =>
+  Array.from(boardEl.querySelectorAll("[data-garden-section-id]")).map(
+    (sectionEl) => sectionEl.dataset.gardenSectionId,
+  );
+
 export const createGardenHooks = ({ renderGardenLucideIcons }) => ({
   // I really wanted a plant icon from lucide. Might need to revisit this.
   GardenLucideIcons: {
@@ -216,6 +221,51 @@ export const createGardenHooks = ({ renderGardenLucideIcons }) => ({
             sections: uniqueCareSortableSections(event.from, event.to).map(
               careSortableSectionPayload,
             ),
+          });
+        },
+      });
+    },
+
+    destroySortable() {
+      if (!this.sortable) return;
+
+      this.sortable.destroy();
+      this.sortable = null;
+    },
+  },
+
+  // Connects board sections so whole sections can be reordered.
+  GardenSectionSortable: {
+    mounted() {
+      this.initializeSortable();
+    },
+
+    updated() {
+      this.destroySortable();
+      this.initializeSortable();
+    },
+
+    destroyed() {
+      this.destroySortable();
+    },
+
+    initializeSortable() {
+      if (this.el.dataset.sortableEnabled !== "true") return;
+
+      this.sortable = Sortable.create(this.el, {
+        animation: 180,
+        draggable: ".garden-section-sortable-item",
+        handle: ".garden-section-drag-handle",
+        ghostClass: "garden-section-drag-ghost",
+        chosenClass: "garden-section-drag-chosen",
+        dragClass: "garden-section-drag-active",
+        onEnd: (event) => {
+          if (!event.item?.dataset?.gardenSectionId) return;
+          if (event.oldIndex === event.newIndex) return;
+
+          this.pushEvent("reposition_section", {
+            section_id: event.item.dataset.gardenSectionId,
+            section_ids: sectionSortablePayload(this.el),
           });
         },
       });

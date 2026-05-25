@@ -383,6 +383,35 @@ defmodule WaterWeb.GardenLive do
   end
 
   @impl true
+  def handle_event("reposition_section", params, socket) do
+    with true <- sortable_enabled?(socket.assigns),
+         {:ok, section_id, section_ids} <- parse_section_reposition_params(params),
+         {:ok, _moved_section} <-
+           Garden.reposition_section(
+             socket.assigns.household,
+             socket.assigns.active_member,
+             section_id,
+             section_ids
+           ) do
+      :ok = Garden.broadcast_board_changed(socket.assigns.household)
+
+      {:noreply, refresh_sections_and_board(socket)}
+    else
+      false ->
+        {:noreply, refresh_sections_and_board(socket)}
+
+      _error ->
+        {:noreply,
+         socket
+         |> refresh_sections_and_board()
+         |> put_flash(
+           :error,
+           "That section move could not be saved. The board has been refreshed."
+         )}
+    end
+  end
+
+  @impl true
   def handle_event("interact_with_item", params, socket) do
     raw_item_id = Map.get(params, "item-id")
 
@@ -710,6 +739,8 @@ defmodule WaterWeb.GardenLive do
           <% true -> %>
             <section
               id="garden-board"
+              data-sortable-enabled={to_string(sortable_enabled?(assigns))}
+              phx-hook="GardenSectionSortable"
               class="grid gap-5 xl:grid-cols-2"
             >
               <SectionComponents.garden_section
@@ -871,6 +902,18 @@ defmodule WaterWeb.GardenLive do
       {:ok, item_ids}
     else
       :error
+    end
+  end
+
+  @spec parse_section_reposition_params(map()) :: {:ok, pos_integer(), [pos_integer()]} | :error
+  defp parse_section_reposition_params(params) do
+    with section_id when is_integer(section_id) <-
+           Navigation.parse_item_id(Map.get(params, "section_id")),
+         raw_section_ids when is_list(raw_section_ids) <- Map.get(params, "section_ids"),
+         {:ok, section_ids} <- parse_reposition_item_ids(raw_section_ids) do
+      {:ok, section_id, section_ids}
+    else
+      _other -> :error
     end
   end
 

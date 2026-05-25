@@ -18,26 +18,44 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
     ~H"""
     <article
       id={"garden-section-#{@section_card.section.id}"}
-      class={[SurfaceClasses.panel_card(), "rounded-[1.8rem] p-5"]}
+      data-garden-section-id={@section_card.section.id}
+      class={[
+        SurfaceClasses.panel_card(),
+        "garden-section-sortable-item rounded-[1.8rem] p-5",
+        @sortable? && "garden-section-sortable"
+      ]}
     >
-      <div class="flex items-start justify-between gap-3">
-        <div class="min-w-0 flex-1">
-          <.section_title
-            :if={@editing_section_id == @section_card.section.id}
-            section={@section_card.section}
-            form={@section_form}
-          />
-
-          <h3
-            :if={@editing_section_id != @section_card.section.id}
-            id={"garden-section-#{@section_card.section.id}-title"}
-            class="text-base-content px-4 text-xl font-semibold tracking-tight"
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex min-w-0 flex-1 items-center gap-3">
+          <button
+            :if={@sortable?}
+            id={"garden-section-#{@section_card.section.id}-drag-handle"}
+            type="button"
+            class="garden-section-drag-handle inline-flex size-10 shrink-0 cursor-grab touch-none items-center justify-center rounded-full"
+            aria-label={"Drag #{@section_card.section.name} to reorder sections"}
+            title="Drag to move section"
           >
-            {@section_card.section.name}
-          </h3>
+            <VisualComponents.garden_icon name="grip-vertical" class="size-4" />
+          </button>
+
+          <div class="min-w-0 flex-1">
+            <.section_title
+              :if={@editing_section_id == @section_card.section.id}
+              section={@section_card.section}
+              form={@section_form}
+            />
+
+            <h3
+              :if={@editing_section_id != @section_card.section.id}
+              id={"garden-section-#{@section_card.section.id}-title"}
+              class="text-base-content truncate text-xl font-semibold leading-tight tracking-tight"
+            >
+              {@section_card.section.name}
+            </h3>
+          </div>
         </div>
 
-        <div class="flex shrink-0 items-center gap-2">
+        <div class="flex shrink-0 items-center gap-2 self-end sm:self-center">
           <div
             id={"garden-section-#{@section_card.section.id}-summary"}
             class="flex flex-nowrap items-center gap-1.5"
@@ -71,7 +89,7 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
         </div>
       </div>
 
-      <div class="mt-5">
+      <div class="mt-3">
         <div
           id={"garden-section-items-#{@section_card.section.id}"}
           data-care-section-id={@section_card.section.id}
@@ -116,7 +134,7 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
       id={"garden-section-#{@section.id}-rename-form"}
       phx-change="validate_section"
       phx-submit="save_section"
-      class="garden-section-rename-form flex flex-col gap-2 px-4 sm:flex-row sm:items-center"
+      class="garden-section-rename-form flex flex-col gap-2 sm:flex-row sm:items-center"
     >
       <div class="min-w-0 flex-1">
         <.input

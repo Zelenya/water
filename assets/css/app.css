@@ -978,6 +978,32 @@
     pointer-events: none;
   }
 
+  .garden-section-sortable {
+    touch-action: manipulation;
+  }
+
+  .garden-section-drag-handle {
+    color: var(--garden-text-faint);
+    transition:
+      background-color 160ms ease,
+      color 160ms ease,
+      transform 160ms ease;
+  }
+
+  .garden-section-drag-handle:hover {
+    background: var(--garden-control-bg);
+    color: var(--garden-text-muted);
+    transform: translateY(-1px);
+  }
+
+  .garden-section-drag-ghost {
+    opacity: 0.42;
+  }
+
+  .garden-section-drag-active {
+    box-shadow: var(--garden-shadow-md);
+  }
+
   .garden-care-tile {
     overflow: clip;
     position: relative;
@@ -1313,6 +1339,14 @@
     #garden-shell[data-tool-mode="browse"]
       .garden-care-tile
       .garden-care-drag-handle:active {
+      cursor: grabbing;
+    }
+
+    #garden-shell[data-tool-mode="browse"] .garden-section-drag-handle {
+      cursor: grab;
+    }
+
+    #garden-shell[data-tool-mode="browse"] .garden-section-drag-handle:active {
       cursor: grabbing;
     }
 

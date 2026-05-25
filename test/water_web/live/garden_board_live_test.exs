@@ -7,6 +7,7 @@ defmodule WaterWeb.GardenBoardLiveTest do
 
   alias Water.Garden.{CareEvent, CareItem, Section}
   alias Water.GardenFixtures
+  alias Water.Households.Household
   alias Water.Repo
   alias WaterWeb.GardenLive.Navigation
 
@@ -60,8 +61,10 @@ defmodule WaterWeb.GardenBoardLiveTest do
       assert has_element?(view, "#garden-board-controls")
       assert has_element?(view, "#garden-board-toolbar")
       assert has_element?(view, "#garden-board-filters")
+      assert has_element?(view, "#garden-board[data-sortable-enabled='true']")
       assert has_element?(view, "#today-panel")
       assert has_element?(view, "#garden-section-#{section.id}")
+      assert has_element?(view, "#garden-section-#{section.id}-drag-handle")
       assert has_element?(view, "#garden-section-#{section.id}-actions")
       assert has_element?(view, "#garden-section-#{section.id}-summary")
 
@@ -394,7 +397,37 @@ defmodule WaterWeb.GardenBoardLiveTest do
                "#garden-section-items-#{section.id}[data-sortable-enabled='false']"
              )
 
+      assert has_element?(view, "#garden-board[data-sortable-enabled='false']")
+      refute has_element?(view, "#garden-section-#{section.id}-drag-handle")
       refute has_element?(view, "#section-item-tile-#{item.id}-drag-handle")
+    end
+
+    test "reorders sections from the sortable hook", %{conn: conn} do
+      household = GardenFixtures.default_household_fixture()
+      _member = GardenFixtures.member_fixture(household, %{name: "A"})
+
+      first = GardenFixtures.section_fixture(household, %{name: "First", position: 0})
+      second = GardenFixtures.section_fixture(household, %{name: "Second", position: 1})
+      third = GardenFixtures.section_fixture(household, %{name: "Third", position: 2})
+
+      {:ok, view, _html} = live(conn, ~p"/")
+
+      render_hook(view, "reposition_section", %{
+        "section_id" => to_string(third.id),
+        "section_ids" => [
+          to_string(third.id),
+          to_string(first.id),
+          to_string(second.id)
+        ]
+      })
+
+      assert has_element?(view, "#garden-section-#{third.id}-title", "Third")
+
+      assert section_order(household) == [
+               {third.id, "Third", 0},
+               {first.id, "First", 1},
+               {second.id, "Second", 2}
+             ]
     end
 
     test "moves an item between sections from the sortable hook", %{conn: conn} do
@@ -528,6 +561,16 @@ defmodule WaterWeb.GardenBoardLiveTest do
       where: care_item.section_id == ^section_id,
       order_by: [asc: care_item.position, asc: care_item.inserted_at],
       select: {care_item.id, care_item.name, care_item.position}
+    )
+    |> Repo.all()
+  end
+
+  @spec section_order(Household.t()) :: [{Section.id(), String.t(), non_neg_integer()}]
+  defp section_order(%Household{id: household_id}) do
+    from(section in Section,
+      where: section.household_id == ^household_id,
+      order_by: [asc: section.position, asc: section.inserted_at],
+      select: {section.id, section.name, section.position}
     )
     |> Repo.all()
   end

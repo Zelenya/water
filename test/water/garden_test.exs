@@ -6,6 +6,7 @@ defmodule Water.GardenTest do
   alias Water.Garden
   alias Water.Garden.{BoardSectionSummary, CareEvent, CareItem, CareItemDetail, Section}
   alias Water.GardenFixtures
+  alias Water.Households.Household
   alias Water.Repo
 
   describe "sections and items" do
@@ -23,6 +24,50 @@ defmodule Water.GardenTest do
 
       assert {:ok, section} = Garden.create_section(household, %{name: "Back Yard"})
       assert section.position == 1
+    end
+
+    test "reposition_section/4 reorders sections" do
+      household = GardenFixtures.household_fixture()
+      member = GardenFixtures.member_fixture(household)
+
+      first = GardenFixtures.section_fixture(household, %{name: "First", position: 0})
+      second = GardenFixtures.section_fixture(household, %{name: "Second", position: 1})
+      third = GardenFixtures.section_fixture(household, %{name: "Third", position: 2})
+
+      assert {:ok, moved_section} =
+               Garden.reposition_section(household, member, third.id, [
+                 third.id,
+                 first.id,
+                 second.id
+               ])
+
+      assert moved_section.id == third.id
+
+      assert section_order(household) == [
+               {third.id, "Third", 0},
+               {first.id, "First", 1},
+               {second.id, "Second", 2}
+             ]
+    end
+
+    test "reposition_section/4 rejects stale or incomplete orders without partial updates" do
+      household = GardenFixtures.household_fixture()
+      member = GardenFixtures.member_fixture(household)
+
+      first = GardenFixtures.section_fixture(household, %{name: "First", position: 0})
+      second = GardenFixtures.section_fixture(household, %{name: "Second", position: 1})
+      third = GardenFixtures.section_fixture(household, %{name: "Third", position: 2})
+
+      assert Garden.reposition_section(household, member, second.id, [
+               second.id,
+               first.id
+             ]) == {:error, :stale_reposition}
+
+      assert section_order(household) == [
+               {first.id, "First", 0},
+               {second.id, "Second", 1},
+               {third.id, "Third", 2}
+             ]
     end
 
     test "update_section/2 renames a section" do
@@ -930,6 +975,16 @@ defmodule Water.GardenTest do
       where: care_item.section_id == ^section_id,
       order_by: [asc: care_item.position, asc: care_item.inserted_at],
       select: {care_item.id, care_item.name, care_item.position}
+    )
+    |> Repo.all()
+  end
+
+  @spec section_order(Household.t()) :: [{Section.id(), String.t(), non_neg_integer()}]
+  defp section_order(%Household{id: household_id}) do
+    from(section in Section,
+      where: section.household_id == ^household_id,
+      order_by: [asc: section.position, asc: section.inserted_at],
+      select: {section.id, section.name, section.position}
     )
     |> Repo.all()
   end
