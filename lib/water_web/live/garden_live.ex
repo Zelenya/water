@@ -22,7 +22,7 @@ defmodule WaterWeb.GardenLive do
   alias WaterWeb.Garden.Care.ActionComponents, as: CareActionComponents
   alias WaterWeb.Garden.Care.ScheduleSuggestionComponents
   alias WaterWeb.Garden.Item.{DetailModalComponents, FormModalComponents}
-  alias WaterWeb.Garden.Shared.ModalComponents
+  alias WaterWeb.Garden.Shared.{ModalComponents, SurfaceClasses}
 
   alias WaterWeb.GardenLive.{
     CareActions,
@@ -670,7 +670,7 @@ defmodule WaterWeb.GardenLive do
 
         <section
           id="garden-board-controls"
-          class="garden-panel-soft rounded-[1.75rem] px-4 py-3"
+          class={[SurfaceClasses.panel_soft(), "rounded-[1.75rem] px-4 py-3"]}
         >
           <div class="flex flex-col gap-3 md:flex-row md:items-center">
             <div class="hidden shrink-0 md:block">

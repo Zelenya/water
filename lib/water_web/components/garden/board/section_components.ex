@@ -2,7 +2,7 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
   use WaterWeb, :html
 
   alias WaterWeb.Garden.Board.ItemTileComponents
-  alias WaterWeb.Garden.Shared.VisualComponents
+  alias WaterWeb.Garden.Shared.{SurfaceClasses, VisualComponents}
   alias WaterWeb.GardenLive.Navigation
 
   attr :section_card, :map, required: true
@@ -18,7 +18,7 @@ defmodule WaterWeb.Garden.Board.SectionComponents do
     ~H"""
     <article
       id={"garden-section-#{@section_card.section.id}"}
-      class="garden-panel-card rounded-[1.8rem] p-5"
+      class={[SurfaceClasses.panel_card(), "rounded-[1.8rem] p-5"]}
     >
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0 flex-1">

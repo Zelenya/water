@@ -166,19 +166,19 @@ defmodule WaterWeb.Garden.Board.HudComponents do
   end
 
   defp weather_card_tone_class("orange") do
-    "border-[var(--garden-status-orange-border)] bg-[var(--garden-status-orange-bg)] text-[var(--garden-status-orange-text)]"
+    "border-[color-mix(in_oklab,var(--garden-status-orange-border)_62%,var(--garden-border))] bg-[color-mix(in_oklab,var(--garden-status-orange-bg)_34%,var(--garden-control-bg))] text-[var(--garden-status-orange-text)]"
   end
 
   defp weather_card_tone_class("sky") do
-    "border-[var(--garden-status-sky-border)] bg-[var(--garden-status-sky-bg)] text-[var(--garden-status-sky-text)]"
+    "border-[color-mix(in_oklab,var(--garden-status-sky-border)_62%,var(--garden-border))] bg-[color-mix(in_oklab,var(--garden-status-sky-bg)_34%,var(--garden-control-bg))] text-[var(--garden-status-sky-text)]"
   end
 
   defp weather_card_tone_class("amber") do
-    "border-[var(--garden-status-amber-border)] bg-[var(--garden-status-amber-bg)] text-[var(--garden-status-amber-text)]"
+    "border-[color-mix(in_oklab,var(--garden-status-amber-border)_62%,var(--garden-border))] bg-[color-mix(in_oklab,var(--garden-status-amber-bg)_34%,var(--garden-control-bg))] text-[var(--garden-status-amber-text)]"
   end
 
   defp weather_card_tone_class("rose") do
-    "border-[var(--garden-status-rose-border)] bg-[var(--garden-status-rose-bg)] text-[var(--garden-status-rose-text)]"
+    "border-[color-mix(in_oklab,var(--garden-status-rose-border)_62%,var(--garden-border))] bg-[color-mix(in_oklab,var(--garden-status-rose-bg)_34%,var(--garden-control-bg))] text-[var(--garden-status-rose-text)]"
   end
 
   @spec today_card_icon_name(:loading | {:ok, Forecast.t()} | {:error, term()}) :: String.t()

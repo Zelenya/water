@@ -2,6 +2,7 @@ defmodule WaterWeb.Garden.Board.EmptyStateComponents do
   use WaterWeb, :html
 
   alias Water.Garden.Board
+  alias WaterWeb.Garden.Shared.SurfaceClasses
 
   attr :id, :string, required: true
   attr :title, :string, required: true
@@ -12,7 +13,7 @@ defmodule WaterWeb.Garden.Board.EmptyStateComponents do
     ~H"""
     <section
       id={@id}
-      class="garden-empty-state rounded-[1.8rem] border-dashed px-6 py-8 text-center"
+      class={[SurfaceClasses.empty_state(), "rounded-[1.8rem] border-dashed px-6 py-8 text-center"]}
     >
       <div class="mx-auto max-w-xl space-y-3">
         <p class="text-base-content/55 text-xs font-semibold uppercase tracking-[0.2em]">

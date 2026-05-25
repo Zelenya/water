@@ -1,6 +1,8 @@
 defmodule WaterWeb.Garden.Shared.ModalComponents do
   use WaterWeb, :html
 
+  alias WaterWeb.Garden.Shared.SurfaceClasses
+
   attr :id, :string, required: true
   attr :overlay_class, :any, required: true
   attr :wrapper_class, :any, required: true
@@ -44,9 +46,12 @@ defmodule WaterWeb.Garden.Shared.ModalComponents do
     ~H"""
     <.dismissable_overlay
       id={@id}
-      overlay_class="garden-modal-overlay fixed inset-0 z-40 overflow-y-auto px-4 py-8 backdrop-blur-sm sm:py-12"
+      overlay_class={[
+        SurfaceClasses.modal_overlay(),
+        "fixed inset-0 z-40 overflow-y-auto px-4 py-8 backdrop-blur-sm sm:py-12"
+      ]}
       wrapper_class="flex min-h-full items-start justify-center"
-      surface_class="garden-modal-surface relative z-10 w-full max-w-2xl rounded-[2rem]"
+      surface_class={[SurfaceClasses.modal_surface(), "relative z-10 w-full max-w-2xl rounded-[2rem]"]}
       close_patch={@close_patch}
       backdrop_id="garden-modal-backdrop"
       backdrop_class="block h-full w-full cursor-default"

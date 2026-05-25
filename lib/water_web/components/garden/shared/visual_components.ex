@@ -57,8 +57,8 @@ defmodule WaterWeb.Garden.Shared.VisualComponents do
   @spec status_badge_classes(Schedule.status(), boolean()) :: [String.t()]
   defp status_badge_classes(status, quiet?) do
     [
-      "garden-status-badge badge rounded-full border font-semibold uppercase",
-      quiet? && "badge-sm px-2 py-0.5 text-[0.68rem] tracking-[0.14em]",
+      "garden-status-badge inline-flex items-center rounded-full border font-semibold uppercase",
+      quiet? && "px-2 py-0.5 text-[0.68rem] tracking-[0.14em] opacity-[0.92]",
       !quiet? && "px-2.5 py-1 text-xs tracking-[0.18em]",
       status_badge_tone_class(status)
     ]

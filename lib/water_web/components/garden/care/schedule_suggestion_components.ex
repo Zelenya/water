@@ -1,7 +1,7 @@
 defmodule WaterWeb.Garden.Care.ScheduleSuggestionComponents do
   use WaterWeb, :html
 
-  alias WaterWeb.Garden.Shared.ModalComponents
+  alias WaterWeb.Garden.Shared.{ModalComponents, SurfaceClasses}
   alias WaterWeb.Garden.State.ScheduleSuggestion
 
   attr :suggestion, :any, required: true
@@ -10,9 +10,12 @@ defmodule WaterWeb.Garden.Care.ScheduleSuggestionComponents do
     ~H"""
     <ModalComponents.dismissable_overlay
       id="schedule-suggestion-modal"
-      overlay_class="garden-modal-overlay fixed inset-0 z-50 overflow-y-auto px-4 py-8 backdrop-blur-sm sm:py-12"
+      overlay_class={[
+        SurfaceClasses.modal_overlay(),
+        "fixed inset-0 z-50 overflow-y-auto px-4 py-8 backdrop-blur-sm sm:py-12"
+      ]}
       wrapper_class="flex min-h-full items-start justify-center"
-      surface_class="garden-modal-surface relative z-10 w-full max-w-2xl rounded-[2rem]"
+      surface_class={[SurfaceClasses.modal_surface(), "relative z-10 w-full max-w-2xl rounded-[2rem]"]}
       close_event="dismiss_schedule_suggestion"
       backdrop_id="schedule-suggestion-backdrop"
       backdrop_class="block h-full w-full cursor-default"
@@ -74,7 +77,10 @@ defmodule WaterWeb.Garden.Care.ScheduleSuggestionComponents do
           />
         </div>
 
-        <div id="schedule-suggestion-history" class="garden-panel-soft rounded-[1.5rem] px-4 py-3">
+        <div
+          id="schedule-suggestion-history"
+          class={[SurfaceClasses.panel_soft(), "rounded-[1.5rem] px-4 py-3"]}
+        >
           <div class="flex items-center justify-between gap-3">
             <p class="text-base-content text-sm font-semibold">Recent waterings</p>
             <.icon name="hero-calendar-days" class="text-base-content/70 size-4" />
@@ -118,7 +124,7 @@ defmodule WaterWeb.Garden.Care.ScheduleSuggestionComponents do
 
   defp summary_card(assigns) do
     ~H"""
-    <div id={@id} class="garden-panel-soft rounded-[1.25rem] px-4 py-3">
+    <div id={@id} class={[SurfaceClasses.panel_soft(), "rounded-[1.25rem] px-4 py-3"]}>
       <p class="text-base-content/70 text-xs font-semibold uppercase">{@label}</p>
       <p class="text-base-content mt-1 text-sm font-semibold">{@value}</p>
     </div>

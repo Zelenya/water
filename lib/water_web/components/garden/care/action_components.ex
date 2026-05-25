@@ -2,6 +2,7 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
   use WaterWeb, :html
 
   alias Water.Garden.CareItemCard
+  alias WaterWeb.Garden.Shared.SurfaceClasses
   alias WaterWeb.Garden.State.CareAction
 
   attr :care_action, :any, required: true
@@ -11,7 +12,10 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
     ~H"""
     <div
       id="care-action-modal"
-      class="garden-modal-overlay fixed inset-0 z-50 overflow-y-auto px-4 py-8 backdrop-blur-sm sm:py-12"
+      class={[
+        SurfaceClasses.modal_overlay(),
+        "fixed inset-0 z-50 overflow-y-auto px-4 py-8 backdrop-blur-sm sm:py-12"
+      ]}
       role="dialog"
       aria-modal="true"
       aria-labelledby="care-action-modal-title"
@@ -25,7 +29,10 @@ defmodule WaterWeb.Garden.Care.ActionComponents do
           aria-label="Close care action"
         />
 
-        <section class="garden-modal-surface relative z-10 w-full max-w-2xl rounded-[2rem]">
+        <section class={[
+          SurfaceClasses.modal_surface(),
+          "relative z-10 w-full max-w-2xl rounded-[2rem]"
+        ]}>
           <div class="garden-divider flex items-center justify-between gap-4 border-b px-6 py-5 sm:px-8">
             <div class="space-y-1">
               <h2

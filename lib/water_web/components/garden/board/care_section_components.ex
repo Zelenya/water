@@ -2,7 +2,7 @@ defmodule WaterWeb.Garden.Board.CareSectionComponents do
   use WaterWeb, :html
 
   alias WaterWeb.Garden.Board.ItemTileComponents
-  alias WaterWeb.Garden.Shared.VisualComponents
+  alias WaterWeb.Garden.Shared.{SurfaceClasses, VisualComponents}
 
   attr :item_cards, :list, required: true
   attr :tool_mode, :atom, required: true
@@ -16,7 +16,7 @@ defmodule WaterWeb.Garden.Board.CareSectionComponents do
     ~H"""
     <section
       id="today-panel"
-      class="garden-panel-soft rounded-[1.8rem] p-4"
+      class={[SurfaceClasses.panel_soft(), "rounded-[1.8rem] p-4"]}
     >
       <div class="flex flex-col gap-1.5 sm:flex-row sm:items-end sm:justify-between">
         <h2 class="text-base-content px-4 text-2xl font-semibold tracking-tight">Needs care</h2>

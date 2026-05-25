@@ -3,8 +3,13 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
 
   alias Water.Garden.{CareEvent, CareItem, CareItemCard, Section}
   alias Water.Households.Member
-  alias WaterWeb.Garden.Shared.{ModalComponents, VisualComponents}
+  alias WaterWeb.Garden.Shared.{ModalComponents, SurfaceClasses, VisualComponents}
   alias WaterWeb.Garden.State.CareFeedback
+
+  @detail_action_base "inline-flex h-10 min-h-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold leading-none transition duration-150 hover:-translate-y-px"
+  @detail_action_primary "#{@detail_action_base} bg-[var(--garden-primary-action-bg)] text-white shadow-[0_18px_28px_-20px_var(--garden-primary-action-shadow)] hover:bg-[var(--garden-primary-action-hover-bg)] hover:shadow-[0_22px_34px_-24px_var(--garden-primary-action-hover-shadow)]"
+  @detail_action_secondary "#{@detail_action_base} border border-[var(--garden-border)] bg-[var(--garden-pill-bg)] text-[var(--garden-text-primary)] hover:border-[var(--garden-border-strong)] hover:bg-[var(--garden-surface-subtle)] hover:shadow-[0_18px_28px_-26px_rgba(31,42,27,0.4)]"
+  @detail_action_danger "#{@detail_action_base} border border-[var(--garden-status-rose-border)] bg-[var(--garden-status-rose-bg)] text-[var(--garden-status-rose-text)] shadow-[0_18px_28px_-24px_color-mix(in_oklab,var(--garden-status-rose-border)_58%,transparent)] hover:border-[color-mix(in_oklab,var(--garden-status-rose-border)_82%,white)] hover:bg-[color-mix(in_oklab,var(--garden-status-rose-bg)_86%,white)] hover:shadow-[0_18px_28px_-24px_color-mix(in_oklab,var(--garden-status-rose-border)_72%,transparent)]"
 
   attr :id, :string, required: true
   attr :modal, :any, required: true
@@ -48,14 +53,14 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
 
         <div
           id="item-detail-quick-actions"
-          class="garden-panel-soft rounded-[1.4rem] p-2"
+          class={[SurfaceClasses.panel_soft(), "rounded-[1.4rem] p-2"]}
         >
-          <div class="flex flex-col justify-center gap-1 sm:flex-row sm:flex-wrap">
+          <div class="flex flex-col items-stretch justify-center gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <button
               id="item-detail-water"
               type="button"
               phx-click="water_from_detail"
-              class="btn btn-sm btn-primary rounded-full gap-2 px-4 text-sm font-semibold"
+              class={[detail_action_primary_class(), "gap-2 px-4"]}
             >
               <VisualComponents.garden_icon name="droplets" class="size-5" /> Water now
             </button>
@@ -65,7 +70,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
               type="button"
               phx-click="open_detail_care_action"
               phx-value-kind="schedule_watering"
-              class="btn btn-sm btn-soft rounded-full gap-2 px-4 text-sm font-semibold"
+              class={[detail_action_secondary_class(), "gap-2 px-4"]}
             >
               <VisualComponents.garden_icon name="calendar-1" class="size-5" /> Schedule one
             </button>
@@ -74,7 +79,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
               id="item-detail-clear-schedule"
               type="button"
               phx-click="clear_schedule_from_detail"
-              class="btn btn-sm btn-soft rounded-full gap-2 px-4 text-sm font-semibold"
+              class={[detail_action_secondary_class(), "gap-2 px-4"]}
             >
               <.icon name="hero-pause-circle" class="size-5" /> Clear schedule
             </button>
@@ -85,8 +90,8 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
               aria-label="Edit item"
               title="Edit item"
               class={[
-                "btn btn-sm btn-soft rounded-full",
-                @mobile? && "gap-2 px-4 py-2.5 text-sm font-semibold",
+                detail_action_secondary_class(),
+                @mobile? && "gap-2 px-4",
                 !@mobile? && "size-10"
               ]}
             >
@@ -104,8 +109,8 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
               aria-label="Delete item"
               title="Delete item"
               class={[
-                "btn btn-sm btn-error btn-soft rounded-full",
-                @mobile? && "gap-2 px-4 py-2.5 text-sm font-semibold",
+                detail_action_danger_class(),
+                @mobile? && "gap-2 px-4",
                 !@mobile? && "size-10"
               ]}
             >
@@ -155,7 +160,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
 
         <div
           id="item-detail-history"
-          class="garden-panel-soft rounded-[1.4rem] p-4"
+          class={[SurfaceClasses.panel_soft(), "rounded-[1.4rem] p-4"]}
         >
           <div class="flex items-center justify-between gap-3">
             <div>
@@ -182,7 +187,7 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
             <article
               :for={event <- @modal.item_detail.recent_events}
               id={"item-detail-history-event-#{event.id}"}
-              class="garden-history-item rounded-[1.2rem] px-4 py-3"
+              class={[SurfaceClasses.history_item(), "rounded-[1.2rem] px-4 py-3"]}
             >
               <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div class="min-w-0 space-y-2">
@@ -224,7 +229,8 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
     <article
       id={@id}
       class={[
-        "garden-detail-card rounded-[1.35rem] px-4 py-3",
+        SurfaceClasses.detail_card(),
+        "rounded-[1.35rem] px-4 py-3",
         @highlighted? && "garden-detail-card-feedback"
       ]}
     >
@@ -233,6 +239,10 @@ defmodule WaterWeb.Garden.Item.DetailModalComponents do
     </article>
     """
   end
+
+  defp detail_action_primary_class, do: @detail_action_primary
+  defp detail_action_secondary_class, do: @detail_action_secondary
+  defp detail_action_danger_class, do: @detail_action_danger
 
   @spec format_date(Date.t()) :: String.t()
   defp format_date(%Date{} = date), do: Calendar.strftime(date, "%A, %B %-d, %Y")
