@@ -130,11 +130,11 @@ defmodule WaterWeb.Layouts do
   Provides dark vs light theme toggle based on themes defined in app.css.
 
   The toggle dispatches a browser event instead of round-tripping through the
-  server. That keeps theme changes instant, persists them across pages via
-  `localStorage`, and avoids coupling a purely presentational preference to
-  LiveView assigns.
+  server. That keeps theme changes instant, persists them across pages via a
+  cookie-backed browser preference, and avoids coupling a purely presentational
+  preference to LiveView assigns.
 
-  See <head> in root.html.heex which applies the theme before page load.
+  See root.html.heex, which reads the theme cookie before CSS loads.
   """
   def theme_toggle(assigns) do
     ~H"""
@@ -174,4 +174,11 @@ defmodule WaterWeb.Layouts do
     </div>
     """
   end
+
+  defp initial_theme(%{conn: %{req_cookies: %{"phx:theme" => theme}}})
+       when theme in ["light", "dark"] do
+    theme
+  end
+
+  defp initial_theme(_assigns), do: nil
 end

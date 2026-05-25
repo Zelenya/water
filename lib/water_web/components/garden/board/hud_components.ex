@@ -2,7 +2,7 @@ defmodule WaterWeb.Garden.Board.HudComponents do
   use WaterWeb, :html
 
   alias Water.Weather.{Forecast, ForecastDay}
-  alias WaterWeb.Garden.Shared.VisualComponents
+  alias WaterWeb.Garden.Shared.{SurfaceClasses, VisualComponents}
 
   attr :today, :any, required: true
   attr :weather_forecast_state, :any, default: :loading
@@ -21,7 +21,7 @@ defmodule WaterWeb.Garden.Board.HudComponents do
     ~H"""
     <section
       id="garden-top-hud"
-      class="garden-panel-hero overflow-hidden rounded-[2rem]"
+      class={[SurfaceClasses.panel_card(), "overflow-hidden rounded-[2rem]"]}
     >
       <div class="px-6 py-5 sm:px-8">
         <div id="garden-weather-hook" phx-hook="GardenWeatherLocation" class="hidden" />

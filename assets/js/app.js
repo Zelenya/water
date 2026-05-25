@@ -50,6 +50,8 @@ import {
 import topbar from "../vendor/topbar";
 
 const themeStorageKey = "phx:theme";
+const themeCookieKey = "phx:theme";
+const themeCookieMaxAge = 60 * 60 * 24 * 365;
 const gardenLucideIcons = {
   "bed-single": BedSingle,
   "calendar-1": Calendar1,
@@ -88,17 +90,37 @@ const renderGardenLucideIcons = (root) => {
 
 const gardenHooks = createGardenHooks({ renderGardenLucideIcons });
 
+const setThemeCookie = (theme) => {
+  document.cookie = `${themeCookieKey}=${theme}; Max-Age=${themeCookieMaxAge}; Path=/; SameSite=Lax`;
+};
+
+const removeThemeCookie = () => {
+  document.cookie = `${themeCookieKey}=; Max-Age=0; Path=/; SameSite=Lax`;
+};
+
+const normalizeTheme = (theme) => {
+  return theme === "light" || theme === "dark" ? theme : "system";
+};
+
 const applyTheme = (theme) => {
-  if (theme === "system") {
+  const normalizedTheme = normalizeTheme(theme);
+
+  if (normalizedTheme === "system") {
     removeLocalStorageItem(themeStorageKey);
+    removeThemeCookie();
     document.documentElement.removeAttribute("data-theme");
   } else {
-    setLocalStorageItem(themeStorageKey, theme);
-    document.documentElement.setAttribute("data-theme", theme);
+    setLocalStorageItem(themeStorageKey, normalizedTheme);
+    setThemeCookie(normalizedTheme);
+    document.documentElement.setAttribute("data-theme", normalizedTheme);
   }
 };
 
-if (!document.documentElement.hasAttribute("data-theme")) {
+const initialTheme = document.documentElement.getAttribute("data-theme");
+
+if (initialTheme === "light" || initialTheme === "dark") {
+  setLocalStorageItem(themeStorageKey, initialTheme);
+} else {
   applyTheme(getLocalStorageItem(themeStorageKey) || "system");
 }
 

@@ -5,6 +5,7 @@ defmodule WaterWeb.Router do
 
   pipeline :browser do
     plug :accepts, ["html"]
+    plug :fetch_cookies
     plug :fetch_session
     plug BasicAuth
     plug :fetch_live_flash
