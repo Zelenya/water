@@ -25,7 +25,8 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
       data-care-item-id={@item_card.item.id}
       data-feedback-tone={@feedback_tone}
       class={[
-        "garden-care-tile garden-care-sortable-item rounded-[1.4rem] px-4 py-3.5 transition duration-200",
+        "garden-care-tile garden-care-sortable-item rounded-[1.4rem] transition duration-200",
+        @sortable? && "px-4 py-3.5",
         @sortable? && "garden-care-tile-sortable",
         actionable_tile_classes(@tool_mode),
         @feedback_tone && "garden-care-feedback",
@@ -39,7 +40,10 @@ defmodule WaterWeb.Garden.Board.ItemTileComponents do
           type="button"
           phx-click="interact_with_item"
           phx-value-item-id={@item_card.item.id}
-          class="group block min-w-0 flex-1 cursor-pointer text-left focus-visible:outline-none"
+          class={[
+            "group block min-w-0 flex-1 text-left focus-visible:outline-none",
+            !@sortable? && "w-full rounded-[inherit] px-4 py-3.5"
+          ]}
           aria-label={tile_action_aria_label(@tool_mode, @item_card)}
         >
           <div class="flex min-w-0 items-center gap-3">

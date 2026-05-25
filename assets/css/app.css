@@ -1053,10 +1053,7 @@
       transform: translateY(-1px);
     }
 
-    .garden-care-target-browse:hover,
-    .garden-care-target-water:hover,
-    .garden-care-target-soil:hover,
-    .garden-care-target-manual:hover {
+    .garden-care-target-browse:hover {
       transform: translateY(-2px);
     }
 
@@ -1111,7 +1108,8 @@
     }
 
     #garden-shell[data-tool-mode="water"] .garden-care-tile,
-    #garden-shell[data-tool-mode="water"] .garden-care-tile button {
+    #garden-shell[data-tool-mode="water"] .garden-care-tile button,
+    #garden-shell[data-tool-mode="water"] .garden-care-tile button * {
       cursor:
         url("/images/cursors/water-drop.svg") 16 28,
         pointer;
@@ -1124,7 +1122,8 @@
     }
 
     #garden-shell[data-tool-mode="soil_check"] .garden-care-tile,
-    #garden-shell[data-tool-mode="soil_check"] .garden-care-tile button {
+    #garden-shell[data-tool-mode="soil_check"] .garden-care-tile button,
+    #garden-shell[data-tool-mode="soil_check"] .garden-care-tile button * {
       cursor:
         url("/images/cursors/shovel.svg") 6 26,
         pointer;
@@ -1139,7 +1138,11 @@
     #garden-shell[data-tool-mode="manual_needs_watering"] .garden-care-tile,
     #garden-shell[data-tool-mode="manual_needs_watering"]
       .garden-care-tile
-      button {
+      button,
+    #garden-shell[data-tool-mode="manual_needs_watering"]
+      .garden-care-tile
+      button
+      * {
       cursor:
         url("/images/cursors/flag.svg") 5 4,
         pointer;
