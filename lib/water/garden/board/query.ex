@@ -132,8 +132,6 @@ defmodule Water.Garden.Board.Query do
 
   @spec card_matches_filter?(CareItemCard.t(), Board.filter(), Date.t()) ::
           boolean()
-  defp card_matches_filter?(%CareItemCard{}, :all, %Date{}), do: true
-
   defp card_matches_filter?(%CareItemCard{status: :no_schedule}, :no_schedule, %Date{}), do: true
   defp card_matches_filter?(%CareItemCard{}, :no_schedule, %Date{}), do: false
 

@@ -46,7 +46,7 @@ defmodule Water.Garden.CommandPersistence do
     end
   end
 
-  @dialyzer {:nowarn_function, build_command_multi: 3}
+  @dialyzer {:no_opaque, build_command_multi: 3}
   @spec build_command_multi(CareItem.t(), Member.t(), Schedule.Transition.t()) :: Multi.t()
   defp build_command_multi(%CareItem{} = care_item, %Member{} = member, transition) do
     care_item_changeset =

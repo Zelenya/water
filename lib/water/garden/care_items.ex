@@ -148,6 +148,7 @@ defmodule Water.Garden.CareItems do
     {:error, :suggestion_item_mismatch}
   end
 
+  @dialyzer {:no_opaque, delete_item: 2}
   @spec delete_item(CareItem.t(), Member.t()) :: delete_result()
   def delete_item(%CareItem{} = care_item, %Member{} = member) do
     with :ok <- validate_member_household_match(care_item, member) do
@@ -486,7 +487,7 @@ defmodule Water.Garden.CareItems do
     end
   end
 
-  @dialyzer {:nowarn_function, build_update_multi: 4}
+  @dialyzer {:no_opaque, build_update_multi: 4}
   @spec build_update_multi(CareItem.t(), Member.t(), Ecto.Changeset.t(), Date.t()) :: Multi.t()
   defp build_update_multi(
          %CareItem{} = care_item,
@@ -630,7 +631,7 @@ defmodule Water.Garden.CareItems do
     Enum.reduce(@schedule_boundary_fields, attrs, &Attrs.delete_attr(&2, &1))
   end
 
-  @spec validate_member_household_match(CareItem.t(), Member.t()) ::
+  @spec validate_member_household_match(CareItem.t() | Household.t(), Member.t()) ::
           :ok | {:error, :member_household_mismatch}
   defp validate_member_household_match(
          %CareItem{household_id: household_id},

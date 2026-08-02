@@ -965,9 +965,11 @@ defmodule WaterWeb.GardenLive do
         |> max(@day_rollover_padding_ms)
 
       _timer = Process.send_after(self(), @day_rollover_message, delay_ms)
+      :ok
+    else
+      {:error, _reason} -> :ok
+      :error -> :ok
     end
-
-    :ok
   end
 
   defp schedule_day_rollover(_household), do: :ok

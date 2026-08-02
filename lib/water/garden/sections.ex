@@ -83,6 +83,7 @@ defmodule Water.Garden.Sections do
     {:error, :invalid_reposition}
   end
 
+  @dialyzer {:no_opaque, delete_section: 1}
   @spec delete_section(Section.t()) :: result(Section.t())
   def delete_section(%Section{id: section_id, household_id: household_id} = section) do
     care_item_ids_query =
