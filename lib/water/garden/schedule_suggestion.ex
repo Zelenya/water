@@ -26,7 +26,9 @@ defmodule Water.Garden.ScheduleSuggestion do
   @defaults [
     required_waterings: 3,
     lookback_days: 30,
-    gap_tolerance_days: 1
+    gap_tolerance_days: 3,
+    minimum_support_gaps: 2,
+    minimum_support_percent: 60
   ]
 
   @type t() :: %__MODULE__{
@@ -48,7 +50,6 @@ defmodule Water.Garden.ScheduleSuggestion do
       when is_integer(item_id) do
     config = config()
     watering_dates = care_item |> recent_watering_dates(occurred_on, config)
-    # |> Enum.reverse()
 
     with true <- length(watering_dates) >= config.required_waterings,
          {:ok, suggested_interval} <- suggest_interval(watering_dates, config),
@@ -94,13 +95,30 @@ defmodule Water.Garden.ScheduleSuggestion do
 
     with true <- length(gaps) == length(watering_dates) - 1,
          true <- Enum.all?(gaps, &(&1 > 0)),
-         interval <- median_gap(gaps),
-         true <- interval > 0,
-         true <- Enum.all?(gaps, &(abs(&1 - interval) <= config.gap_tolerance_days)) do
-      {:ok, interval}
+         provisional_interval <- median_gap(gaps),
+         supporting_gaps <- supporting_gaps(gaps, provisional_interval, config),
+         true <- enough_support?(supporting_gaps, gaps, config),
+         suggested_interval <- median_gap(supporting_gaps) do
+      {:ok, suggested_interval}
     else
       _other -> :error
     end
+  end
+
+  @spec supporting_gaps([pos_integer()], pos_integer(), config()) :: [pos_integer()]
+  defp supporting_gaps(gaps, provisional_interval, config) do
+    Enum.filter(
+      gaps,
+      &(abs(&1 - provisional_interval) <= config.gap_tolerance_days)
+    )
+  end
+
+  @spec enough_support?([pos_integer()], [pos_integer()], config()) :: boolean()
+  defp enough_support?(supporting_gaps, all_gaps, config) do
+    support_count = length(supporting_gaps)
+
+    support_count >= config.minimum_support_gaps and
+      support_count * 100 >= length(all_gaps) * config.minimum_support_percent
   end
 
   @spec median_gap([pos_integer()]) :: pos_integer()
@@ -118,7 +136,9 @@ defmodule Water.Garden.ScheduleSuggestion do
   @type config() :: %{
           required(:required_waterings) => pos_integer(),
           required(:lookback_days) => non_neg_integer(),
-          required(:gap_tolerance_days) => non_neg_integer()
+          required(:gap_tolerance_days) => non_neg_integer(),
+          required(:minimum_support_gaps) => pos_integer(),
+          required(:minimum_support_percent) => 1..100
         }
 
   @spec config() :: config()
@@ -131,10 +151,22 @@ defmodule Water.Garden.ScheduleSuggestion do
       lookback_days:
         positive_integer_config(raw_config, :lookback_days, @defaults[:lookback_days]),
       gap_tolerance_days:
-        positive_integer_config(
+        non_negative_integer_config(
           raw_config,
           :gap_tolerance_days,
           @defaults[:gap_tolerance_days]
+        ),
+      minimum_support_gaps:
+        positive_integer_config(
+          raw_config,
+          :minimum_support_gaps,
+          @defaults[:minimum_support_gaps]
+        ),
+      minimum_support_percent:
+        percentage_config(
+          raw_config,
+          :minimum_support_percent,
+          @defaults[:minimum_support_percent]
         )
     }
   end
@@ -145,6 +177,23 @@ defmodule Water.Garden.ScheduleSuggestion do
   defp positive_integer_config(config, key, default) do
     case config_value(config, key, default) do
       value when is_integer(value) and value > 0 -> value
+      _other -> default
+    end
+  end
+
+  @spec non_negative_integer_config(raw_config(), atom(), non_neg_integer()) ::
+          non_neg_integer()
+  defp non_negative_integer_config(config, key, default) do
+    case config_value(config, key, default) do
+      value when is_integer(value) and value >= 0 -> value
+      _other -> default
+    end
+  end
+
+  @spec percentage_config(raw_config(), atom(), 1..100) :: 1..100
+  defp percentage_config(config, key, default) do
+    case config_value(config, key, default) do
+      value when is_integer(value) and value in 1..100 -> value
       _other -> default
     end
   end

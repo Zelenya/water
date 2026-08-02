@@ -64,6 +64,49 @@ defmodule Water.Garden.ScheduleSuggestionTest do
                ScheduleSuggestion.suggest_after_watering(item, ~D[2026-03-27])
     end
 
+    test "ignores an older gap outside the median tolerance" do
+      %{item: item, member: member} = setup_item(%{watering_interval_days: nil, next_due_on: nil})
+
+      insert_waterings(
+        item,
+        member,
+        [~D[2026-07-02], ~D[2026-07-19], ~D[2026-07-25], ~D[2026-07-31]]
+      )
+
+      assert %ScheduleSuggestion{suggested_interval_days: 6, next_due_on: ~D[2026-08-06]} =
+               ScheduleSuggestion.suggest_after_watering(item, ~D[2026-07-31])
+    end
+
+    test "suggests the median when sixty percent of recent gaps are within three days" do
+      Application.put_env(:water, :schedule_suggestions, %{lookback_days: 45})
+
+      %{item: item, member: member} = setup_item(%{watering_interval_days: nil, next_due_on: nil})
+
+      insert_waterings(item, member, [
+        ~D[2026-06-01],
+        ~D[2026-06-08],
+        ~D[2026-06-13],
+        ~D[2026-06-23],
+        ~D[2026-06-30],
+        ~D[2026-07-06]
+      ])
+
+      assert %ScheduleSuggestion{suggested_interval_days: 7} =
+               ScheduleSuggestion.suggest_after_watering(item, ~D[2026-07-06])
+    end
+
+    test "returns no suggestion without at least two gaps supporting the median" do
+      %{item: item, member: member} = setup_item(%{watering_interval_days: nil, next_due_on: nil})
+
+      insert_waterings(
+        item,
+        member,
+        [~D[2026-03-02], ~D[2026-03-03], ~D[2026-03-12], ~D[2026-03-27]]
+      )
+
+      assert ScheduleSuggestion.suggest_after_watering(item, ~D[2026-03-27]) == nil
+    end
+
     test "returns no suggestion when the current interval already matches" do
       %{item: item, member: member} = setup_item(%{watering_interval_days: 1})
 
@@ -84,7 +127,7 @@ defmodule Water.Garden.ScheduleSuggestionTest do
       insert_waterings(
         item,
         member,
-        [~D[2026-03-18], ~D[2026-03-20], ~D[2026-03-22], ~D[2026-03-27]]
+        [~D[2026-03-21], ~D[2026-03-23], ~D[2026-03-26], ~D[2026-03-27]]
       )
 
       assert ScheduleSuggestion.suggest_after_watering(item, ~D[2026-03-27]) == nil
