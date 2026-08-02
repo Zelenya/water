@@ -120,10 +120,6 @@ config :water, :basic_auth,
     parse_usernames.("WATER_BASIC_AUTH_USERNAMES", env.("WATER_BASIC_AUTH_USERNAMES", "a,j")),
   password: env.("WATER_BASIC_AUTH_PASSWORD", "watering")
 
-if daily_reminder_time = System.get_env("WATER_DAILY_REMINDER_TIME") do
-  config :water, :daily_reminders, enabled: true, time: daily_reminder_time
-end
-
 if config_env() == :prod do
   database_config =
     case System.get_env("DATABASE_URL") do

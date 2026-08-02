@@ -1,5 +1,4 @@
 import Sortable from "sortablejs";
-import { GardenDailyReminder } from "./daily_reminder_hook";
 
 const mobileViewportQuery = "(max-width: 767px)";
 
@@ -109,8 +108,6 @@ export const createGardenHooks = ({ renderGardenLucideIcons }) => ({
       );
     },
   },
-
-  GardenDailyReminder,
 
   // Maps focus and keyboard interactions into LiveView events
   GardenCommandLauncher: {

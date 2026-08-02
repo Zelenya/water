@@ -655,8 +655,6 @@ defmodule WaterWeb.GardenLive do
 
   @impl true
   def render(assigns) do
-    assigns = assign(assigns, :daily_reminder, daily_reminder(assigns))
-
     ~H"""
     <Layouts.app flash={@flash} active_member={@active_member}>
       <:header_actions>
@@ -671,16 +669,6 @@ defmodule WaterWeb.GardenLive do
         phx-window-keydown="escape_tool_mode"
         class="garden-shell space-y-6 pb-28 md:pb-8"
       >
-        <div
-          :if={@daily_reminder}
-          id="garden-daily-reminder"
-          class="hidden"
-          phx-hook="GardenDailyReminder"
-          data-daily-reminder-date={Date.to_iso8601(@daily_reminder.date)}
-          data-daily-reminder-notify-at-ms={@daily_reminder.notify_at_ms}
-          data-daily-reminder-body={@daily_reminder.body}
-        >
-        </div>
         <HudComponents.hud_section
           today={@today}
           weather_forecast_state={@weather_forecast_state}
@@ -965,15 +953,6 @@ defmodule WaterWeb.GardenLive do
   defp parse_weather_reason(%{"reason" => "unsupported"}), do: :unsupported
   defp parse_weather_reason(%{"reason" => "timeout"}), do: :timeout
   defp parse_weather_reason(_params), do: :unavailable
-
-  @spec daily_reminder(map()) :: Garden.DailyReminder.t() | nil
-  defp daily_reminder(%{board: nil}), do: nil
-
-  defp daily_reminder(%{household: household, board: board, today: today}) do
-    Garden.daily_reminder(household, board, today)
-  end
-
-  defp daily_reminder(_assigns), do: nil
 
   @spec schedule_day_rollover(map()) :: :ok
   defp schedule_day_rollover(%{timezone: timezone}) when is_binary(timezone) do

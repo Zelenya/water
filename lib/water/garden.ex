@@ -13,7 +13,6 @@ defmodule Water.Garden do
     CareItemCard,
     CareItems,
     Commands,
-    DailyReminder,
     Event,
     Events,
     Schedule,
@@ -25,12 +24,6 @@ defmodule Water.Garden do
   alias Water.Households.{Household, Member}
 
   @type result(value) :: {:ok, value} | {:error, Ecto.Changeset.t()}
-
-  @spec daily_reminder(Household.t(), Board.t(), Date.t()) ::
-          DailyReminder.t() | nil
-  defdelegate daily_reminder(household, board, today),
-    to: DailyReminder,
-    as: :from_board
 
   @spec subscribe(Household.t()) :: :ok | {:error, term()}
   defdelegate subscribe(household), to: Events
